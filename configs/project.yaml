@@ -1,0 +1,27 @@
+# Experiment configuration defaults - single source of truth
+# These are the canonical example settings from design.md section 18.
+# They are starting defaults, NOT empirically established optima.
+
+project:
+  name: predictive-container-management
+  phase: 1
+
+sla:
+  p95_latency_ms: 250
+  safety_margin_ms: 20
+
+containers:
+  min: 2
+  max: 30
+  max_change_per_cycle: 5
+
+forecast:
+  history_window: 30
+  horizon: 5
+
+control:
+  interval_seconds: 60
+
+evaluation:
+  repetitions: 5
+  baseline: reactive

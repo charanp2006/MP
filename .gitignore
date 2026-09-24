@@ -1,0 +1,89 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+wheels/
+*.so
+
+# ---- Virtual environments ----
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ---- Jupyter / notebooks ----
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# ---- Test / quality tooling ----
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ---- ML / RL artifacts (do not commit models, checkpoints or runs) ----
+models/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.h5
+runs/
+tensorboard/
+mlruns/
+
+# ---- Experiment outputs & logs ----
+logs/
+*.log
+results/
+experiments/output/
+*.jsonl
+!**/.gitkeep
+
+# ---- Data (raw and processed datasets are not committed) ----
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.feather
+*.hdf5
+*.npz
+
+# ---- Secrets / config ----
+.env
+.env.*
+*.secret
+*kubeconfig*
+configs/*local*
+
+# ---- Presentations / media (archived on the `files` branch) ----
+*.pptx
+*.png
+**/images/
+**/media/
+
+# ---- Local scratch / temp files ----
+ocr_results.txt
+final_ppt_extract.txt
+*.tmp
+*.bak
+
+# ---- IDE / OS ----
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Docker ----
+*.dockerfile.bak

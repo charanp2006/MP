@@ -121,6 +121,14 @@ subject to  P95 latency ≤ SLA target
 - Improved CPU and memory utilization.
 - Reduced over-provisioning.
 
+### 5.1 Worked use-case
+
+During an e-commerce flash sale, TFT predicts a demand spike well before
+it arrives. Qwen3 therefore plans pre-warming; PPO selects the exact
+pre-warm/scale-out action; the warm containers absorb the surge without
+cold-start latency. As demand drops, the system scales in and terminates
+idle containers to save energy, keeping P95 latency inside the SLA.
+
 ---
 
 ## 6. Proposed Solution
@@ -368,6 +376,20 @@ flowchart TD
     F --> I[Conservative Policy]
     I --> H
 ```
+
+### 9.6 Ingestion / API boundary (conceptual)
+
+The conceptual `final.png` architecture shows a user-facing ingestion
+boundary — `Clients → API Gateway / Load Balancer → function workloads →
+ingestion`. This boundary is **optional deployment context**, not a
+functional requirement of the prototype:
+
+- The prototype focuses on the closed-loop controller and the
+  Kubernetes/OpenFaaS cluster.
+- If an API gateway / load-balancer layer is added in deployment,
+  its endpoints, request schemas and tests must be documented as
+  requirements (see the implementation-readiness checklist in
+  `docs/validation-report.md`).
 
 ---
 

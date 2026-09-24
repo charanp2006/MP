@@ -32,6 +32,10 @@ Start with the complete specification:
 | [docs/design.md](docs/design.md) | Module layout, schemas, training/design details, implementation order |
 | [docs/security.md](docs/security.md) | Threat model, trust boundaries, RBAC, action allowlist, audit |
 | [docs/test_plan.md](docs/test_plan.md) | Test strategy, system scenarios, baselines, ablation, metrics |
+| [docs/validation-report.md](docs/validation-report.md) | Image-vs-docs audit + implementation-readiness checklist |
+| [docs/references.md](docs/references.md) | Recommended research papers mapped to components |
+| [AGENTS.md](AGENTS.md) | Guidance for AI coding agents and contributors |
+| [configs/project.yaml](configs/project.yaml) | Experiment configuration defaults (single source of truth) |
 
 A compact summary of the same documents lives in [docs-simpler/](docs-simpler/).
 
@@ -69,5 +73,10 @@ Documentation and design are complete. Implementation follows `docs/design.md` Â
 
 ## Notes
 
-- The `docs` git branch contains the research survey (PDFs) and Phase-1 presentation material (PPTX).
+- The `files` branch archives media: project images, the final presentation
+  (`Predictive-Container-Management-for-Energy-Efficient-Serverless-Computing.pptx`)
+  and the compact `docs-simpler/` set â€” do not edit it.
+- The `docs` branch contains the research survey (26 PDFs) and older
+  presentation material. See [docs/references.md](docs/references.md) for the
+  recommended papers.
 - The project is a research prototype: numerical improvements are targets, not pre-existing results.
