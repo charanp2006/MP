@@ -1,0 +1,220 @@
+===== SLIDE 1 =====
+  Vidyavardhaka
+  College of Engineering
+  Department of Computer Science and Engineering
+  An Agentic AI and Transformer-
+  Based Framework for Intelligent and Energy-Efficient
+  Container Management in Serverless Computing
+  Major Project — Phase 1
+  Presented By
+  Charan P — 4VV23CS042
+  Darshan S Gowda — 4VV23CS052
+  Gaurav S G — 4VV23CS074
+  Project Guide
+  — Dr. Tej C Hiremath
+  [NOTES]: 1
+===== SLIDE 2 =====
+  Overview
+  Abstract
+  Problem
+  Serverless computing provisions resources on demand, but cold starts spike latency while idle warm containers waste energy.
+  Data & Forecast
+  Azure Functions traces are preprocessed into time-series sequences; a Temporal Fusion Transformer predicts short-term workload.
+  Agentic Planning
+  Qwen3 interprets predicted demand, system state and SLA status to produce a high-level container-management plan.
+  RL Control
+  A PPO controller executes fast decisions — NoOp, PreWarm, ScaleOut, Reuse, ScaleIn or Terminate — with SLA as the primary constraint.
+  Evaluation
+  The closed-loop system is compared against reactive autoscaling on latency, SLA compliance, cold starts, energy and utilisation.
+  [NOTES]: 2
+===== SLIDE 3 =====
+  Problem Statement
+  The Challenge with Serverless Scaling
+  Serverless workloads vary rapidly. Reactive scaling responds
+  after
+  demand changes, causing cold-start latency spikes. Keeping containers warm reduces cold starts but inflates idle energy and resource waste.
+  Core Problem:
+  Anticipate workload changes and autonomously manage containers so energy is minimised without violating SLA requirements.
+  ⏱
+  Cold-Start Delay
+  New containers require initialisation, adding response latency during demand spikes.
+  ⚡
+  Idle Energy Waste
+  Warm containers kept on standby consume power even when receiving zero invocations.
+  📉
+  Reactive Limitation
+  Threshold-based autoscalers scale too late; sudden spikes breach SLA before action is taken.
+  🔢
+  Optimisation Target
+  Minimise
+  E + αL + βCS + γC
+  subject to P95 latency ≤ SLA target.
+  [NOTES]: 3
+===== SLIDE 4 =====
+  Introduction
+  Context & Motivation
+  Serverless Growth
+  Event-driven applications create highly variable, burst-prone workloads that challenge traditional provisioning.
+  Cold-Start Challenge
+  A new container must initialise its runtime before serving requests, directly increasing end-user response latency.
+  Reactive Scaling Limit
+  Scaling triggered by observed demand arrives too late for sudden spikes, causing SLA breaches at the moment of peak load.
+  Energy Efficiency Need
+  Excessive warm capacity consumes significant energy during low-demand periods, raising operational cost and carbon footprint.
+  Predictive Solution
+  Combining Transformer forecasting, Qwen3 agentic planning and PPO reinforcement learning enables proactive, autonomous control.
+  [NOTES]: 4
+===== SLIDE 5 =====
+  Objectives
+  Project Objectives & Targets
+  Workload Forecasting
+  TFT to predict short-term invocation demand from multivariate workload and runtime features.
+  SLA Protection
+  Strongly prioritize P95 latency within the defined SLA target; violations carry the highest penalty.
+  Proactive Scaling
+  Prewarm or scale containers before demand arrives, eliminating reactive cold-start latency.
+  Energy Optimization
+  Reduce unnecessary active and idle container time to lower overall energy consumption.
+  Agentic Planning via Qwen3
+  High-level reasoning over forecast, system state and SLA to generate orchestration plans.
+  Rigorous Evaluation
+  Compare against reactive autoscaling across multiple workload patterns with clear metrics.
+  [NOTES]: 5
+===== SLIDE 6 =====
+  Architecture
+  Data Pipeline & Model Architecture
+  Dataset Prep
+  Clean and sort Azure Functions traces
+  Preprocessing
+  Resample, normalize, encode, add time features
+  TFT Forecasting
+  30 intervals in → predict next 5–15 min
+  Qwen3 Planning
+  Forecast + state + SLA → high-level plan
+  PPO Control
+  State → action: PreWarm/Scale/Reuse/Terminate
+  Data source:
+  Azure Functions workload traces
+  · Key features include invocation count, execution duration, CPU/memory utilisation, container state, cold-start occurrence, response latency and time-of-day indicators.
+  [NOTES]: 6
+===== SLIDE 7 =====
+  Methodology
+  System Methodology & Control Loop
+  Agentic Planning
+  TFT Prediction
+  Data Preprocessing
+  Workload Data
+  [NOTES]: 7
+===== SLIDE 8 =====
+  Implementation
+  Tools & Technologies
+  The stack integrates state-of-the-art ML frameworks with production-grade cloud-native infrastructure, enabling end-to-end experimentation and real deployment validation.
+  Category
+  Tool
+  /
+  Library
+  Role
+  Programming
+  Python
+  Orchestration, ML/RL pipelines
+  Data Processing
+  Pandas, NumPy
+  Cleaning, resampling, feature engineering
+  Deep Learning
+  PyTorch
+  Model implementation
+  Prediction
+  Temporal Fusion Transformer
+  Workload forecasting
+  Agentic AI
+  Qwen3
+  High-level planning & reasoning
+  Reinforcement Learning
+  PPO
+  Fast SLA-aware control
+  Serverless
+  OpenFaaS
+  Function execution runtime
+  Containerisation
+  Docker
+  Application containers
+  Orchestration
+  Kubernetes
+  Container lifecycle & scaling
+  Monitoring
+  Prometheus + Grafana
+  Metrics collection & dashboards
+  Dataset
+  Azure Functions Traces
+  Historical workload patterns
+  Development
+  Jupyter Notebook / VS Code
+  Experimentation & implementation
+  ML / AI Layer
+  PyTorch · TFT · Qwen3 · PPO
+  Infrastructure Layer
+  Kubernetes · OpenFaaS · Docker
+  Observability Layer
+  Prometheus · Grafana
+  [NOTES]: 8
+===== SLIDE 9 =====
+  Expected Outcomes
+  Deliverables & Applications
+  📈
+  Predictive Workload Model
+  Accurate short-term workload forecasts using TFT trained on Azure Functions traces.
+  🤖
+  Autonomous Container Controller
+  Proactive, adaptive lifecycle decisions driven by Qwen3 planning and PPO control.
+  ⚡
+  SLA-Safe Energy Efficiency
+  Lower energy and cold starts while preserving the P95 latency target.
+  (Targets: 15–25% energy, 20–30% cold-start reduction.)
+  ☁
+  Cloud-Native Prototype
+  Kubernetes/OpenFaaS/Docker implementation with Prometheus and Grafana monitoring dashboards.
+  📊
+  Evaluation & Documentation
+  Baseline comparison, ablation study, full metrics/graphs and final project report.
+  Example:
+  During an e-commerce flash sale, TFT predicts a spike → Qwen3 plans prewarming → PPO selects the exact action → warm containers handle demand → as demand drops, the system scales in to save energy.
+  [NOTES]: 9
+===== SLIDE 10 =====
+  References
+  Key References
+  Selected papers that support the project’s predictive autoscaling, cold-start mitigation, and energy-aware container management goals.
+  1. Dynamic Management of Constrained Computing Resources for Serverless Services (2025)
+  Supports:
+  energy-efficient container management, SLA protection, container states and resource optimization
+  Relevance: One of the closest papers to the project’s
+  energy + SLA + serverless container management
+  objective
+  2. Deep Learning and Feedback Control Based Container Auto-Scaling for Cloud Native Micro-Services (2025)
+  Supports:
+  deep-learning-based prediction, Kubernetes/container autoscaling and P95 SLA management
+  Relevance: Provides the basis for the project’s
+  predictive autoscaling and cloud-native implementation
+  3. Incendio: Priority-Based Scheduling for Alleviating Cold Start in Serverless Computing (2024)
+  Supports:
+  workload prediction, container pre-warming, container termination and RL-based scheduling
+  Relevance: Very important because it is one of the closest works to the project’s
+  predictive cold-start management
+  4. Tackling Cold Start in Serverless Computing with Multi-Level Container Reuse (2024)
+  Supports:
+  deep reinforcement learning, container reuse and cold-start reduction
+  Relevance: Supports the project’s
+  PPO/container-reuse strategy
+  5. Microservice Autoscaling With Fine-Grained DVFS in Dynamic Multi-Edge Collaboration via Deep Reinforcement Learning (2026)
+  Supports:
+  DRL-based autoscaling, energy optimization and latency management
+  Relevance: Strengthens the project’s
+  energy-aware reinforcement-learning component
+  6. FaaShare: Enabling Generic Low-Latency and SLO-Aware GPU Sharing in Serverless Computing (2026)
+  Supports:
+  serverless pre-warming, SLO protection and resource allocation
+  Relevance: Supports the project’s
+  SLA/SLO-aware container-management objective
+  [NOTES]: 10
+===== SLIDE 11 =====
+  Thank You
+  [NOTES]: 11

@@ -1,0 +1,1154 @@
+========================= final.png =========================
+Predictive Container Management for Energy-Efficient Serverless Computing
+Predict/ Plan/Optimize/Sustain
+Complete Project Architecture
+TowardsaGreenerServerless Future
+1. Users / Clients
+2. Workload
+AI-Driven Decision Engine
+6.Serverless Execution
+7. Applications/ Services
+Ingestion Layer
+Layer
+4. Agentic AI Planning
+3. Workload Prediction
+5. Reinforcement Learning
+(TFT)
+</>
+(Qwen3)
+Controller (PPO)
+User Service
+End Users
+ PPO
+(Web / Mobile App)
+OpenFaaS
+Search Service
+Qwen3
+Temporal Fusion
+(Serverless Platform)
+Inputs (State)
+Transformer
+Inputs
+. Predicted workload
+Predicted workload
+Real-time metrics
+Container
+Requests
+Inputs
+Product Service
+Internet
+Current system state
+Container state
+: Actions
+Historical workload
+SLA requirements
+(HTTP/HTTPS)
+API Gateway /
+SLA status
+Energy metrics
+System metrics
+. Energy usage
+Load Balancer
+Time features
+Resource utilization
+Actions
+(hour, day, season)
+Payment Service
+E-commerce
+Reasoning & Planning
+Kubernetes
+No action
+(Orchestration)
+Analyze future demand
+Output
+Pre-warm container
+Healthcare
+Generate strategies
+Scale out
+Recommendation
+Request Information
+Predicted workload
+Consider energy & SLA
+Reuse container
+Service
+(next 5 /10 / 15 min)
+. Output recommended
+ Scale in
+Finance
+Invocation rate
+actions
+Terminate container
+· Request type
+Reward Function
+Docker
+.Timestamp
+Media&Streaming
+Other Services
+Planned Strategy
+Minimize energy consumption
+. User/session info
+(Container Runtime)
+e.g., Pre-warm, Scale-out,
+Minimize latency&cold starts
+·Function ID
+Minimize resource wastage
+loT Applications
+Reuse, Scale-in, Terminate
+Function Containers
+•Large penalty for SLA violation
+8. Monitoring & Feedback Layer
+Metrics Collection
+Visualization
+Feedback to AI Engine
+Real-time Metrics
+(Prometheus)
+(Grafana)
+System State &Metrics
+CPU/Memory
+Real-time dashboards
+Update models
+Requestrate
+Alerts
+Refine agent planning
+Response latency
+Performance analysis
+Improve PPO policy
+Container count
+Energy monitoring
+Energyconsumption
+Adapt to changing workload
+Cold starts
+SLA violations
+ContinuousMonitoring,LearningandAdaptation
+9. Key
+SLA Protection
+Reduced Cold Starts
+Better Resource Utilization
+Energy Eficient
+Scalable & Adaptive
+Sustainable Cloud
+Outcomes
+Maintain P95 latency
+Proactive container management
+Avoid over-provisioning
+Handles dynamic workloads
+Lower energy consumption
+Right resources, right time
+========================= ChatGPT Image Sep 13, 2026, 06_18_51 PM.png =========================
+Predictive Container Management for Energy-Efficient Serverless Computing
+Data and Model Architecture
+1. DATA USED IN THE PROJECT
+2. MODEL ARCHITECTURE
+1. Input Data
+Data Sources
+.Preprocessed workload data
+.Real-time metrics (CPU, memory, latency, etc.)
+Azure Functions
+Time features
+Runtime Monitoring Data
+Workload Traces
+Container states
+(Kubernetes / OpenFaas
+. Energy metrics
+(Real-world serverless
+/ Docker Metrics)
+workload dataset)
+2. Temporal Fusion Transformer (TFT) · Input: Historical time series data 
+Predicted Workload
+(multiple features)
+Captures temporal dependencies
+Workload Prediction
+and feature importance
+Output: Predicted workload for
+Future request rate
+Key Features / Attributes
+next time window (e.g., 5/10/15 min)
+and resource demand
+Timestamp
+Number of active containers
+Function / Application ID
+Warm / cold container states
+3. Qwen3 - Agentic AI Layer
+Cold-start occurrences
+Input: Predicted workload + current system state
+Invocation / Request count
+(SLA, energy, containers, latency, etc.)
+Request rate
+Container lifecycle events
+Planning & Reasoning
+Interprets workload conditions
+Execution duration
+(start/stop/reuse)
+Generates high-level container management strategy
+Response latency
+Resource utilization
+(e.g., pre-warm, scale, reuse, terminate)
+Energy consumption /
+CPU utilization
+power metrics
+Memory utilization
+Feedback Loop
+Time-based features
+4. PPo Reinforcement Learning Controller · Input: State (predicted workload, current metrics, etc.)
+(Continuous
+(hour, day, weekday, etc.)
+Actions: pre-warm, scale out, reuse, scale in,
+Improvement)
+terminate, no action
+Decision Making
+Reward:minimize energy,latency,cold starts,cost
+Data Preprocessing
+(large penalty for SLA violation)
+Output:Container managementactions
+5. Container Execution Layer
+Executeactions fromPPO controller
+Resample into
+Remove
+Feature
+Normalize
+Create input
+·Manage container lifecycle
+missing / invalid
+fixed time
+engineering
+features
+sequences
+(pre-warm, scale, reuse, terminate)
+intervals
+(timefeatures,
+records
+(windowing)
+Kubernetes
+OpenFaas
+Docker Containers
+encoding, etc.)
+·Deploy and run serverless functions
+Historical Time Series Data
+6.Monitoring&Feedback
+• Monitor latency, energy, CPU, memory, cold starts, SLA violations
+• Collect real-time metrics
+Time
+CPU (%)
+Memory (%)
+Latency (ms)
+Function ID
+Invocations
+Containers
+Energy (Wh)
+Provide feedback to TFT, Qwen3 and PPO for continuous learning
+120
+2023-01-01 00:00
+F1
+30
+40
+150
+0.5
+and adaptation
+135
+2023-01-01 00:01
+F1
+35
+42
+160
+0.6
+2023-01-01 00:02
+F1
+300
+70
+65
+220
+1.2
+Overall Objective
+Reduce cold-start latency and energy consumption while maintaining SLA requirements
+through predictive and intelligent container management.
+========================= ChatGPT Image Sep 13, 2026, 06_14_59 PM.png =========================
+Project Objectives
+Predict . Optimize . Scale
+Predictive Container Management for Energy-Efficient Serverless Computing
+ForaGreener ServerlessFuture
+01
+Predict Future Workload
+02
+Proactively Manage Containers
+To predict future serverless workload
+To proactively manage containers by
+using a Temporal Fusion Transformer
+using workload predictions to decide
+(TFT) based on historical and real-time
+when containers should be pre-warmed,
+workload characteristics.
+scaledout,reused,scaledin,orterminated
+Project
+03
+04
+Develop Agentic Al Planning Layer
+Optimize with PPO Reinforcement
+Learning
+Objectives
+To develop an agentic Al planning
+To optimize container-management
+layer using Qwen3 to interpret
+decisions using PPO reinforcement
+Towards Intelligent,
+predicted workload conditions and
+PPO
+learning, considering latency, energy
+generate appropriate container-
+Sustainable and
+consumption,coldstarts,resource
+SLA-Aware Serverless
+Qwen3
+management strategies.
+utilization, and SLA requirements.
+Infrastructure
+05
+Reduce Unnecessary
+Protect SLA Requirements
+06
+Energy Consumption
+To protect SLA requirements by ensuring
+To reduce unnecessary energy
+that container-management decisions
+consumption by avoiding excessive
+do not unnecessarily increase response
+container provisioning and intelligently
+latency or cause excessive SLA violations.
+terminating idle containers during
+low-demand periods.
+07
+Implement and Evaluate the Framework
+To implement and evaluate the framework using Kubernetes/OpenFaaS and compare it
+against conventional/reactive autoscaling approaches.
+OpenFaas
+Kubernetes
+Docker
+Efficient Containers
+ReliablePerformance
+SustainableCloud
+========================= ChatGPT Image Sep 11, 2026, 12_20_25 PM.png =========================
+Technologies / Tools to be Used
+Predictive Container Management for Energy-Efficient Serverless Computing
+Core System
+Workload Generation
+Monitoring & Metrics Collection
+Kubernetes
+Container orchestration
+Locust
+Python
+Real-world traces
+Prometheus
+cAdvisor
+Knative Serving
+NodeExporterRAPL/PowerMeter
+(Node metrics)
+(Load testing)
+(Metrics collection)(Containermetrics)
+(Workload scripts)
+(Optional)
+(Energy measurement)
+Serverless platform
+(scale-to-zero)
+Al / ML (Prediction)
+Agent / Management
+Docker
+Build and run containers
+Jupyter
+Runs Function Containers
+Rule-based / RL
+PyTorch
+Python
+PatchTST
+Jupyter Notebook
+Kubernetes
+(Time-series
+(Agent logic)
+(Model training)
+(Decision-making agent)
+(Experimentation)
+Python Client
+Transformer)
+(Control Kubernetes)
+Data Storage
+Visualization
+Development Environment
+Prometheus
+InfluxDB
+vS Code
+Grafana
+Ubuntu Linux
+GitHub
+(Time-series database)
+(OS)
+(IDE)
+(Optional - long term storage)
+(Dashboards)
+(Version control)
+Complete Stack → Data → Al Prediction → Agent Decision → Kubernetes → Monitoring → Visualization
+========================= ChatGPT Image Sep 11, 2026, 12_19_05 PM.png =========================
+Proposed Methodology
+Predictive Container Management for Energy-Efficient Serverless Computing
+1. Data Collection
+2. Data Preprocessing
+3. Transformer-based
+4. Container Demand
+5. Agentic Al Decision Module
+Workload Prediction
+Estimation
+Clean, transform and prepare
+Collect real-time and historical data
+Intelligentagentdecides container
+Convert predicted workload into
+from the serverless platform
+data for model training/inference
+Use PatchTST to predict future
+management actions
+request rate
+required containers
+Inputs to Agent
+Data cleaning
+: Predicted workload
+(remove noise, missing values)
+PatchTST
+Estimate required
+. Current container state
+.CPU/memoryusage
+containers
+Container state
+Request logs
+· Latency (P95, P99)
+Feature engineering
+(based on predicted request rate,
+Future
+Historical
+(timestamp, function)
+(running, idle, cold start)
+. Energy consumption
+(time features, rolling stats,
+workload &
+workload
+service time, concurrency)
+. SLA requirements
+resource usage, etc.)
+features
+(predicted next
+(past n minutes)
+5-15 minutes)
+Transformer Encoder
+Apply safety margin
+(with patching)
+(to handle uncertainty)
+Decision-Making Agent
+Normalization
+(scaling)
+System metrics
+Energy metrics
+Actual
++ Predicted
+(CPU, memory, latency)
+(RAPL / power meter)
+Request Rate
+100
+PossibleActions
+: Pre-warm containers
+50
+Determinewarmcontainer
+Create time-series dataset
+. Scale up
+pool size
+(sliding window)
+: Reuse idle containers
+(min, max, pre-warm count)
+.Keep current state
+10
+20
+30
+40
+50
+60
+Scaledown
+Time (minutes)
+Terminateunnecessary containers
+6. Execution Layer (Kubernetes / Knative)
+Executeagentdecisionsandmanagecontainerlifecycle
+Actions via Kubernetes API
+Cold Start
+Running
+Warm Container
+Kubernetes
+Idle
+. Create new containers
++ Knative Serving
+• Scale replicas
+(Serverless Platform)
+.Terminate containers
+(Ready)
+(Container Creation)
+(Processing Requests)
+(May be terminated)
+.Manage container lifecycle
+(through Knative)
+7. Monitoring & Feedback
+8. Evaluation
+9. Continuous Learning (Optional)
+Continuously monitor system after actions
+Compare with baseline approaches
+Update model and agent with new data
+. Cold start latency
+·Average/P95/P99 latency
+•Retrain Transformer periodically
+. Energy consumption
+(with new data)
+·Resource utilization
+: Improve agent policy (rule-based or RL)
+Collect updated
+Visualize in
+Store in
+Provide feedback
+.Warm container hit rate
+:Adapt to changing workload patterns
+Prometheus
+Grafana
+metrics
+to agent and model
+.SLAviolations
+·Prediction accuracy (MAE, RMSE)
+Continuous Monitoring, Learning and Improvement
+========================= ChatGPT Image Sep 11, 2026, 12_17_00 PM.png =========================
+Predictive Container Management for Energy-Efficient Serverless Computing
+Complete Project Architecture
+2. Serverless Platform
+5. Agentic AI
+1. Workload Sources
+3. Monitoring & Data Collection
+4. Transformer-based
+6. Visualization
+(Kubernetes + Knative)
+(Container Management Agent)
+Workload Prediction
+&UserInterface
+Prometheus
+• Collects metrics
+Knative Serving
+PatchTST (Time-Series Transformer)
+Real Users / Clients
+•Stores time-series data
+ Observes
+cAdvisor
+• Exposes serverless functions
+Workload Prediction (Example)
+: Predicted workload
++ Actual
+-+- Predicted
+• Routes incoming requests
+Container-level metrics
+80
+.Current container state
+(CPU, Memory, etc.)
+·Scales containers (scale-to-zero)
+60
+. CPU / memory / energy usage
+Web/API Requests
+Metrics
+Historical&
+• Latency & SLA metrics
+HTTP
+Metrics &
+Predicted
+Grafana
+. Integrates with Kubernetes
+40
+(Real-time)
+Requests
+Real-time Data
+Workload
+. Cold start frequency
+Decisions
+()
+Node Exporter
+(Event-driven)
+20
+Function Containers (Pods)
+. Node-level metrics
+(CPU, Memory, Energy
+10203040
+60
+Reasoning (Goal-driven/RL)
+. Real-time dashboards
+loT Devices
+Time (minutes)
+yia RAPL)
+. Request rate
+:Decide when to pre-warm containers
+. Predicted vs actual
+Loki (Logs)
+Input Features
+.Scaleup/down
+·Active containers
+:. Past request rate
+• Container logs
+. Reuse idle containers
+.CPU/Memory usage
+. CPU & memory usage
+.Terminate unnecessary containers
+.Detect cold starts
+Scheduled Jobs
+.Energy consumption
+: Active containers
+:Balance latency vs energy vs cost
+· Latency (Avg, P95, P99)
+. Time of day / day of week
+Kubernetes Cluster
+Intel RAPL /
+. Cold start frequency
+. Recent latency
+Actions
+Power Meter
+: Other system metrics
+Manages containers/pods
+:Agentactions
+. SLA violations
+•Executes scaling commands
+·Energy consumption
+Synthetic Workloads
+·Send scaling commands toKubemetes
+•Container lifecycle management
+• Power metrics
+. Predicted request rate (next 1-5 minutes)
+·Update container pool size
+(Locust / Traces)
+. Estimated required containers
+:Adjust container keep-alive time
+Scaling Actions
+Scaling Decision
+-(Create/ Scale/Terminate/Prewarm)
+(pre-warm / scale /terminate)
+7. Kubernetes/Knative Cluster (Runtime Environment)
+Autoscaling (Knative/ Custom Controller)
+Container Lifecycle
+Function Examples
+Create new containers
+Terminate idle containers
+Running
+Manage container lifecycle
+Cold Start
+Warm Container
+Idle
+Data
+ML
+Image
+File
+(May be Terminated)
+Processing
+Inference
+(Container Creation)
+(Ready)
+(Processing Requests)
+Analysis
+Execute agent decisions
+Processing
+9. Evaluation & Comparison
+8. Model Training Pipeline (Offline)
+10.ExpectedOutcomes
+Model Deployment
+Metrics
+Reduced cold starts
+(for real-time inference)
+• Reactive autoscaling (baseline)
+• Latency (Avg, P95, P99)
+. Cold start frequency
+Lower energy consumption
+ Fixed warm containers (baseline)
+• Energy consumption
+ Transformer + rule-based
+. Energy per request
+Historical Data
+Better resource utilization
+Data Preprocessing
+Training Dataset
+Train PatchTST
+Trained Model
+Deploy Model
+(PyTorch)
+& Feature Engineering
+(Saved)
+(REST API / FastAPI)
+.Transformer+ Agentic Al (proposed) · Resource utilization
+(from Prometheus/Logs)
+(Time Series)
+·Prediction accuracy (MAE, RMSE)
+Meet SLA requirements
+• SLA violations
+Cost-efficient serverless platform
+System Component
+Legend:
+★Data Flow
++ Control Flow
++ Model Flow
+Monitoring
+AI/ML Component
+Agent Component
+Output/Visualization
+========================= ChatGPT Image Sep 24, 2026, 07_04_34 AM.png =========================
+Proposed Methodology
+Predict I Plan 1 Optimize I Scale
+Predictive Container Management for Energy-Efficient Serverless Computing
+Towards a Greener Serverless Future
+Agentic AI Planning
+Data
+Data
+Workload Prediction
+PPO Decision
+Container
+Monitoring&
+Collection
+()
+(Qwen3)
+Preprocessing
+Making
+Execution
+Feedback
+Azure Functions
+PPO
+Qwen3
+Workload Traces
+Kubernetes
+(Reinforcement Learning)
+Orchestrate and manage
+Temporal Fusion
+High-level reasoning
+Remove missing data
+containers
+Transformer (TFT)
+Learn optimal container
+Continuous monitoring
+and planning
+actions
+and feedback
+Resample time series
+Runtime Metrics
+Input:
+State:
+Normalize features
+Predicted workload,
+. P95 latency
+Input:
+Invocations
+Historical workload +
+current metrics, etc.
+OpenFaaS
+Historical workload
+current system state
+· CPU/ Memory
+Execution time
+(SLA, energy, containers,
+Encode categorical data
+and systemmetrics
+Actions:
+Deploy and run
+. CPU / Memory
+· Energy consumption
+latency, etc.)
+Pre-warm, scale out,
+serverless functions
+. Latency
+reuse, scale in,
+Create time-based
+. Number of containers
+Output:
+features
+terminate, no action
+.Container state
+Output:
+. Cold starts
+. Cold starts
+Future workload
+Reward:
+Container management
+demand (next 5/10/15 min)
+Generate input sequences
+·SLAviolations
+. Energy usage
+Mimimize energy latency.
+strategy (e.g., pre-warm,
+Docker
+(windowing)
+cold starts, resource usage
+·Resource utilization
+scale, reuse, terminate)
+(large penalty for SLA violation)
+Build and run
+function containers
+Feedback Loop
+Use real-time metrics to continuously improve prediction, planning and decision making
+Step-by-Step Methodology
+Workload Prediction
+Agentic Al Planning
+PPO-Based
+Data Preprocessing
+Data Collection
+Container Execution
+Monitoring&
+using TFT
+Decision Making
+using Qwen3
+Feedback
+. PPO learns the best
+Removemissingand
+Train a Temporal
+.Use Azure Functions
+.Execute the selected
+ Provide predicted
+Monitorlatency,energy,
+Fusion Transformer
+container action.
+invalid records.
+workload traces and
+action using Kubernetes,
+CPU, memory, cold
+. Resample into fixed
+workload and current
+on historical multivariate
+OpenFaaS and Docker.
+runtime metrics.
+system state to Qwen3.
+.Actions: pre-warm,
+starts and SLA
+time-series data.
+time intervals.
+scale out, reuse,
+violations.
+. Qwen3 interprets
+. Collect invocation rate,
+. Manage container
+. Normalize numerical
+. Collect real-time
+. Input: Past workload
+scale in, terminate,
+execution time, CPU,
+features.
+conditions andgenerates
+lifecycle (pre-warm,
+metrics using
+and system metrics.
+memory, latency,
+no action.
+scale, reuse, terminate).
+.Encode categorical
+high-level container
+Prometheus and
+container states,
+.Output:Futureworkload
+variables.
+.Reward considers
+management strategies.
+. Deploy and run
+Grafana.
+cold starts and
+Generate time-based
+demand.
+ energy, latency.
+• Considers SLA, latency.
+serverless functions
+·Feed the results back
+energy usage.
+features (hour, weekday,
+cold starts, resource
+efficiently.
+: Helps anticipate workload
+energy, containers and
+to improve TFT, Qwen3
+peak/off-peak).
+usage and SLA violations.
+increases/decreases
+resource utilization.
+and PPO.
+Create sequential input
+before they occur.
+Learnstooptimize
+windows.
+Creates a closed-loop
+long-termperformance.
+adaptive system.
+Overall Objective
+To minimize energy consumption and cold-start latency while maintaining SLA requirements
+through predictive and intelligent container management.
+SLA Protection
+Lower Energy Consumption
+Better Resource Utilization
+Reduced Cold Starts
+Sustainable Serverless Computing
+========================= ChatGPT Image Sep 24, 2026, 07_03_16 AM.png =========================
+Proposed Methodology
+Predictive Container Management for Energy-Efficient Serverless Computing
+Container
+Data
+Data
+Workload
+Agentic Al
+PPO
+Monitoring
+Decision Making
+Preprocessing
+Planning (Qwen3)
+Collection
+Execution
+Prediction (TFT)
+& Feedback
+Kubernetes
+Azure Functions
+Choose best action
+Generate container
+Track latency,
+Clean, normalize
+Predict future
+(pre-warm, scale,
+workload traces
+OpenFaas
+energy, CPU, memory,
+management
+workload demand
+andcreatefeatures
+reuse, scale in,
+strategy
+cold starts and
+terminate)
+Runtime metrics
+SLA violations
+Docker
+Feedback Loop
+Use real-time metrics to continuously improve prediction, planning and decision making
+Goal
+Minimize energy consumption and cold-start latency
+while maintaining SLA requirements.
+========================= ChatGPT Image Sep 13, 2026, 07_51_46 PM.png =========================
+Complete Project Architecture
+Predict Smarter
+Scale Greener
+Predictive Container Management for Energy-Efficient Serverless Computing
+Serve Better
+Agentic Al Planning
+Data Preprocessing
+Workload Prediction
+PPOReinforcement
+Data Sources
+Container
+(Qwen3)
+Learning Controller
+&Feature Engineering
+(Temporal FusionTransformer)
+Execution Layer
+Inputs to Agent
+Historical Time Series
+Data Cleaning
+Environment State
+(Multiple Features)
+(Remove missing/invalid
+Predicted workload
+Predicted workload
+Azure Functions
+records)
+Workload metrics
+(from TFT)
+Current metrics (CPU, memory,
+Workload Traces
+Current system state
+Resourcemetrics
+latency, energy)
+(Real-world serverless
+(latency, energy, containers, etc.)
+.Number of containers
+Kubernetes
+workload dataset)
+Time features
+Resampling
+Execute
+. SLA target
+(Orchestration)
+SLA requirements
+Container
+(Fixed time intervals)
+: Qwen3 strategy
+Container metrics
+Actions
+Operational constraints
+Feature Engineering
+Runtime Monitoring
+(Time features,
+Temporal Fusion
+Qwen3
+Data
+PPO
+encoding,normalization)
+Transformer (TFT)
+(Reinforcement Learning)
+(CPU, memory, latency,
+(Agentic Al)
+OpenFaaS
+(Serverless Platform)
+containers, energy, etc.)
+Serverless Functions
+Reasoning & Planning
+Learn optimal actions
+Create Input Sequences
+Key Data
+(Windowing)
+·Invocations/requestcount
+Predicted Workload
+Function 1  Function 2
+(Future Time Window)
+Output
+. Execution time
+Actions
+. CPU &memory usage
+Container Management
+Processed Time Series Data
+No action
+: Response latency
+Strategy
+Pre-warm container
+. Container state
+Function 3
+Time
+CPU
+Invocations
+Memory
+Pre-warm containers
+. Scale out
+Docker
+. Cold starts
+120
+ Request rate
+t-2
+30
+40
+. Scale out
+.Reuse container
+.Number of containers
+(Container Runtime)
+. Reuse warm containers
+:Expected invocations
+150
+35
+t-1
+42
+: Energy consumption
+. Scale in
+Resource demand
+ Scale in
+180
+40
+48
+Terminate container
+Terminateidle containers
+Monitoring&Feedback
+Energy
+Memory
+Number of
+Cold Starts
+SLA
+CPU
+Latency
+Resource
+Violations
+Utilization
+Utilization
+Consumption
+Utilization
+Containers
+(P95)
+Prometheus + Grafana
+Feedback Loop
+Real-time metrics are fed back to continuously improve prediction, planning and decision making
+Minimize energy consumption and cold-start latency while maintaining SLA requirements
+Overall Goal
+through predictive and intelligent container management.
+Energy Efficient
+Low Latency
+SLA Protection
+Scalable Serverless
+========================= ChatGPT Image Sep 24, 2026, 07_15_38 AM.png =========================
+Tools and Technologies
+Intelligent Scaling
+Lower Energy
+Predictive Container Management for Energy-Efficient Serverless Computing
+Higher Efficiency
+Data Processing
+Programming Language
+Deep Learning Framework
+Prediction Model
+Agentic AI Model
+pandas
+NumPy
+PyTorch
+Temporal Fusion
+Qwen3
+Python
+Transformer (TFT)
+Training the Temporal Fusion
+Model development, data
+High-level reasoning,
+Predict future serverless
+Data cleaning,preprocessing
+Transformer (TFT) model and
+processing, and implementation
+workload using time-series data
+planningandorchestration
+and feature engineering.
+other deep learning components.
+of the complete framework.
+with multiple features.
+for container management
+strategies.
+Reinforcement Learning
+Serverless Platform
+Containerization
+Container Orchestration
+Monitoring & Visualization
+PPO
+(Proximal Policy
+Optimization)
+Prometheus
+OPENFAAS
+Grafana
+Docker
+Kubernetes
+Intelligent container scaling
+and lifecycle decisions
+Container deployment,
+Deploying and managing
+Monitoring CPU, memory, latency.
+Building and running
+considering SLA, energy.
+scaling and lifecycle
+serverless functions.
+containers andoverallsystem
+function containers.
+latency and cold starts.
+management.
+performance.
+Development Environment
+Dataset
+Core Technology Stack
+Jupyter
+Azure Functions
+VS Code
+Workload Traces
+jupyter
+Notebook
+PyTorch
+Python
+Qwen3
+PPO
+Kubernetes
+OpenFaas
+Docker Prometheus
+Grafana
+()
+Historical serverless workload data
+ Model development, experimentation
+for training and testing.
+and implementation.
+End-to-EndAl-DrivenServerless ContainerManagement
+Predict · Plan · Optimize · Scale
+Goal: Use these tools and technologies to build an intelligent, energy-efficient and SLA-aware serverless container management system.
+Towards a Greener Serverless Future
