@@ -34,6 +34,7 @@ Start with the complete specification:
 | [docs/test_plan.md](docs/test_plan.md) | Test strategy, system scenarios, baselines, ablation, metrics |
 | [docs/validation-report.md](docs/validation-report.md) | Image-vs-docs audit + implementation-readiness checklist |
 | [docs/references.md](docs/references.md) | Recommended research papers mapped to components |
+| [docs/tech-stack.md](docs/tech-stack.md) | Technology stack, tools and per-stage mapping |
 | [AGENTS.md](AGENTS.md) | Guidance for AI coding agents and contributors |
 | [configs/project.yaml](configs/project.yaml) | Experiment configuration defaults (single source of truth) |
 

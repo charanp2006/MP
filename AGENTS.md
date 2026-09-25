@@ -54,6 +54,7 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 - `docs/test_plan.md` - test strategy, system scenarios, baselines, ablations.
 - `docs/validation-report.md` - image-vs-docs audit + implementation-readiness checklist.
 - `docs/references.md` - recommended research papers mapped to components.
+- `docs/tech-stack.md` - technology stack, tools and per-stage mapping.
 - `configs/project.yaml` - experiment configuration defaults.
 
 ## How to implement (agreed order, from docs/design.md)
