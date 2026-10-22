@@ -18,9 +18,79 @@ containers:
 forecast:
   history_window: 30
   horizon: 5
+  # Compact TFT (pure PyTorch) - defaults from design.md section 6.
+  model:
+    d_model: 32            # hidden width of the TFT backbone
+    attention_heads: 2
+    dropout: 0.1
+    variable_selection: true
+  training:
+    epochs: 8
+    batch_size: 64
+    learning_rate: 0.001
+    # Chronological split fractions (train < validation < test). No shuffle.
+    split: [0.70, 0.15, 0.15]
+    seed: 42
+  # Target column to forecast; normalized with a train-fit scaler.
+  target_column: invocation_count
+  # Extra covariates fed to the forecaster alongside the target.
+  covariates: [cpu_utilization, memory_utilization, active_containers, hour, day_of_week, peak_period]
+  checkpoint_path: models/tft_checkpoint.pt
 
 control:
   interval_seconds: 60
+  # PPO (pure PyTorch) - defaults from design.md sections 10-12.
+  rl:
+    # Discrete action set: 0 NoOp, 1 PreWarm, 2 ScaleOut, 3 Reuse, 4 ScaleIn, 5 Terminate.
+    n_actions: 6
+    # Reward weights (design.md section 12). Normalized components.
+    reward_weights:
+      energy: 1.0        # w_e
+      latency: 1.0       # w_l
+      cold_start: 1.5    # w_c
+      resource: 0.5      # w_r
+      underutil: 0.3     # w_u
+      sla_violation: 5.0 # w_s (highest penalty - SLA is the primary constraint)
+    training:
+      episodes: 200
+      gamma: 0.99
+      gae_lambda: 0.95
+      clip_ratio: 0.2
+      learning_rate: 0.0003
+      epochs_per_update: 4
+      minibatch_size: 64
+      entropy_coeff: 0.01
+      seed: 42
+    # Simulation constants for the serverless environment.
+    sim:
+      containers_per_100_rps: 2   # target load per container
+      base_latency_ms: 40
+      ms_per_extra_container: 8   # latency penalty per container of shortfall
+      power_per_container_w: 15
+      idle_power_w: 5
+    checkpoint_path: models/ppo_policy.pt
+
+baseline:
+  # Reactive autoscaler (agreed step 2) used as the comparison baseline.
+  scale_up_threshold: 0.7    # scale out when mean cpu above this
+  scale_down_threshold: 0.3  # scale in when mean cpu below this
+  target_cpu: 0.6
+
+data:
+  # Azure Functions trace (data source only, not the execution platform).
+  # Set source_path to the CSV, or use source: sample for a built-in demo trace.
+  source: sample
+  source_path: data/raw/azure_functions_trace.csv
+  processed_path: data/processed/features.csv
+  dedupe_policy: last            # first | last | mean
+  target_column: invocation_count
+  normalize: false               # scaler is fit on the train split only (P2)
+
+features:
+  lags: [1, 2, 3]
+  rolling_windows: [5, 10, 30]
+  rolling_stats: [mean, max, min, std]
+  peak_hours: [9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 evaluation:
   repetitions: 5
