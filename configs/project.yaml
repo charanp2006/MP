@@ -70,6 +70,20 @@ control:
       idle_power_w: 5
     checkpoint_path: models/ppo_policy.pt
 
+agent:
+  # Planner runtime: "stub" (deterministic, offline; default) or "ollama"
+  # (real Qwen3 over the local Ollama HTTP API). Qwen3 is a high-level planner
+  # only - it never emits infrastructure commands.
+  runtime: stub
+  model: qwen3:4b
+  base_url: http://localhost:11434
+  timeout_s: 30
+  temperature: 0.0
+  num_predict: 256
+  # Deterministic thresholds used by the offline stub planner.
+  high_demand_ratio: 1.10   # forecast peak / current workload => scale out
+  low_demand_ratio: 0.90    # forecast peak / current workload => scale in (if safe)
+
 baseline:
   # Reactive autoscaler (agreed step 2) used as the comparison baseline.
   scale_up_threshold: 0.7    # scale out when mean cpu above this

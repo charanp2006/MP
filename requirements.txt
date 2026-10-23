@@ -8,6 +8,6 @@ pytest==9.0.3
 torch==2.11.0
 scikit-learn==1.8.0
 
-# Agent planner + schema validation (P3, add when that phase starts)
-# pydantic==2.13.3
-# jsonschema==4.26.0
+# Agent planner + schema validation (P3)
+pydantic==2.13.3
+# jsonschema==4.26.0  # optional: not required by the pydantic-based validator
