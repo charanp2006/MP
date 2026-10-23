@@ -67,11 +67,11 @@ A compact summary of the same documents lives in [docs-simpler/](docs-simpler/).
 - **Institution:** Vidyavardhaka College of Engineering, Department of Computer Science and Engineering
 - **Guide:** Dr. Tej C Hiremath
 - **Team:** Charan P (4VV23CS042) · Darshan S Gowda (4VV23CS052) · Gaurav S G (4VV23CS074)
-- **Status:** Phase 1 — design & documentation complete; implementation in progress (P1 data pipeline and P2 forecasting/control complete).
+- **Status:** Phase 1 — design & documentation complete; implementation in progress (P1 data pipeline, P2 forecasting/control complete, P3 decision engine complete in simulation).
 
 ## Status / roadmap
 
-Documentation and design are complete. Implementation follows `docs/design.md` §24 (data pipeline → baseline → monitoring → TFT → PPO → SLA reward → Qwen3 planning → validators → Kubernetes/OpenFaaS integration → experiments → dashboards → ablation/evaluation). P1 (data pipeline) and P2 (compact TFT + PPO in simulation) are implemented; see [docs/implementation/](docs/implementation/README.md).
+Documentation and design are complete. Implementation follows `docs/design.md` §24 (data pipeline → baseline → monitoring → TFT → PPO → SLA reward → Qwen3 planning → validators → Kubernetes/OpenFaaS integration → experiments → dashboards → ablation/evaluation). P1 (data pipeline), P2 (compact TFT + PPO in simulation), and P3 (Qwen3/stub + validators + SLA guard + bounded loop) are implemented; see [docs/implementation/](docs/implementation/README.md).
 
 ## Notes
 

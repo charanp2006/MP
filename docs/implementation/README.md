@@ -38,7 +38,7 @@ Rules:
 |---|---|---|---|---|
 | P1 | [p1-v1.0-data-pipeline.md](p1-v1.0-data-pipeline.md) | v1.0 | Complete | Ingestion, preprocessing (D01–D04), feature engineering, pipeline |
 | P2 | [p2-v1.0-workload-ingestion-and-prediction.md](p2-v1.0-workload-ingestion-and-prediction.md) | v1.0 | Complete | End-to-end ingestion→prediction, compact TFT, training/evaluation, integration |
-| P3 | _(planned)_ | — | Not started | Qwen3 planner + plan/action validators + SLA guard integration |
+| P3 | [p3-v1.0-decision-engine.md](p3-v1.0-decision-engine.md) | v1.0 | Complete | Qwen3/stub planner, state builder, plan/action validators, SLA guard, bounded loop |
 | P4 | _(planned)_ | — | Not started | Docker/OpenFaaS/Kubernetes execution |
 | P5 | _(planned)_ | — | Not started | Prometheus/Grafana, feedback loop, experiments/ablation |
 
@@ -57,6 +57,7 @@ See also: [`plan.md`](../../plan.md) for the phase-to-architecture mapping.
 | Date | YYYY-MM-DD |
 | Related commit | <hash> |
 | Test IDs | <e.g. T01–T04> |
+| Architecture layers touched | <e.g. Layer 1, Layer 2> |
 
 ## Changelog
 | Version | Date | Change |
