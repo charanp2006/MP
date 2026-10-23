@@ -1,0 +1,13 @@
+# Data pipeline (P1)
+pandas==3.0.2
+numpy==2.4.4
+PyYAML==6.0.3
+pytest==9.0.3
+
+# Forecasting + RL controller (P2)
+torch==2.11.0
+scikit-learn==1.8.0
+
+# Agent planner + schema validation (P3, add when that phase starts)
+# pydantic==2.13.3
+# jsonschema==4.26.0

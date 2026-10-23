@@ -26,7 +26,8 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 
 | Branch | Contents | Use |
 |---|---|---|
-| `main` | This repo's ground truth: `README.md`, `project.md`, `docs/`, `AGENTS.md`, `configs/`, `.gitignore` | Build/implement from here |
+| `main` | This repo's ground truth: `README.md`, `project.md`, `docs/`, `AGENTS.md`, `configs/`, `.gitignore` | Canonical/reference |
+| `dev` | Active implementation branch (phase work lands here, then merges to `main`) | Build/implement here |
 | `files` | Full archive: images, final PPTX, `docs-simpler/`, temp extracts | Media / archive only - do not edit |
 | `docs` | Research papers (PDFs) + older/shorter Markdown documents | Research source material |
 
@@ -55,6 +56,9 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 - `docs/validation-report.md` - image-vs-docs audit + implementation-readiness checklist.
 - `docs/references.md` - recommended research papers mapped to components.
 - `docs/tech-stack.md` - technology stack, tools and per-stage mapping.
+- `docs/implementation/` - **versioned implementation records, one doc per
+  completed phase** (see "Phase documentation" below; start at
+  `docs/implementation/README.md`).
 - `configs/project.yaml` - experiment configuration defaults.
 
 ## How to implement (agreed order, from docs/design.md)
@@ -84,6 +88,24 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
   (see `.gitignore`).
 - Numeric improvements (15-25% energy, 20-30% cold-start) are **targets**,
   never quoted as measured results.
+
+## Phase documentation (required)
+
+Every completed phase or standalone implementation milestone gets its own
+document under `docs/implementation/`, written at completion time:
+
+- **File name:** `p{N}-v{MAJOR}.{MINOR}-{slug}.md`
+  (e.g. `p2-v1.0-workload-ingestion-and-prediction.md`).
+- **New phase** -> new file (`v1.0`). **Revision to an existing phase doc** ->
+  bump `MINOR` (`v1.1`, ...) and add a row to the doc's Changelog.
+- **Mandatory header:** phase, doc version, status, date, related commit, test
+  IDs, architecture layers touched.
+- **Mandatory content:** objective, module map, design/data contracts, how to
+  run & verify, test coverage, limitations & next steps.
+- **Explicitly label** smoke/synthetic runs and unimplemented parts; never
+  quote unmeasured performance as a result.
+- Update the index in `docs/implementation/README.md` and the docs map here
+  when adding a doc.
 
 ## Verification
 
