@@ -39,7 +39,7 @@ Rules:
 | P1 | [p1-v1.0-data-pipeline.md](p1-v1.0-data-pipeline.md) | v1.0 | Complete | Ingestion, preprocessing (D01–D04), feature engineering, pipeline |
 | P2 | [p2-v1.0-workload-ingestion-and-prediction.md](p2-v1.0-workload-ingestion-and-prediction.md) | v1.0 | Complete | End-to-end ingestion→prediction, compact TFT, training/evaluation, integration |
 | P3 | [p3-v1.0-decision-engine.md](p3-v1.0-decision-engine.md) | v1.0 | Complete | Qwen3/stub planner, state builder, plan/action validators, SLA guard, bounded loop |
-| P4 | _(planned)_ | — | Not started | Docker/OpenFaaS/Kubernetes execution |
+| P4 | [p4-v1.0-execution.md](p4-v1.0-execution.md) | v1.0 | Complete | Bounded executor (kubectl scale), allowlists, dry-run default, decision-loop wiring |
 | P5 | _(planned)_ | — | Not started | Prometheus/Grafana, feedback loop, experiments/ablation |
 
 See also: [`plan.md`](../../plan.md) for the phase-to-architecture mapping.
