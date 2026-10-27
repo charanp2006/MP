@@ -83,8 +83,18 @@ class KubernetesExecutor:
         self.function = str(execution.get("function", "fn-checkout"))
         self.kubectl = str(execution.get("kubectl", "kubectl"))
         self.timeout_s = float(execution.get("timeout_s", 30))
-        self.allowed_namespaces = set(execution.get("allowed_namespaces", [self.namespace]))
-        self.max_replicas = int(execution.get("max_replicas", 30))
+
+        containers = config.get("containers", {})
+        self.min_capacity = int(containers.get("min", 2))
+        self.max_capacity = int(containers.get("max", 30))
+        self.max_change = max(1, int(containers.get("max_change_per_cycle", 5)))
+        self.max_replicas = int(execution.get("max_replicas", self.max_capacity))
+
+        # Allowlist must be independent of namespace; require explicit or fixed safe default
+        if "allowed_namespaces" in execution:
+            self.allowed_namespaces = set(str(ns) for ns in execution.get("allowed_namespaces", []))
+        else:
+            self.allowed_namespaces = {"serverless-mgmt"}
         self.action_validator = ActionValidator(config)
 
         if self.namespace not in self.allowed_namespaces:
@@ -92,13 +102,32 @@ class KubernetesExecutor:
 
     def _plan_operation(self, action: int, state: StateSnapshot):
         name = ACTIONS[action]
+        current = int(getattr(state, "active_containers", 0))
         if name == "NoOp":
-            return "noop", int(state.active_containers), []
+            return "noop", current, []
         if name == "PreWarm":
-            return "prewarm", int(state.active_containers), []
+            return "prewarm", current, []
 
-        target = self.action_validator.capacity_after(state.active_containers, action)
-        target = min(target, self.max_replicas)
+        # REUSE requires available warm capacity (matches ServerlessEnv._apply_action)
+        if name == "REUSE":
+            warm = getattr(state, "warm_containers", None)
+            if warm is None:
+                return "rejected", current, []
+            if int(warm) <= 0:
+                return "rejected", current, []
+
+        target = self.action_validator.capacity_after(current, action)
+        # Enforce bounds: never bypass min/max and per-cycle limits; handle already-over cap
+        if current > self.max_replicas:
+            delta = min(self.max_change, current - self.min_capacity)
+            target = max(self.min_capacity, current - delta)
+        else:
+            target = min(target, self.max_replicas)
+            target = max(target, self.min_capacity)
+            if target > current:
+                target = min(target, current + self.max_change)
+            if target < current:
+                target = max(target, current - self.max_change)
         operation = "terminate" if name == "Terminate" else "scale"
         command = [
             self.kubectl,
@@ -129,6 +158,18 @@ class KubernetesExecutor:
             )
 
         operation, target, commands = self._plan_operation(action, state)
+        current = int(getattr(state, "active_containers", 0))
+        if operation == "rejected":
+            return ExecutionResult(
+                False,
+                "reuse_no_warm_capacity",
+                "REUSE requires available warm capacity; none available or not reported",
+                True,
+                False,
+                "none",
+                current,
+                [],
+            )
 
         if not self.enabled:
             return ExecutionResult(

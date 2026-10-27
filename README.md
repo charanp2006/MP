@@ -35,7 +35,7 @@ Start with the complete specification:
 | [docs/validation-report.md](docs/validation-report.md) | Image-vs-docs audit + implementation-readiness checklist |
 | [docs/references.md](docs/references.md) | Recommended research papers mapped to components |
 | [docs/tech-stack.md](docs/tech-stack.md) | Technology stack, tools and per-stage mapping |
-| [docs/implementation/](docs/implementation/README.md) | Versioned per-phase implementation records (what was built, how to run and verify) |
+| [docs/implementation/](docs/implementation/README.md) | Versioned per-phase implementation records (P1–P4) — [P4 execution](docs/implementation/p4-v1.0-execution.md) |
 | [AGENTS.md](AGENTS.md) | Guidance for AI coding agents and contributors |
 | [configs/project.yaml](configs/project.yaml) | Experiment configuration defaults (single source of truth) |
 
