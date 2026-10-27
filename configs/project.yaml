@@ -96,6 +96,24 @@ execution:
   allowed_namespaces: [serverless-mgmt]
   max_replicas: 30
 
+monitoring:
+  enabled: false
+  prometheus:
+    host: 127.0.0.1
+    port: 9090
+    scrape_interval_s: 15
+  grafana:
+    host: 127.0.0.1
+    port: 3000
+  metrics:
+    export_interval_s: 60
+    history_size: 1000
+  feedback:
+    enabled: true
+    window: 10        # number of recent steps used for feedback
+    degrade_threshold: 0.2  # relative increase in p95/violations to trigger caution
+    min_samples: 5
+
 baseline:
   # Reactive autoscaler (agreed step 2) used as the comparison baseline.
   scale_up_threshold: 0.7    # scale out when mean cpu above this

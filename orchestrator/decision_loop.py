@@ -1,9 +1,9 @@
-"""Decision loop wiring planner -> validator -> PPO -> action validator -> SLA guard -> executor.
+"""Decision loop wiring planner -> validator -> PPO -> action validator -> SLA guard -> executor -> monitoring.
 
 Architecture Layers 4-9 in one bounded control step (docs/design.md section 16,
 docs/test_plan.md I02/I03). Every step produces an auditable record of what was
 forecast, planned, selected, validated and finally executed. Execution is
-disabled by default (P4).
+disabled by default (P4); monitoring/feedback is optional and safe (P5).
 """
 
 from __future__ import annotations
@@ -20,6 +20,8 @@ from agent.planner import Planner, StubPlanner, build_planner
 from agent.schemas import Plan, StateSnapshot
 from agent.validator import PlanValidation, PlanValidator
 from forecasting.inference import classify_trend
+from monitoring.feedback import FeedbackLoop
+from monitoring.metrics import MetricsCollector
 from orchestrator.action_validator import ActionValidator
 from orchestrator.executor import Executor, build_executor
 from orchestrator.sla_guard import SLAGuard
@@ -43,6 +45,7 @@ class Decision:
     used_fallback: bool
     authorized: bool
     execution: Optional[Dict] = None
+    feedback: Optional[Dict] = None
 
     def to_dict(self) -> Dict:
         data = {
@@ -62,6 +65,8 @@ class Decision:
         }
         if self.execution is not None:
             data["execution"] = self.execution
+        if self.feedback is not None:
+            data["feedback"] = self.feedback
         return data
 
 
@@ -76,6 +81,8 @@ class DecisionLoop:
         action_validator: Optional[ActionValidator] = None,
         sla_guard: Optional[SLAGuard] = None,
         executor: Optional[Executor] = None,
+        metrics: Optional[MetricsCollector] = None,
+        feedback: Optional[FeedbackLoop] = None,
     ) -> None:
         self.config = config or {}
         self.planner = planner or build_planner(self.config)
@@ -84,6 +91,8 @@ class DecisionLoop:
         self.action_validator = action_validator or ActionValidator(self.config)
         self.sla_guard = sla_guard or SLAGuard(self.config)
         self.executor = executor or build_executor(self.config)
+        self.metrics = metrics or MetricsCollector(self.config)
+        self.feedback = feedback or FeedbackLoop(self.config)
 
     def _safe_plan(self, state: StateSnapshot) -> tuple[Plan, PlanValidation, bool]:
         used_fallback = False
@@ -135,6 +144,8 @@ class DecisionLoop:
         policy: Optional[Union[Callable, object]] = None,
         authorized: bool = True,
         execute: bool = False,
+        step_info: Optional[Dict] = None,
+        feedback_signal: Optional[Dict] = None,
     ) -> Decision:
         state = build_state(forecast, metrics, self.config)
         plan, plan_validation, used_fallback = self._safe_plan(state)
@@ -153,6 +164,24 @@ class DecisionLoop:
             result = self.executor.execute(final_action, state, plan=plan, authorized=authorized)
             execution = result.to_dict()
 
+        signal = feedback_signal
+        if step_info is not None and signal is None:
+            try:
+                self.feedback.record(
+                    float(step_info.get("p95_latency", state.p95_latency_ms)),
+                    bool(step_info.get("sla_violated", False)),
+                    float(step_info.get("cold_starts", 0.0)),
+                )
+                signal = self.feedback.signal()
+                self.metrics.record_step(step_info, ACTIONS[final_action])
+            except Exception:
+                signal = None
+        elif signal is None:
+            try:
+                signal = self.feedback.signal()
+            except Exception:
+                signal = None
+
         return Decision(
             state=state,
             plan=plan,
@@ -168,6 +197,7 @@ class DecisionLoop:
             used_fallback=used_fallback,
             authorized=authorized,
             execution=execution,
+            feedback=signal,
         )
 
 
@@ -181,6 +211,8 @@ def run_episode(env, config: Dict, policy=None, steps: Optional[int] = None) -> 
 
     records: List[Dict] = []
     done = False
+    prev_info = None
+    prev_feedback = None
     while not done and (steps is None or len(records) < steps):
         idx = env.idx
         row = env.timeline.iloc[idx]
@@ -200,9 +232,24 @@ def run_episode(env, config: Dict, policy=None, steps: Optional[int] = None) -> 
             "cold_starts": 0.0,
             "energy": float(obs[8]) * env.energy_ref,
         }
-        decision = loop.decide(forecast, metrics, obs=obs, policy=policy)
+        if prev_info is not None:
+            try:
+                loop.feedback.record(
+                    float(prev_info.get("p95_latency", metrics["p95_latency_ms"])),
+                    bool(prev_info.get("sla_violated", False)),
+                    float(prev_info.get("cold_starts", 0.0)),
+                )
+                prev_feedback = loop.feedback.signal()
+            except Exception:
+                prev_feedback = None
+        decision = loop.decide(forecast, metrics, obs=obs, policy=policy, feedback_signal=prev_feedback)
         obs, reward, done, info = env.step(decision.final_action)
+        try:
+            loop.metrics.record_step(info, decision.final_action_name)
+        except Exception:
+            pass
         records.append({"decision": decision.to_dict(), "reward": float(reward), "info": info})
+        prev_info = info
     return records
 
 
@@ -244,6 +291,8 @@ def main() -> None:
         records = []
         done = False
         count = 0
+        prev_info = None
+        prev_feedback = None
         while not done and (args.steps is None or count < args.steps):
             idx = env2.idx
             row = env2.timeline.iloc[idx]
@@ -259,9 +308,24 @@ def main() -> None:
                 "cold_starts": 0.0,
                 "energy": float(obs[8]) * env2.energy_ref,
             }
-            decision = loop.decide(forecast, metrics, obs=obs, policy=policy, execute=True)
+            if prev_info is not None:
+                try:
+                    loop.feedback.record(
+                        float(prev_info.get("p95_latency", metrics["p95_latency_ms"])),
+                        bool(prev_info.get("sla_violated", False)),
+                        float(prev_info.get("cold_starts", 0.0)),
+                    )
+                    prev_feedback = loop.feedback.signal()
+                except Exception:
+                    prev_feedback = None
+            decision = loop.decide(forecast, metrics, obs=obs, policy=policy, execute=True, feedback_signal=prev_feedback)
             obs, reward, done, info = env2.step(decision.final_action)
+            try:
+                loop.metrics.record_step(info, decision.final_action_name)
+            except Exception:
+                pass
             records.append({"decision": decision.to_dict(), "reward": float(reward), "info": info})
+            prev_info = info
             count += 1
     print(json.dumps({"steps": len(records), "last": records[-1]}, indent=2, default=str))
 
