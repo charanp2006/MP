@@ -35,7 +35,7 @@ Start with the complete specification:
 | [docs/validation-report.md](docs/validation-report.md) | Image-vs-docs audit + implementation-readiness checklist |
 | [docs/references.md](docs/references.md) | Recommended research papers mapped to components |
 | [docs/tech-stack.md](docs/tech-stack.md) | Technology stack, tools and per-stage mapping |
-| [docs/implementation/](docs/implementation/README.md) | Versioned per-phase implementation records (what was built, how to run and verify) |
+| [docs/implementation/](docs/implementation/README.md) | Versioned per-phase implementation records (P1–P4) — [P4 execution](docs/implementation/p4-v1.0-execution.md) |
 | [AGENTS.md](AGENTS.md) | Guidance for AI coding agents and contributors |
 | [configs/project.yaml](configs/project.yaml) | Experiment configuration defaults (single source of truth) |
 
@@ -67,11 +67,11 @@ A compact summary of the same documents lives in [docs-simpler/](docs-simpler/).
 - **Institution:** Vidyavardhaka College of Engineering, Department of Computer Science and Engineering
 - **Guide:** Dr. Tej C Hiremath
 - **Team:** Charan P (4VV23CS042) · Darshan S Gowda (4VV23CS052) · Gaurav S G (4VV23CS074)
-- **Status:** Phase 1 — design & documentation complete; implementation in progress (P1 data pipeline, P2 forecasting/control complete, P3 decision engine complete in simulation).
+- **Status:** Phase 1 — design & documentation complete; implementation in progress (P1–P4 complete in simulation/dry-run).
 
 ## Status / roadmap
 
-Documentation and design are complete. Implementation follows `docs/design.md` §24 (data pipeline → baseline → monitoring → TFT → PPO → SLA reward → Qwen3 planning → validators → Kubernetes/OpenFaaS integration → experiments → dashboards → ablation/evaluation). P1 (data pipeline), P2 (compact TFT + PPO in simulation), and P3 (Qwen3/stub + validators + SLA guard + bounded loop) are implemented; see [docs/implementation/](docs/implementation/README.md).
+Documentation and design are complete. Implementation follows `docs/design.md` §24 (data pipeline → baseline → monitoring → TFT → PPO → SLA reward → Qwen3 planning → validators → Kubernetes/OpenFaaS integration → experiments → dashboards → ablation/evaluation). P1 (data pipeline), P2 (compact TFT + PPO in simulation), P3 (Qwen3/stub + validators + SLA guard + bounded loop), and P4 (bounded executor + allowlists + dry-run wiring) are implemented; see [docs/implementation/](docs/implementation/README.md).
 
 ## Notes
 

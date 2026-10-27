@@ -1,13 +1,10 @@
-"""Decision orchestration (architecture Layers 4, 8, 9 and the control wiring).
+"""Execution orchestration (architecture Layers 4-10).
 
 * ``state_builder``    --- combine forecast + observation into a state snapshot.
 * ``sla_guard``       --- deterministic protection against risky reductions.
 * ``action_validator``--- known/authorized/plan-consistent, bounded actions.
 * ``decision_loop``   --- planner -> validator -> PPO -> guard integration.
-
-Execution against Kubernetes/OpenFaaS is P4; this package is simulation-only.
-Exports are lazy so ``python -m orchestrator.decision_loop`` does not import the
-module twice.
+* ``executor``        --- bounded translation to platform ops (dry-run by default).
 """
 
 from __future__ import annotations
@@ -25,6 +22,11 @@ __all__ = [
     "DecisionLoop",
     "Decision",
     "run_episode",
+    "Executor",
+    "ExecutionResult",
+    "NoOpExecutor",
+    "KubernetesExecutor",
+    "build_executor",
 ]
 
 _EXPORTS: Dict[str, Tuple[str, str]] = {
@@ -37,6 +39,11 @@ _EXPORTS: Dict[str, Tuple[str, str]] = {
     "DecisionLoop": ("orchestrator.decision_loop", "DecisionLoop"),
     "Decision": ("orchestrator.decision_loop", "Decision"),
     "run_episode": ("orchestrator.decision_loop", "run_episode"),
+    "Executor": ("orchestrator.executor", "Executor"),
+    "ExecutionResult": ("orchestrator.executor", "ExecutionResult"),
+    "NoOpExecutor": ("orchestrator.executor", "NoOpExecutor"),
+    "KubernetesExecutor": ("orchestrator.executor", "KubernetesExecutor"),
+    "build_executor": ("orchestrator.executor", "build_executor"),
 }
 
 
@@ -47,3 +54,4 @@ def __getattr__(name: str) -> Any:
     value = getattr(importlib.import_module(module_name), attribute)
     globals()[name] = value
     return value
+

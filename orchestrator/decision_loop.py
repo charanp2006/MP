@@ -1,8 +1,9 @@
-"""Decision loop wiring planner -> validator -> PPO -> action validator -> SLA guard.
+"""Decision loop wiring planner -> validator -> PPO -> action validator -> SLA guard -> executor.
 
 Architecture Layers 4-9 in one bounded control step (docs/design.md section 16,
 docs/test_plan.md I02/I03). Every step produces an auditable record of what was
-forecast, planned, selected, validated and finally executed.
+forecast, planned, selected, validated and finally executed. Execution is
+disabled by default (P4).
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ from agent.schemas import Plan, StateSnapshot
 from agent.validator import PlanValidation, PlanValidator
 from forecasting.inference import classify_trend
 from orchestrator.action_validator import ActionValidator
+from orchestrator.executor import Executor, build_executor
 from orchestrator.sla_guard import SLAGuard
 from orchestrator.state_builder import build_state
 from rl.environment import ACTIONS, NOOP
@@ -40,9 +42,10 @@ class Decision:
     action_code: str
     used_fallback: bool
     authorized: bool
+    execution: Optional[Dict] = None
 
     def to_dict(self) -> Dict:
-        return {
+        data = {
             "state": self.state.model_dump(),
             "plan": self.plan.model_dump(),
             "plan_valid": self.plan_valid,
@@ -57,6 +60,9 @@ class Decision:
             "used_fallback": self.used_fallback,
             "authorized": self.authorized,
         }
+        if self.execution is not None:
+            data["execution"] = self.execution
+        return data
 
 
 class DecisionLoop:
@@ -69,6 +75,7 @@ class DecisionLoop:
         plan_validator: Optional[PlanValidator] = None,
         action_validator: Optional[ActionValidator] = None,
         sla_guard: Optional[SLAGuard] = None,
+        executor: Optional[Executor] = None,
     ) -> None:
         self.config = config or {}
         self.planner = planner or build_planner(self.config)
@@ -76,6 +83,7 @@ class DecisionLoop:
         self.plan_validator = plan_validator or PlanValidator(self.config)
         self.action_validator = action_validator or ActionValidator(self.config)
         self.sla_guard = sla_guard or SLAGuard(self.config)
+        self.executor = executor or build_executor(self.config)
 
     def _safe_plan(self, state: StateSnapshot) -> tuple[Plan, PlanValidation, bool]:
         used_fallback = False
@@ -126,6 +134,7 @@ class DecisionLoop:
         obs: Optional[np.ndarray] = None,
         policy: Optional[Union[Callable, object]] = None,
         authorized: bool = True,
+        execute: bool = False,
     ) -> Decision:
         state = build_state(forecast, metrics, self.config)
         plan, plan_validation, used_fallback = self._safe_plan(state)
@@ -138,6 +147,11 @@ class DecisionLoop:
         guard = self.sla_guard.check(candidate, state.p95_latency_ms)
         final_action = guard.action if not guard.allow else candidate
         final_action = int(final_action) if final_action in range(len(ACTIONS)) else NOOP
+
+        execution = None
+        if execute:
+            result = self.executor.execute(final_action, state, plan=plan, authorized=authorized)
+            execution = result.to_dict()
 
         return Decision(
             state=state,
@@ -153,6 +167,7 @@ class DecisionLoop:
             action_code=action_validation.code,
             used_fallback=used_fallback,
             authorized=authorized,
+            execution=execution,
         )
 
 
@@ -192,11 +207,12 @@ def run_episode(env, config: Dict, policy=None, steps: Optional[int] = None) -> 
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the bounded decision loop (P3 smoke)")
+    parser = argparse.ArgumentParser(description="Run the bounded decision loop (P3/P4 smoke)")
     parser.add_argument("--config", default=None)
     parser.add_argument("--steps", type=int, default=5)
     parser.add_argument("--runtime", choices=["stub", "ollama"], default=None)
     parser.add_argument("--policy", choices=["none", "checkpoint"], default="checkpoint")
+    parser.add_argument("--execute", action="store_true", help="call the executor (respecting config)")
     args = parser.parse_args()
 
     from configs import load_config
@@ -218,8 +234,38 @@ def main() -> None:
             policy = load_checkpoint(checkpoint)
 
     records = run_episode(env, config, policy=policy, steps=args.steps)
+    if args.execute:
+        loop = DecisionLoop(config)
+        env2 = ServerlessEnv(frame, config)
+        obs = env2.reset()
+        horizon = int(config["forecast"]["horizon"])
+        timeline = env2.timeline["workload"].to_numpy(dtype=float)
+        env2.set_forecast(timeline)
+        records = []
+        done = False
+        count = 0
+        while not done and (args.steps is None or count < args.steps):
+            idx = env2.idx
+            row = env2.timeline.iloc[idx]
+            future = timeline[idx + 1 : idx + 1 + horizon]
+            predicted = [float(value) for value in future] if len(future) else [float(row["workload"])]
+            forecast = {"forecast_horizon": len(predicted), "predicted_workload": predicted, "trend": classify_trend(predicted)}
+            metrics = {
+                "current_workload": float(row["workload"]),
+                "cpu_utilization": float(row["cpu"]),
+                "memory_utilization": float(row["memory"]),
+                "active_containers": int(env2.capacity),
+                "p95_latency_ms": float(obs[5]) * env2.sla_threshold,
+                "cold_starts": 0.0,
+                "energy": float(obs[8]) * env2.energy_ref,
+            }
+            decision = loop.decide(forecast, metrics, obs=obs, policy=policy, execute=True)
+            obs, reward, done, info = env2.step(decision.final_action)
+            records.append({"decision": decision.to_dict(), "reward": float(reward), "info": info})
+            count += 1
     print(json.dumps({"steps": len(records), "last": records[-1]}, indent=2, default=str))
 
 
 if __name__ == "__main__":
     main()
+

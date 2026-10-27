@@ -84,6 +84,18 @@ agent:
   high_demand_ratio: 1.10   # forecast peak / current workload => scale out
   low_demand_ratio: 0.90    # forecast peak / current workload => scale in (if safe)
 
+execution:
+  # Layer 10 (Kubernetes/OpenFaaS/Docker). Disabled by default for safety.
+  enabled: false
+  dry_run: true
+  backend: kubernetes
+  namespace: serverless-mgmt
+  function: fn-checkout
+  kubectl: kubectl
+  timeout_s: 30
+  allowed_namespaces: [serverless-mgmt]
+  max_replicas: 30
+
 baseline:
   # Reactive autoscaler (agreed step 2) used as the comparison baseline.
   scale_up_threshold: 0.7    # scale out when mean cpu above this
