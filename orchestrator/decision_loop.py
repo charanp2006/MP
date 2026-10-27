@@ -1,9 +1,9 @@
-"""Decision loop wiring planner -> validator -> PPO -> action validator -> SLA guard -> executor.
+"""Decision loop wiring planner -> validator -> PPO -> action validator -> SLA guard -> executor -> monitoring.
 
 Architecture Layers 4-9 in one bounded control step (docs/design.md section 16,
 docs/test_plan.md I02/I03). Every step produces an auditable record of what was
 forecast, planned, selected, validated and finally executed. Execution is
-disabled by default (P4).
+disabled by default (P4); monitoring/feedback is optional and safe (P5).
 """
 
 from __future__ import annotations
@@ -20,6 +20,8 @@ from agent.planner import Planner, StubPlanner, build_planner
 from agent.schemas import Plan, StateSnapshot
 from agent.validator import PlanValidation, PlanValidator
 from forecasting.inference import classify_trend
+from monitoring.feedback import FeedbackLoop
+from monitoring.metrics import MetricsCollector
 from orchestrator.action_validator import ActionValidator
 from orchestrator.executor import Executor, build_executor
 from orchestrator.sla_guard import SLAGuard
@@ -43,6 +45,7 @@ class Decision:
     used_fallback: bool
     authorized: bool
     execution: Optional[Dict] = None
+    feedback: Optional[Dict] = None
 
     def to_dict(self) -> Dict:
         data = {
@@ -62,6 +65,8 @@ class Decision:
         }
         if self.execution is not None:
             data["execution"] = self.execution
+        if self.feedback is not None:
+            data["feedback"] = self.feedback
         return data
 
 
@@ -76,6 +81,8 @@ class DecisionLoop:
         action_validator: Optional[ActionValidator] = None,
         sla_guard: Optional[SLAGuard] = None,
         executor: Optional[Executor] = None,
+        metrics: Optional[MetricsCollector] = None,
+        feedback: Optional[FeedbackLoop] = None,
     ) -> None:
         self.config = config or {}
         self.planner = planner or build_planner(self.config)
@@ -84,6 +91,8 @@ class DecisionLoop:
         self.action_validator = action_validator or ActionValidator(self.config)
         self.sla_guard = sla_guard or SLAGuard(self.config)
         self.executor = executor or build_executor(self.config)
+        self.metrics = metrics or MetricsCollector(self.config)
+        self.feedback = feedback or FeedbackLoop(self.config)
 
     def _safe_plan(self, state: StateSnapshot) -> tuple[Plan, PlanValidation, bool]:
         used_fallback = False
@@ -135,6 +144,7 @@ class DecisionLoop:
         policy: Optional[Union[Callable, object]] = None,
         authorized: bool = True,
         execute: bool = False,
+        step_info: Optional[Dict] = None,
     ) -> Decision:
         state = build_state(forecast, metrics, self.config)
         plan, plan_validation, used_fallback = self._safe_plan(state)
@@ -153,6 +163,19 @@ class DecisionLoop:
             result = self.executor.execute(final_action, state, plan=plan, authorized=authorized)
             execution = result.to_dict()
 
+        feedback_signal = None
+        if step_info is not None:
+            try:
+                self.feedback.record(
+                    float(step_info.get("p95_latency", state.p95_latency_ms)),
+                    bool(step_info.get("sla_violated", False)),
+                    float(step_info.get("cold_starts", 0.0)),
+                )
+                feedback_signal = self.feedback.signal()
+                self.metrics.record_step(step_info, ACTIONS[final_action])
+            except Exception:
+                feedback_signal = None
+
         return Decision(
             state=state,
             plan=plan,
@@ -168,6 +191,7 @@ class DecisionLoop:
             used_fallback=used_fallback,
             authorized=authorized,
             execution=execution,
+            feedback=feedback_signal,
         )
 
 
