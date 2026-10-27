@@ -21,8 +21,10 @@ def test_metrics_collector_enabled():
     snap = collector.snapshot()
     assert "requests_total" in snap
     assert "containers_active" in snap
+    assert any("action_selected_total" in key for key in snap)
     text = export_prometheus_text(snap)
     assert "containers_active" in text
+    assert 'action="ScaleOut"' in text
 
 
 def test_feedback_loop_caution_on_degradation():

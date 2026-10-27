@@ -53,11 +53,18 @@ class MetricsCollector:
         return items[-n:]
 
     @staticmethod
+    def _escape_label(value: str) -> str:
+        return value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+
+    @staticmethod
     def _key(name: str, labels: Optional[Dict[str, str]]) -> str:
         if not labels:
             return name
-        parts = ",".join(f"{k}={labels[k]}" for k in sorted(labels))
-        return f"{name}{{{parts}}}"
+        parts = []
+        for k in sorted(labels):
+            parts.append(f'{k}="{MetricsCollector._escape_label(str(labels[k]))}"')
+        return f"{name}{{{','.join(parts)}}}"
+
 
     def record_step(self, info: Dict, final_action_name: str) -> None:
         if not self.enabled:
@@ -70,7 +77,7 @@ class MetricsCollector:
         self.set_gauge("workload", float(info.get("workload", 0.0)))
         if info.get("sla_violated"):
             self.inc("sla_violations_total")
-        self.observe("action_selected", 1.0, {"action": final_action_name})
+        self.inc("action_selected_total", 1.0, {"action": final_action_name})
 
 
 def export_prometheus_text(snapshot: Dict[str, float]) -> str:

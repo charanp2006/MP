@@ -145,6 +145,7 @@ class DecisionLoop:
         authorized: bool = True,
         execute: bool = False,
         step_info: Optional[Dict] = None,
+        feedback_signal: Optional[Dict] = None,
     ) -> Decision:
         state = build_state(forecast, metrics, self.config)
         plan, plan_validation, used_fallback = self._safe_plan(state)
@@ -163,18 +164,23 @@ class DecisionLoop:
             result = self.executor.execute(final_action, state, plan=plan, authorized=authorized)
             execution = result.to_dict()
 
-        feedback_signal = None
-        if step_info is not None:
+        signal = feedback_signal
+        if step_info is not None and signal is None:
             try:
                 self.feedback.record(
                     float(step_info.get("p95_latency", state.p95_latency_ms)),
                     bool(step_info.get("sla_violated", False)),
                     float(step_info.get("cold_starts", 0.0)),
                 )
-                feedback_signal = self.feedback.signal()
+                signal = self.feedback.signal()
                 self.metrics.record_step(step_info, ACTIONS[final_action])
             except Exception:
-                feedback_signal = None
+                signal = None
+        elif signal is None:
+            try:
+                signal = self.feedback.signal()
+            except Exception:
+                signal = None
 
         return Decision(
             state=state,
@@ -191,7 +197,7 @@ class DecisionLoop:
             used_fallback=used_fallback,
             authorized=authorized,
             execution=execution,
-            feedback=feedback_signal,
+            feedback=signal,
         )
 
 
@@ -205,6 +211,8 @@ def run_episode(env, config: Dict, policy=None, steps: Optional[int] = None) -> 
 
     records: List[Dict] = []
     done = False
+    prev_info = None
+    prev_feedback = None
     while not done and (steps is None or len(records) < steps):
         idx = env.idx
         row = env.timeline.iloc[idx]
@@ -224,9 +232,24 @@ def run_episode(env, config: Dict, policy=None, steps: Optional[int] = None) -> 
             "cold_starts": 0.0,
             "energy": float(obs[8]) * env.energy_ref,
         }
-        decision = loop.decide(forecast, metrics, obs=obs, policy=policy)
+        if prev_info is not None:
+            try:
+                loop.feedback.record(
+                    float(prev_info.get("p95_latency", metrics["p95_latency_ms"])),
+                    bool(prev_info.get("sla_violated", False)),
+                    float(prev_info.get("cold_starts", 0.0)),
+                )
+                prev_feedback = loop.feedback.signal()
+            except Exception:
+                prev_feedback = None
+        decision = loop.decide(forecast, metrics, obs=obs, policy=policy, feedback_signal=prev_feedback)
         obs, reward, done, info = env.step(decision.final_action)
+        try:
+            loop.metrics.record_step(info, decision.final_action_name)
+        except Exception:
+            pass
         records.append({"decision": decision.to_dict(), "reward": float(reward), "info": info})
+        prev_info = info
     return records
 
 
@@ -268,6 +291,8 @@ def main() -> None:
         records = []
         done = False
         count = 0
+        prev_info = None
+        prev_feedback = None
         while not done and (args.steps is None or count < args.steps):
             idx = env2.idx
             row = env2.timeline.iloc[idx]
@@ -283,9 +308,24 @@ def main() -> None:
                 "cold_starts": 0.0,
                 "energy": float(obs[8]) * env2.energy_ref,
             }
-            decision = loop.decide(forecast, metrics, obs=obs, policy=policy, execute=True)
+            if prev_info is not None:
+                try:
+                    loop.feedback.record(
+                        float(prev_info.get("p95_latency", metrics["p95_latency_ms"])),
+                        bool(prev_info.get("sla_violated", False)),
+                        float(prev_info.get("cold_starts", 0.0)),
+                    )
+                    prev_feedback = loop.feedback.signal()
+                except Exception:
+                    prev_feedback = None
+            decision = loop.decide(forecast, metrics, obs=obs, policy=policy, execute=True, feedback_signal=prev_feedback)
             obs, reward, done, info = env2.step(decision.final_action)
+            try:
+                loop.metrics.record_step(info, decision.final_action_name)
+            except Exception:
+                pass
             records.append({"decision": decision.to_dict(), "reward": float(reward), "info": info})
+            prev_info = info
             count += 1
     print(json.dumps({"steps": len(records), "last": records[-1]}, indent=2, default=str))
 
