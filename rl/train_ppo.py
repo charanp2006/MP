@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import torch
@@ -28,18 +28,36 @@ def set_seed(seed: int) -> None:
 
 
 def compute_gae(
-    rewards: List[float], values: List[float], last_value: float, gamma: float, lam: float
+    rewards: List[float],
+    values: List[float],
+    last_value: float,
+    gamma: float,
+    lam: float,
+    dones: Optional[List[bool]] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """Generalized advantage estimation over a finished trajectory."""
+    """Generalized advantage estimation over a trajectory.
+
+    Terminal transitions must not bootstrap ``last_value``. ``dones[t]`` should be
+    True when the episode ended at step ``t``.
+    """
+    rewards = np.asarray(rewards, dtype=np.float32)
+    values = np.asarray(values, dtype=np.float32)
+    dones_arr = np.zeros(len(rewards), dtype=np.float32)
+    if dones is not None:
+        dones_arr = np.asarray(dones, dtype=np.float32)
+        if len(dones_arr) != len(rewards):
+            raise ValueError("dones length must match rewards")
+
     advantages = np.zeros(len(rewards), dtype=np.float32)
     gae = 0.0
     for t in reversed(range(len(rewards))):
+        nonterminal = 1.0 - dones_arr[t]
         next_value = last_value if t == len(rewards) - 1 else values[t + 1]
-        delta = rewards[t] + gamma * next_value - values[t]
-        gae = delta + gamma * lam * gae
+        delta = rewards[t] + gamma * next_value * nonterminal - values[t]
+        gae = delta + gamma * lam * nonterminal * gae
         advantages[t] = gae
-    returns = advantages + np.asarray(values, dtype=np.float32)
-    return advantages, returns
+    returns = advantages + values
+    return advantages.astype(np.float32), returns.astype(np.float32)
 
 
 def collect_episode(
@@ -74,6 +92,7 @@ def collect_episode(
         "log_probs": np.asarray(logp_buffer, dtype=np.float32),
         "rewards": np.asarray(rew_buffer, dtype=np.float32),
         "values": np.asarray(val_buffer, dtype=np.float32),
+        "dones": np.asarray(done_buffer, dtype=np.bool_),
         "last_value": np.float32(last_value.item()),
     }
 
@@ -153,7 +172,12 @@ def train_ppo(frame, config: Dict | None = None, verbose: bool = False):
     for ep in range(episodes):
         traj = collect_episode(env, model)
         advantages, returns = compute_gae(
-            traj["rewards"].tolist(), traj["values"].tolist(), float(traj["last_value"]), gamma, lam
+            traj["rewards"].tolist(),
+            traj["values"].tolist(),
+            float(traj["last_value"]),
+            gamma,
+            lam,
+            dones=traj.get("dones").tolist() if "dones" in traj else None,
         )
         update_stats = ppo_update(model, optimizer, traj, advantages, returns, train_cfg)
 

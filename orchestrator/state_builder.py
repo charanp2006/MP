@@ -63,6 +63,7 @@ def build_state(
         cpu_utilization=min(max(float(metrics.get("cpu_utilization", 0.0)), 0.0), 1.0),
         memory_utilization=min(max(float(metrics.get("memory_utilization", 0.0)), 0.0), 1.0),
         active_containers=max(int(metrics.get("active_containers", 0)), 0),
+        warm_containers=max(int(metrics.get("warm_containers", 0)), 0),
         p95_latency_ms=max(p95, 0.0),
         cold_start_rate=cold_rate,
         energy=max(float(metrics.get("energy", 0.0)), 0.0),

@@ -142,13 +142,14 @@ def resample_frame(frame: pd.DataFrame, interval_seconds: int) -> pd.DataFrame:
 
 def fill_missing(frame: pd.DataFrame) -> pd.DataFrame:
     out = frame.copy()
+    out = out.sort_values(["function_id", "timestamp"], kind="stable")
     for column in out.columns:
         if column in ID_COLUMNS or not pd.api.types.is_numeric_dtype(out[column]):
             continue
-        if column in ZERO_FILL_COLUMNS:
-            out[column] = out[column].fillna(0)
-        else:
-            out[column] = out[column].ffill().bfill().fillna(0)
+        filled = out.groupby("function_id", sort=False)[column].transform(
+            lambda s: s.ffill().bfill()
+        )
+        out[column] = filled.fillna(0)
     return out
 
 
