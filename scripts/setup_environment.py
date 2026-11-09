@@ -1,0 +1,1 @@
+import json,sys; print(json.dumps({"note":"py -m pip install -r requirements.txt; live stack needs Docker/K8s/OpenFaaS/Prometheus/Grafana/Ollama(qwen3:4b). Simulation/dry-run default.","python":sys.version}, indent=2))

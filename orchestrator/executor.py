@@ -109,7 +109,7 @@ class KubernetesExecutor:
             return "prewarm", current, []
 
         # REUSE requires available warm capacity (matches ServerlessEnv._apply_action)
-        if name == "REUSE":
+        if name == "Reuse":
             warm = getattr(state, "warm_containers", None)
             if warm is None:
                 return "rejected", current, []

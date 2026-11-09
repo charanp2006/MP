@@ -51,6 +51,7 @@ class StateSnapshot(BaseModel):
     cpu_utilization: float = Field(ge=0.0, le=1.0)
     memory_utilization: float = Field(ge=0.0, le=1.0)
     active_containers: int = Field(ge=0)
+    warm_containers: int = Field(default=0, ge=0)
     p95_latency_ms: float = Field(ge=0.0)
     cold_start_rate: float = Field(ge=0.0, le=1.0)
     energy: float = Field(ge=0.0)

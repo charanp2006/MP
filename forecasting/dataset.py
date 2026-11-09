@@ -151,7 +151,36 @@ def make_forecast_data(
     }
 
     # Fit the scaler on train rows only, then transform everything.
+    # IMPORTANT: fit on concatenated train rows across functions (not just the first
+    # function) to avoid leaking one function's scale into others.
     scaler = StandardScaler()
+    for function_id, group in frame.groupby("function_id", sort=True):
+        group = group.sort_values("timestamp", kind="stable").reset_index(drop=True)
+        n = len(group)
+        if n <= history + horizon:
+            continue
+        train_end, _ = chronological_boundaries(n, split)
+        full_train = group[feature_columns].to_numpy(dtype=np.float64)[0:train_end]
+        if scaler.mean_ is None:
+            scaler.fit(full_train)
+        else:
+            # incremental: combine? simpler: collect then fit once
+            pass
+
+    # collect all train rows to fit a single global scaler (preserves existing checkpoint interface)
+    train_rows = []
+    for function_id, group in frame.groupby("function_id", sort=True):
+        group = group.sort_values("timestamp", kind="stable").reset_index(drop=True)
+        n = len(group)
+        if n <= history + horizon:
+            continue
+        train_end, _ = chronological_boundaries(n, split)
+        train_rows.append(group[feature_columns].to_numpy(dtype=np.float64)[0:train_end])
+    scaler = StandardScaler()
+    if train_rows:
+        scaler.fit(np.concatenate(train_rows, axis=0))
+    else:
+        scaler.fit(frame[feature_columns].to_numpy(dtype=np.float64))
 
     for function_id, group in frame.groupby("function_id", sort=True):
         group = group.sort_values("timestamp", kind="stable").reset_index(drop=True)
@@ -166,8 +195,6 @@ def make_forecast_data(
         }
 
         full = group[feature_columns].to_numpy(dtype=np.float64)
-        if scaler.mean_ is None:
-            scaler.fit(full[boundaries["train"][0] : boundaries["train"][1]])
         scaled = scaler.transform(full)
         target_series = scaled[:, target_index]
 

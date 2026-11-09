@@ -31,6 +31,7 @@ from rl.reward import compute_reward
 # Canonical action set (project.md, docs/test_plan.md R01).
 ACTIONS: List[str] = ["NoOp", "PreWarm", "ScaleOut", "Reuse", "ScaleIn", "Terminate"]
 NOOP, PREWARM, SCALE_OUT, REUSE, SCALE_IN, TERMINATE = range(6)
+ACTION_BY_NAME = {name.lower(): idx for idx, name in enumerate(ACTIONS)}
 
 OBS_NAMES = [
     "predicted_workload",
@@ -150,14 +151,14 @@ class ServerlessEnv:
 
         row = self.timeline.iloc[self.idx]
         workload = float(row["workload"])
-        required = int(
-            np.clip(math.ceil(workload / self.load_per_container), self.min_capacity, self.max_capacity)
-        )
+        required_raw = int(math.ceil(workload / self.load_per_container))
+        required = int(np.clip(required_raw, self.min_capacity, self.max_capacity))
 
         cold_starts, _ = self._apply_action(action)
         capacity = self.capacity
 
-        shortfall = max(0, required - capacity)
+        # Use unclipped required for shortfall/latency so overload/SLA risk is not hidden
+        shortfall = max(0, required_raw - capacity)
         latency = self.base_latency + self.ms_per_shortfall * shortfall
         p95 = latency * self.p95_factor
         energy = self.power_per_container * capacity + self.idle_power
@@ -169,7 +170,9 @@ class ServerlessEnv:
             "p95_latency": p95,
             "cold_starts": float(cold_starts),
             "capacity": float(capacity),
+            "warm_containers": float(self.warm),
             "required_capacity": float(required),
+            "required_capacity_raw": float(required_raw),
         }
         reward, components = compute_reward(raw, self.reward_weights, self.context)
 
@@ -179,7 +182,9 @@ class ServerlessEnv:
         info = {
             "action": ACTIONS[action],
             "capacity": capacity,
+            "warm_containers": int(self.warm),
             "required_capacity": required,
+            "required_capacity_raw": required_raw,
             "workload": workload,
             "latency": latency,
             "p95_latency": p95,
