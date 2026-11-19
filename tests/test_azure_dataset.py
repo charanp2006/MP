@@ -8,6 +8,7 @@ from data import ingestion
 from data.azure_functions_2019 import (
     DAY1_BASE_UTC,
     add_split_labels_by_time,
+    aggregate_wide_files,
     build_manifest,
     chronological_split_indices,
     clean_long,
@@ -121,6 +122,23 @@ def test_prepare_writes_manifest_and_csv(tmp_path):
     assert "units" in saved and "assumptions" in saved
     # prepared spans 2 days * 1440 minutes * 3 functions
     assert len(pd.read_csv(out_csv)) == 2 * 1440 * 3
+
+
+def test_wide_aggregation_total_and_by_app():
+    total, total_report = aggregate_wide_files([D01, D02], mode="total")
+    app, app_report = aggregate_wide_files([D01, D02], mode="by_app")
+    assert total_report["mode"] == "total"
+    assert total_report["method"] == "chunked_wide"
+    assert set(total["function_id"].unique()) == {"__total__"}
+    assert len(total) == 2 * 1440
+    assert app_report["output_functions"] == 2
+    assert set(app["function_id"].unique()) == set(app["hash_app"].unique())
+    assert total["invocation_count"].sum() >= app["invocation_count"].sum() > 0
+
+
+def test_wide_aggregation_timeout():
+    with pytest.raises(TimeoutError):
+        aggregate_wide_files([D01], mode="total", timeout_s=0.000001)
 
 
 def test_load_prepared_as_trace_and_ingestion_integration(tmp_path):

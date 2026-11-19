@@ -143,6 +143,10 @@ data:
     invocations_glob: invocations_per_function_md.anon.d*.csv
     function_limit: null         # optional: limit number of functions for experiments
     simulate_resources: false    # if true, add deterministic SIMULATED/ESTIMATED resource proxies (not in trace)
+    aggregate: total
+    top_k: null
+    chunk_size: 2000
+    timeout_s: 300
 
 features:
   lags: [1, 2, 3]

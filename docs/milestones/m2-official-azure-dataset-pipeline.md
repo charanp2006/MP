@@ -3,17 +3,22 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 — Official Azure dataset acquisition and preparation |
-| Status | **In progress (source inspection + design started; implementation not complete)** |
+| Status | **Complete (official archive acquired, verified, extracted, prepared, visualized)** |
 | Date started | 2026-11-19 |
-| Branch | `feat/m1-audit-contract-harmonization` |
-| Base commit | `f41feecb2433b9a304ee1ee37b118b24fc0182bc` |
-| Scope (so far) | Official source inspection (README/license/docs/metadata), trace selection rationale, pipeline design notes. **No large dataset download, no model training.** |
+| Date completed | 2026-11-20 |
+| Branch | `feat/m2-azure-dataset-pipeline` (uncommitted changes) |
+| Base commit | `1e58fde7555914655d3ec089fe74274b8d824a95` |
+| Scope | Official source inspection, verified archive download, safe extraction, chunked `total` aggregation, cleaning, chronological split, manifest, prepared CSV, plots, and CLI timeout. **No model training or live deployment.** |
+| Test IDs | U01-U12, D01-D04 (dataset smoke/official-prep); T01-T04/Q01-Q06/R01-R06/I01-I06/S01-S06/F01-F06 not run in this milestone |
 
 ## Changelog
 
 | Version | Date | Change |
 |---|---|---|
 | v0.1 | 2026-11-19 | Created M2 report; recorded official AzurePublicDataset inspection, licensing, candidate trace comparison, selected trace, and initial pipeline design/acceptance mapping. |
+| v0.2 | 2026-11-19 | Added fixture-verified scaffold and ingestion integration. |
+| v0.3 | 2026-11-19 | Added `obtain` CLI and local synthetic end-to-end validation. |
+| v1.0 | 2026-11-20 | Completed official 14-day acquisition/verification/preparation/visualization; added chunked wide aggregation, selective extraction, `--timeout-s` watchdog, and final commands/results. |
 
 ## 1. Official source inspection (verified 2026-11-19)
 
@@ -92,3 +97,62 @@ py -m data.azure_functions_2019 prepare --inputs tests/fixtures/azure_functions_
 - No official Azure raw/processed data committed (by design).
 
 **Measured vs simulated vs estimated:** implementation/tests measured on local fixtures/smoke runs only. No real Azure trace metrics, no model training, no live cluster/Prometheus data.
+
+
+## 12. Implementation progress (v0.3, 2026-11-19, branch `feat/m2-azure-dataset-pipeline`)
+
+**Branch:** continued on `feat/m2-azure-dataset-pipeline` (created from `dev`/`1e58fde`, which already contains M1/M2 scaffold commit `3e6dce5`; additional M2 changes uncommitted).
+
+**Completed this update:**
+- Added `obtain_official(...)` and CLI `obtain` to `data/azure_functions_2019.py`: one-command flow to **download (resumable) or reuse existing archive, verify SHA-256/size, extract safely (if needed), discover/parse/aggregate/clean/split, and export prepared CSV + manifest** with verification/extraction metadata. Supports `--days`, `--dest/--source-dir/--out/--manifest`, `--no-split`, `--force-download`.
+- Added configurable aggregation modes in preparation (`data.azure.aggregate`: `per_function` default, `total`, `by_app`, `top_k_total` with `top_k`) and recorded `aggregation_detail` in manifest (useful because full 14-day per-function expansion can be very large).
+- Fixed `_day_index_from_name`/parse flexibility to accept fixture-style `*_dNN_*` names while preserving official `...dNN.csv` handling.
+
+**Validation (no network download of official data, no model training):**
+- `py -m pytest -q tests/test_azure_dataset.py` → **8 passed**.
+- `py -m pytest -q` → **111 passed, 1 warning** (pre-existing ingestion format warning).
+- Local "official-like" end-to-end validation (no network): built a `.tar.xz` from schema-compatible fixtures with correct names, set expected hash/size, ran `obtain_official` on reused archive → **verified `sha256_ok=True`, `size_ok=True`, extraction/discovery/prepare succeeded, manifest includes verification/extraction/cleaning/split**, prepared 8640 rows / 3 functions, monotonic/complete grid. (Synthetic local archive only; not the real Azure trace.)
+
+**Commands run (this update):**
+```text
+git switch -c feat/m2-azure-dataset-pipeline   # from dev/1e58fde
+py -m py_compile data/azure_functions_2019.py
+py -m pytest -q tests/test_azure_dataset.py
+py -m pytest -q
+py -m data.azure_functions_2019 --help
+py -m data.azure_functions_2019 obtain --help
+python - <<'PY'  # local synthetic tar.xz obtain_official validation (no network)
+...
+PY
+```
+
+**Still open for M2 acceptance:**
+- **Real official archive not downloaded/extracted/prepared in this environment** (`azurefunctions_dataset2019_azurefunctions-dataset2019.tar.xz`, ~143 MB). `obtain` is implemented but not yet executed against the official remote asset here.
+- Official-trace visualization/review on real prepared data not done (script exists and was run on fixtures: `results/plots/azure_fixture/*`).
+- Full-trace scale/performance not exercised (per-function 14-day long form is large); recommended to use `--days` and/or aggregation (`total`/`by_app`/`top_k_total`) for tractable experiments and document choices.
+- Feature-generation leakage checks specific to Azure-prepared data at training scale, and any additional interval/timezone edge-case validation on real data, remain.
+- No official/raw/processed Azure data committed.
+
+**Next concrete step (superseded by section 13):** run `python -m data.azure_functions_2019 obtain [--days ...] [--aggregate/--out/--manifest ...]` to acquire+verify+prepare the official trace (network/disk), then run `python scripts/visualize_azure_dataset.py --csv ... --manifest ...` and review; record manifest/hash/rows/coverage/splits and update this report. If a local archive/extracted path is preferred, point `--dest`/`--source-dir` instead of downloading.
+
+## 13. Final M2 completion (v1.0, 2026-11-20)
+
+**Modules/contracts changed:** `data/azure_functions_2019.py`, `configs/project.yaml`, `tests/test_azure_dataset.py`, `docs/milestones/README.md`. Canonical outputs are gitignored: `data/processed/azure_features.csv`, `data/processed/azure_manifest.json`, `data/processed/azure2019_full_total.*`, `results/plots/azure2019_full_total/*`.
+
+**Official acquisition and verification (measured):**
+- Downloaded/reused `data/raw/azure/azurefunctions-dataset-2019/azurefunctions_dataset2019_azurefunctions-dataset2019.tar.xz`, `142968140` bytes, SHA-256 `aff8b3ca7240a41a109e4ee598e0a96e45fcb92e7b8395ac19cb3748cd260d89` → `sha256_ok=true`, `size_ok=true`.
+- Safe extraction now supports `member_pattern`/`days` filters; the full run used 14 official `invocations_per_function_md.anon.dNN.csv` files (13 extracted in the final run, d01 from the earlier day-1 run).
+- One-command `obtain` was completed end-to-end with `--timeout-s`; the canonical default run was interrupted by the operator, so canonical outputs were generated from the verified explicit-path full run and copied with manifest paths updated. No raw/processed data committed.
+
+**Official prepared trace (measured, not simulated):**
+- Command: `py -m data.azure_functions_2019 obtain --aggregate total --out data/processed/azure2019_full_total.csv --manifest data/processed/azure2019_full_total_manifest.json` → `20160` rows, `1` aggregate series (`__total__`), `14` input files, `618545` input rows.
+- Coverage: `20160/20160` expected function×time rows, zero duplicates, zero invalid/negative values, monotonic, start `2019-07-01 00:00:00+00:00`, end `2019-07-14 23:59:00+00:00`.
+- Chronological split: train `14112`, val `3024`, test `3024`; boundaries recorded in manifest (train/test order preserved, no shuffle).
+- Count stats from visualization: min `447383`, max `1258768`, mean `619831.8872023809` invocations per minute across the aggregate trace. These are real trace-derived counts, not energy/latency measurements.
+- Plots generated: `results/plots/azure2019_full_total/{total_invocations_over_time,invocation_distribution,hourly_pattern,top_functions,split_boundaries}.png`.
+
+**Timeout/timer implementation:** `prepare` and `obtain` now accept `--timeout-s N` (config default `300`). `aggregate_wide_files` checks deadlines per file/chunk; CLI installs a hard watchdog thread that exits `124`. Verified with `py -m data.azure_functions_2019 prepare --aggregate by_app --days 1 --timeout-s 10 ...` → exit `124` in ~11.6 s; cooperative timeout verified by unit test. `by_app`/`top_k_total` are implemented and fixture-tested but are **not recommended on full official day files until optimized**; `total` is the default and validated mode.
+
+**Verification:** `py -m py_compile data/azure_functions_2019.py`, `py -m pytest -q` → **113 passed, 1 warning** (pre-existing ingestion date-format warning); `py -m data.azure_functions_2019 prepare --help` / `obtain --help` show `--timeout-s`.
+
+**Limitations/next:** full per-function 14-day expansion and `by_app`/`top_k_total` official-scale runs remain unvalidated/slow; feature-generation leakage checks at training scale remain M3+ work; no model training, no live K8s/OpenFaaS/Prometheus, no measured energy/latency. Next milestone: M3 (TFT training/evaluation on the prepared chronological splits).
