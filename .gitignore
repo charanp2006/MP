@@ -55,6 +55,7 @@ data/raw/*
 data/processed/*
 !data/processed/.gitkeep
 *.csv
+!tests/fixtures/*.csv
 *.parquet
 *.feather
 *.hdf5
