@@ -38,6 +38,53 @@ def classify_trend(predicted: Sequence[float], threshold_ratio: float = 0.02) ->
     return "stable"
 
 
+def predict_scaled_windows(
+    model: TemporalFusionTransformer,
+    scaled_windows: np.ndarray,
+    scaler_mean: np.ndarray,
+    scaler_std: np.ndarray,
+    target_index: int,
+) -> np.ndarray:
+    values = np.asarray(scaled_windows, dtype=np.float64)
+    squeeze = values.ndim == 2
+    if squeeze:
+        values = values[None, ...]
+    if values.ndim != 3:
+        raise ValueError(f"windows must be 2D or 3D, got shape {values.shape}")
+    if not np.all(np.isfinite(values)):
+        raise ValueError("scaled windows contain non-finite values")
+
+    std = np.asarray(scaler_std, dtype=np.float64)
+    mean = np.asarray(scaler_mean, dtype=np.float64)
+    tensor = torch.tensor(values, dtype=torch.float32)
+    with torch.no_grad():
+        pred_scaled = model(tensor).numpy()
+
+    predicted = pred_scaled * std[target_index] + mean[target_index]
+    predicted = np.maximum(predicted, 0.0)
+    if not np.all(np.isfinite(predicted)):
+        raise ValueError("model produced non-finite predictions")
+    return predicted[0] if squeeze else predicted
+
+
+def predict_windows(
+    model: TemporalFusionTransformer,
+    windows: np.ndarray,
+    scaler_mean: np.ndarray,
+    scaler_std: np.ndarray,
+    target_index: int,
+) -> np.ndarray:
+    values = np.asarray(windows, dtype=np.float64)
+    if values.ndim not in (2, 3):
+        raise ValueError(f"windows must be 2D or 3D, got shape {values.shape}")
+    mean = np.asarray(scaler_mean, dtype=np.float64)
+    std = np.asarray(scaler_std, dtype=np.float64)
+    scaled = (values - mean) / std
+    if not np.all(np.isfinite(scaled)):
+        raise ValueError("history window contains non-finite values after scaling")
+    return predict_scaled_windows(model, scaled, mean, std, target_index)
+
+
 def forecast(
     model: TemporalFusionTransformer,
     history_window: np.ndarray,
@@ -45,22 +92,12 @@ def forecast(
     scaler_std: np.ndarray,
     target_index: int,
 ) -> Dict:
-    """Forecast the workload for the next ``horizon`` steps.
-
-    ``history_window`` is a raw (history, n_features) array in real units; it is
-    normalized here with the train-fit scaler before being fed to the model.
-    """
+    """Forecast the workload for the next ``horizon`` steps."""
     window = np.asarray(history_window, dtype=np.float64)
     if window.ndim != 2:
         raise ValueError(f"history_window must be 2D (history, features), got shape {window.shape}")
 
-    scaled = (window - np.asarray(scaler_mean)) / np.asarray(scaler_std)
-    tensor = torch.tensor(scaled, dtype=torch.float32).unsqueeze(0)  # (1, history, F)
-    with torch.no_grad():
-        pred_scaled = model(tensor).squeeze(0).numpy()  # (horizon,)
-
-    predicted = pred_scaled * scaler_std[target_index] + scaler_mean[target_index]
-    predicted = np.maximum(predicted, 0.0)  # workload cannot be negative
+    predicted = predict_windows(model, window, scaler_mean, scaler_std, target_index)
 
     return {
         "forecast_horizon": int(model.horizon),

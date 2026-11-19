@@ -29,7 +29,12 @@ class GatedResidualNetwork(nn.Module):
     """GRN: ELU-linear transform gated and added to a skip connection."""
 
     def __init__(
-        self, input_size: int, d_model: int, dropout: float = 0.1, output_size: Optional[int] = None
+        self,
+        input_size: int,
+        d_model: int,
+        dropout: float = 0.1,
+        output_size: Optional[int] = None,
+        use_layer_norm: bool = True,
     ) -> None:
         super().__init__()
         output_size = output_size or d_model
@@ -39,7 +44,8 @@ class GatedResidualNetwork(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.gate = nn.Linear(input_size, output_size)
         self.skip = nn.Linear(input_size, output_size) if input_size != output_size else None
-        self.layer_norm = nn.LayerNorm(output_size)
+        self.use_layer_norm = use_layer_norm
+        self.layer_norm = nn.LayerNorm(output_size) if use_layer_norm else nn.Identity()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         skip = self.skip(x) if self.skip is not None else x
@@ -102,7 +108,9 @@ class TemporalFusionTransformer(nn.Module):
             embed_dim=d_model, num_heads=attention_heads, dropout=dropout, batch_first=True
         )
         self.post_attention = GatedResidualNetwork(d_model, d_model, dropout)
-        self.head = GatedResidualNetwork(d_model, d_model, dropout, output_size=horizon)
+        self.head = GatedResidualNetwork(
+            d_model, d_model, dropout, output_size=horizon, use_layer_norm=False
+        )
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

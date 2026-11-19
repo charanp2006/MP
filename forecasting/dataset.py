@@ -98,6 +98,24 @@ def build_windows(
     return np.stack(x_list), np.stack(y_list)
 
 
+def build_window_index(
+    timestamps: pd.Series,
+    history: int,
+    horizon: int,
+    start: int,
+    end: int,
+    function_id: str,
+) -> List[Tuple[str, pd.Timestamp, pd.Timestamp]]:
+    return [
+        (
+            str(function_id),
+            pd.Timestamp(timestamps.iloc[t - 1]),
+            pd.Timestamp(timestamps.iloc[t]),
+        )
+        for t in range(start + history, end - horizon + 1)
+    ]
+
+
 @dataclass
 class ForecastData:
     """Windowed, scaled, chronologically split dataset ready for the model."""
@@ -115,6 +133,11 @@ class ForecastData:
     horizon: int
     # Per-split (function_id, min_timestamp, max_timestamp) provenance for T03.
     split_time_ranges: Dict[str, Tuple[pd.Timestamp, pd.Timestamp]] = field(
+        default_factory=dict
+    )
+    X_test_raw: np.ndarray | None = None
+    y_test_raw: np.ndarray | None = None
+    sample_index: Dict[str, List[Tuple[str, pd.Timestamp, pd.Timestamp]]] = field(
         default_factory=dict
     )
 
@@ -144,6 +167,9 @@ def make_forecast_data(
 
     x_parts: Dict[str, List[np.ndarray]] = {"train": [], "val": [], "test": []}
     y_parts: Dict[str, List[np.ndarray]] = {"train": [], "val": [], "test": []}
+    x_test_raw_parts: List[np.ndarray] = []
+    y_test_raw_parts: List[np.ndarray] = []
+    test_index: List[Tuple[str, pd.Timestamp, pd.Timestamp]] = []
     time_ranges: Dict[str, List[Tuple[pd.Timestamp, pd.Timestamp]]] = {
         "train": [],
         "val": [],
@@ -197,6 +223,7 @@ def make_forecast_data(
         full = group[feature_columns].to_numpy(dtype=np.float64)
         scaled = scaler.transform(full)
         target_series = scaled[:, target_index]
+        target_series_raw = full[:, target_index]
 
         for name, (seg_start, seg_end) in boundaries.items():
             x, y = build_windows(
@@ -206,6 +233,17 @@ def make_forecast_data(
                 continue
             x_parts[name].append(x)
             y_parts[name].append(y)
+            if name == "test":
+                x_raw, y_raw = build_windows(
+                    full, target_series_raw, history, horizon, seg_start, seg_end
+                )
+                x_test_raw_parts.append(x_raw)
+                y_test_raw_parts.append(y_raw)
+                test_index.extend(
+                    build_window_index(
+                        group["timestamp"], history, horizon, seg_start, seg_end, function_id
+                    )
+                )
             seg_times = group["timestamp"].iloc[seg_start:seg_end]
             time_ranges[name].append(
                 (function_id, seg_times.min(), seg_times.max())
@@ -229,6 +267,9 @@ def make_forecast_data(
         feature_columns=feature_columns,
         history=history,
         horizon=horizon,
+        X_test_raw=_concat(x_test_raw_parts, (history, len(feature_columns))),
+        y_test_raw=_concat(y_test_raw_parts, (horizon,)),
+        sample_index={"test": test_index},
     )
     # Collapse per-function ranges to global min/max per split for T03 checks.
     for name, entries in time_ranges.items():

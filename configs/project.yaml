@@ -36,6 +36,15 @@ forecast:
   # Extra covariates fed to the forecaster alongside the target.
   covariates: [cpu_utilization, memory_utilization, active_containers, hour, day_of_week, peak_period]
   checkpoint_path: models/tft_checkpoint.pt
+  evaluation:
+    output_dir: results/forecast
+    peak_quantile: 0.9
+    interval_alpha: 0.2
+    seasonal_period: 1440
+    moving_average_window: 5
+    max_plot_points: 800
+  inference:
+    max_staleness_s: 300
 
 control:
   interval_seconds: 60
