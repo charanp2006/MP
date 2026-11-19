@@ -49,7 +49,11 @@ def train_tft(
     history = int(forecast_cfg["history_window"])
     horizon = int(forecast_cfg["horizon"])
     target_column = forecast_cfg.get("target_column", "invocation_count")
-    feature_columns = list(feature_columns or forecast_cfg.get("covariates", []))
+    if target_column not in frame.columns:
+        raise ValueError(f"target_column {target_column!r} not present in frame")
+    requested = list(feature_columns or forecast_cfg.get("covariates", []))
+    available = set(frame.columns)
+    feature_columns = [c for c in requested if c in available]
     if target_column not in feature_columns:
         feature_columns = [target_column] + feature_columns
 

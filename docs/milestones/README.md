@@ -32,7 +32,7 @@ validation plan.
 |---|---|---|---|---|
 | M1 | [m1-repository-audit-and-contract-harmonization.md](m1-repository-audit-and-contract-harmonization.md) | Complete (audit) | 2026-11-19 | `f41feecb` (base) |
 | M2 | [m2-official-azure-dataset-pipeline.md](m2-official-azure-dataset-pipeline.md) | Complete (official archive verified, prepared, visualized) | 2026-11-20 | `1e58fdec` (base, uncommitted) |
-| M3 | _pending_ | Not started | — | — |
+| M3 | [m3-tft-forecast-model.md](m3-tft-forecast-model.md) | Complete (official run, baselines, plots, fallback) | 2026-11-20 | `b7ccce5f` (base, uncommitted) |
 | M4 | _pending_ | Not started | — | — |
 | M5 | _pending_ | Not started | — | — |
 | M6 | _pending_ | Not started | — | — |
