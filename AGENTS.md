@@ -59,6 +59,7 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 - `docs/implementation/` - **versioned implementation records, one doc per
   completed phase** (see "Phase documentation" below; start at
   `docs/implementation/README.md`; includes [P4 execution](docs/implementation/p4-v1.0-execution.md)).
+- `docs/milestones/README.md` - current M1-M9 integration/validation milestone reports.
 - `configs/project.yaml` - experiment configuration defaults.
 
 ## How to implement (agreed order, from docs/design.md)
