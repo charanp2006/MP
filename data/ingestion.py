@@ -56,7 +56,7 @@ def read_trace(path: str | Path) -> pd.DataFrame:
 
 def load_trace(config: dict) -> pd.DataFrame:
     data_config = config.get("data", {})
-    source_kind = data_config.get("source", "sample")
+    source_kind = str(data_config.get("source", "sample")).lower()
 
     if source_kind == "sample":
         from data.sample import sample_trace
@@ -65,6 +65,23 @@ def load_trace(config: dict) -> pd.DataFrame:
             days=int(data_config.get("sample_days", 7)),
             seed=int(data_config.get("seed", 42)),
         )
+        return validate_trace(frame)
+
+    if source_kind in ("azure_functions_2019", "azure2019", "azure"):
+        # Prepared Azure Functions 2019 invocations trace (see data.azure_functions_2019).
+        from data.azure_functions_2019 import load_prepared_as_trace
+
+        azure_cfg = data_config.get("azure", {}) or {}
+        prepared_path = azure_cfg.get("processed_path") or data_config.get(
+            "prepared_path", "data/processed/azure_features.csv"
+        )
+        frame = load_prepared_as_trace(
+            config=config,
+            prepared_path=prepared_path,
+            function_limit=azure_cfg.get("function_limit"),
+            require_simulated_resources=bool(azure_cfg.get("simulate_resources", False)),
+        )
+        # Keep only columns compatible with trace schema/validation; split/trigger/day_index are optional extras.
         return validate_trace(frame)
 
     return read_trace(data_config.get("source_path", "data/raw/trace.csv"))

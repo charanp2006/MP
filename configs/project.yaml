@@ -121,14 +121,28 @@ baseline:
   target_cpu: 0.6
 
 data:
-  # Azure Functions trace (data source only, not the execution platform).
-  # Set source_path to the CSV, or use source: sample for a built-in demo trace.
+  # Workload trace source (Azure is data source only, not execution platform).
+  # source: sample | file | azure_functions_2019
+  # - sample: built-in synthetic demo trace (default, CI-friendly)
+  # - file: read a prepared CSV at source_path
+  # - azure_functions_2019: read a prepared Azure Functions 2019 invocations CSV (see data.azure_functions_2019)
   source: sample
   source_path: data/raw/azure_functions_trace.csv
   processed_path: data/processed/features.csv
   dedupe_policy: last            # first | last | mean
   target_column: invocation_count
   normalize: false               # scaler is fit on the train split only (P2)
+  azure:
+    # Official selected trace: AzureFunctionsDataset2019 (ATC 2020, CC-BY-4.0)
+    # Raw archive is NOT committed/downloaded by default. Use inspect/download/verify/prepare steps.
+    dataset: azurefunctions-dataset-2019
+    raw_dir: data/raw/azure/azurefunctions-dataset-2019
+    extracted_dir: data/raw/azure/azurefunctions-dataset-2019/extracted
+    processed_path: data/processed/azure_features.csv
+    manifest_path: data/processed/azure_manifest.json
+    invocations_glob: invocations_per_function_md.anon.d*.csv
+    function_limit: null         # optional: limit number of functions for experiments
+    simulate_resources: false    # if true, add deterministic SIMULATED/ESTIMATED resource proxies (not in trace)
 
 features:
   lags: [1, 2, 3]
