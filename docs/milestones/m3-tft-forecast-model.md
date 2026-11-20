@@ -6,14 +6,17 @@
 | Doc version | v1.0 |
 | Status | **Complete (official-data training/evaluation, baselines, plots, inference fallback)** |
 | Date | 2026-11-20 |
-| Branch | `feat/m3-tft-forecasting` (uncommitted changes) |
+| Branch | `feat/m3-tft-forecasting` (merged) |
 | Base commit | `b7ccce5f21249ea359775de625bac2cf53b5c6ea` |
+| Merge commit | `b3624ba410c1f88663d011eefe5aef0a8f520c0e` |
+| Feature commit | `06245d5 feat(m3-ttf-forecasting): Enhance forecasting model with new metrics, evaluation, and visualization` |
 | Test IDs | T01-T04, F01 (forecast unit/integration/failure) |
 | Architecture layers touched | L2 data contract, L3 forecasting, scripts/CLI, tests, config |
 
 | Version | Date | Change |
 |---|---|---|
 | v1.0 | 2026-11-20 | Initial M3 completion report: baselines, extended metrics, plots, fallback service, official Azure run. |
+| v1.1 | 2026-11-20 | Corrected status to merged after PR #8; recorded merge/feature commits. |
 
 > Milestone numbering note: `IMPLEMENTATION_AGENT_PROMPT.md` defines Milestone 3 as the
 > TFT forecast model, while `IMPLEMENTATION_PLAN.md` uses a different numbering for

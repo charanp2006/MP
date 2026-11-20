@@ -6,8 +6,10 @@
 | Status | **Complete (official archive acquired, verified, extracted, prepared, visualized)** |
 | Date started | 2026-11-19 |
 | Date completed | 2026-11-20 |
-| Branch | `feat/m2-azure-dataset-pipeline` (uncommitted changes) |
+| Branch | `feat/m2-azure-dataset-pipeline` (merged) |
 | Base commit | `1e58fde7555914655d3ec089fe74274b8d824a95` |
+| Merge commit | `b7ccce5f21249ea359775de625bac2cf53b5c6ea` |
+| Feature commit | `3939243 feat(m2) official-azure-dataset-pipeline: Reproducible acquisition and preparation` |
 | Scope | Official source inspection, verified archive download, safe extraction, chunked `total` aggregation, cleaning, chronological split, manifest, prepared CSV, plots, and CLI timeout. **No model training or live deployment.** |
 | Test IDs | U01-U12, D01-D04 (dataset smoke/official-prep); T01-T04/Q01-Q06/R01-R06/I01-I06/S01-S06/F01-F06 not run in this milestone |
 
@@ -19,6 +21,7 @@
 | v0.2 | 2026-11-19 | Added fixture-verified scaffold and ingestion integration. |
 | v0.3 | 2026-11-19 | Added `obtain` CLI and local synthetic end-to-end validation. |
 | v1.0 | 2026-11-20 | Completed official 14-day acquisition/verification/preparation/visualization; added chunked wide aggregation, selective extraction, `--timeout-s` watchdog, and final commands/results. |
+| v1.1 | 2026-11-20 | Corrected status to merged after PR #7; recorded merge/feature commits. |
 
 ## 1. Official source inspection (verified 2026-11-19)
 

@@ -47,6 +47,7 @@ class Decision:
     execution: Optional[Dict] = None
     feedback: Optional[Dict] = None
     feedback_applied: bool = False
+    planner_record: Optional[Dict] = None
 
     def to_dict(self) -> Dict:
         data = {
@@ -69,6 +70,8 @@ class Decision:
             data["execution"] = self.execution
         if self.feedback is not None:
             data["feedback"] = self.feedback
+        if self.planner_record is not None:
+            data["planner_record"] = self.planner_record
         return data
 
 
@@ -169,6 +172,13 @@ class DecisionLoop:
         # enriching metrics with plan-derived hints before policy consumes obs/plan.
         state = build_state(forecast, metrics, self.config)
         plan, plan_validation, used_fallback = self._safe_plan(state)
+        planner_record_obj = getattr(self.planner, "last_record", None)
+        planner_record = (
+            planner_record_obj.to_dict() if hasattr(planner_record_obj, "to_dict") else None
+        )
+        if planner_record is not None:
+            planner_record = dict(planner_record)
+            planner_record["plan_code"] = plan_validation.code
 
         ppo_action = self._select_action(policy, obs)
         # Feedback is a soft signal; apply as a bounded bias, then still validate/guard.
@@ -221,6 +231,7 @@ class DecisionLoop:
             execution=execution,
             feedback=signal,
             feedback_applied=feedback_applied,
+            planner_record=planner_record,
         )
 
 
