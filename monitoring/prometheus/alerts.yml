@@ -1,0 +1,31 @@
+groups:
+  - name: serverless-control-loop
+    rules:
+      - alert: P95NearSLA
+        expr: p95_latency_ms >= 230
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: P95 latency is within the SLA safety margin
+      - alert: SLAHighViolationRate
+        expr: rate(sla_violations_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: SLA violation rate exceeds 10 percent
+      - alert: MetricsStale
+        expr: up{job="control-loop"} == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: Control-loop exporter is unreachable
+      - alert: ExecutorFailure
+        expr: increase(execution_failures_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: Bounded executor reported a failure
