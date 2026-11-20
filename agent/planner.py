@@ -13,8 +13,9 @@ import urllib.error
 import urllib.request
 from typing import Dict, Optional, Protocol
 
-from agent.prompts import build_user_prompt, load_system_prompt
+from agent.prompts import PROMPT_VERSION, build_user_prompt, load_system_prompt
 from agent.schemas import Plan, StateSnapshot
+from agent.telemetry import PlannerCallRecord, now_ms, redact_text
 
 
 class PlannerError(RuntimeError):
@@ -40,6 +41,7 @@ class StubPlanner:
         self.safety_margin = float(sla.get("safety_margin_ms", 0.0))
         self.high_ratio = float(agent.get("high_demand_ratio", 1.10))
         self.low_ratio = float(agent.get("low_demand_ratio", 0.90))
+        self.last_record: Optional[PlannerCallRecord] = None
 
     def _scale_out_change(self, state: StateSnapshot) -> int:
         room = max(0, self.max_capacity - state.active_containers)
@@ -49,7 +51,7 @@ class StubPlanner:
         room = max(0, state.active_containers - self.min_capacity)
         return -min(self.max_change, room)
 
-    def plan(self, state: StateSnapshot) -> Plan:
+    def _decide(self, state: StateSnapshot) -> Plan:
         ratio = state.forecast_peak / max(state.current_workload, 1.0)
         sla_risk = state.sla_margin_ms <= self.safety_margin
 
@@ -126,6 +128,20 @@ class StubPlanner:
             constraints_respected=True,
         )
 
+    def plan(self, state: StateSnapshot) -> Plan:
+        start = now_ms()
+        plan = self._decide(state)
+        self.last_record = PlannerCallRecord(
+            provider="stub",
+            model="stub",
+            prompt_version="n/a",
+            status="ok",
+            latency_ms=now_ms() - start,
+            fallback=False,
+            strategy=plan.strategy,
+        )
+        return plan
+
 
 class Qwen3OllamaPlanner:
     """Real Qwen3 planner backed by a local Ollama server."""
@@ -138,7 +154,12 @@ class Qwen3OllamaPlanner:
         self.timeout_s = float(agent.get("timeout_s", 30))
         self.temperature = float(agent.get("temperature", 0.0))
         self.num_predict = int(agent.get("num_predict", 256))
+        self.prompt_version = str(agent.get("prompt_version", PROMPT_VERSION))
+        self.max_prompt_chars = int(agent.get("max_prompt_chars", 8000))
+        self.max_metadata_keys = int(agent.get("max_metadata_keys", 12))
+        self.max_metadata_chars = int(agent.get("max_metadata_chars", 200))
         self.system_prompt = load_system_prompt()
+        self.last_record: Optional[PlannerCallRecord] = None
 
     def _post(self, payload: Dict) -> Dict:
         request = urllib.request.Request(
@@ -151,25 +172,53 @@ class Qwen3OllamaPlanner:
             return json.loads(response.read().decode("utf-8"))
 
     def plan(self, state: StateSnapshot) -> Plan:
-        payload = {
-            "model": self.model,
-            "messages": [
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": build_user_prompt(state)},
-            ],
-            "stream": False,
-            "format": "json",
-            "options": {"temperature": self.temperature, "num_predict": self.num_predict},
-        }
+        start = now_ms()
         try:
+            user_prompt = build_user_prompt(
+                state,
+                max_prompt_chars=self.max_prompt_chars,
+                max_metadata_keys=self.max_metadata_keys,
+                max_metadata_chars=self.max_metadata_chars,
+            )
+            payload = {
+                "model": self.model,
+                "messages": [
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                "stream": False,
+                "format": "json",
+                "options": {"temperature": self.temperature, "num_predict": self.num_predict},
+            }
             body = self._post(payload)
             content = body["message"]["content"]
             raw = content if isinstance(content, dict) else json.loads(content)
-            return Plan.model_validate(raw)
-        except PlannerError:
-            raise
+            plan = Plan.model_validate(raw)
         except Exception as exc:
-            raise PlannerError(f"Qwen3 planner failed: {exc}") from exc
+            reason = redact_text(exc)
+            self.last_record = PlannerCallRecord(
+                provider="ollama",
+                model=self.model,
+                prompt_version=self.prompt_version,
+                status="error",
+                latency_ms=now_ms() - start,
+                fallback=False,
+                reason=reason,
+            )
+            if isinstance(exc, PlannerError):
+                raise
+            raise PlannerError(f"Qwen3 planner failed: {reason}") from exc
+
+        self.last_record = PlannerCallRecord(
+            provider="ollama",
+            model=self.model,
+            prompt_version=self.prompt_version,
+            status="ok",
+            latency_ms=now_ms() - start,
+            fallback=False,
+            strategy=plan.strategy,
+        )
+        return plan
 
 
 class FallbackPlanner:
@@ -180,17 +229,41 @@ class FallbackPlanner:
         self.fallback = fallback or StubPlanner()
         self.last_fallback = False
         self.last_error: Optional[str] = None
+        self.last_record: Optional[PlannerCallRecord] = None
 
     def plan(self, state: StateSnapshot) -> Plan:
         try:
             plan = self.primary.plan(state)
+            record = getattr(self.primary, "last_record", None)
+            self.last_record = record or PlannerCallRecord(
+                provider=type(self.primary).__name__,
+                model=getattr(self.primary, "model", "unknown"),
+                prompt_version="n/a",
+                status="ok",
+                latency_ms=0.0,
+                strategy=plan.strategy,
+            )
             self.last_fallback = False
             self.last_error = None
             return plan
         except Exception as exc:
             self.last_fallback = True
-            self.last_error = str(exc)
-            return self.fallback.plan(state)
+            self.last_error = redact_text(exc)
+            record = getattr(self.primary, "last_record", None)
+            self.last_record = record or PlannerCallRecord(
+                provider=type(self.primary).__name__,
+                model=getattr(self.primary, "model", "unknown"),
+                prompt_version="n/a",
+                status="error",
+                latency_ms=0.0,
+                reason=self.last_error,
+            )
+            plan = self.fallback.plan(state)
+            self.last_record.status = "fallback"
+            self.last_record.fallback = True
+            self.last_record.reason = self.last_error
+            self.last_record.strategy = plan.strategy
+            return plan
 
 
 def build_planner(config: Optional[Dict] = None, with_fallback: bool = True) -> Planner:

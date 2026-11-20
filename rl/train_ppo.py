@@ -61,7 +61,9 @@ def compute_gae(
 
 
 def collect_episode(
-    env: ServerlessEnv, model: ActorCritic
+    env: ServerlessEnv,
+    model: ActorCritic,
+    action_filter=None,
 ) -> Dict[str, np.ndarray]:
     """Run one episode and record the trajectory."""
     obs_buffer: List[np.ndarray] = []
@@ -70,11 +72,17 @@ def collect_episode(
     rew_buffer: List[float] = []
     val_buffer: List[float] = []
     done_buffer: List[bool] = []
+    shielded_buffer: List[int] = []
 
     obs = env.reset()
     done = False
     while not done:
-        action, logp, value = model.act(obs)
+        proposed, logp, value = model.act(obs)
+        action = int(proposed)
+        if action_filter is not None:
+            decision = action_filter(env, action)
+            action = int(getattr(decision, "action", decision))
+            shielded_buffer.append(int(action != proposed))
         next_obs, reward, done, _ = env.step(action)
         obs_buffer.append(obs)
         act_buffer.append(action)
@@ -93,6 +101,7 @@ def collect_episode(
         "rewards": np.asarray(rew_buffer, dtype=np.float32),
         "values": np.asarray(val_buffer, dtype=np.float32),
         "dones": np.asarray(done_buffer, dtype=np.bool_),
+        "shield_interventions": np.asarray(shielded_buffer, dtype=np.int32),
         "last_value": np.float32(last_value.item()),
     }
 
@@ -150,7 +159,7 @@ def ppo_update(
     return {k: v / n for k, v in totals.items()}
 
 
-def train_ppo(frame, config: Dict | None = None, verbose: bool = False):
+def train_ppo(frame, config: Dict | None = None, verbose: bool = False, action_filter=None):
     """Train PPO on the simulated environment; return (model, env, history)."""
     config = config or load_config()
     rl_cfg = config["control"]["rl"]
@@ -166,11 +175,12 @@ def train_ppo(frame, config: Dict | None = None, verbose: bool = False):
     episodes = int(train_cfg.get("episodes", 200))
 
     history: List[float] = []
+    shield_interventions = 0
     best_mean = -float("inf")
     best_state = {k: v.clone() for k, v in model.state_dict().items()}
 
     for ep in range(episodes):
-        traj = collect_episode(env, model)
+        traj = collect_episode(env, model, action_filter=action_filter)
         advantages, returns = compute_gae(
             traj["rewards"].tolist(),
             traj["values"].tolist(),
@@ -183,6 +193,7 @@ def train_ppo(frame, config: Dict | None = None, verbose: bool = False):
 
         mean_reward = float(traj["rewards"].mean())
         history.append(mean_reward)
+        shield_interventions += int(traj["shield_interventions"].sum())
         if mean_reward > best_mean:
             best_mean = mean_reward
             best_state = {k: v.clone() for k, v in model.state_dict().items()}
@@ -194,18 +205,51 @@ def train_ppo(frame, config: Dict | None = None, verbose: bool = False):
 
     model.load_state_dict(best_state)
     model.eval()
-    return model, env, {"mean_reward_history": history, "best_mean_reward": best_mean}
+    return model, env, {
+        "mean_reward_history": history,
+        "best_mean_reward": best_mean,
+        "shield_interventions": shield_interventions,
+    }
 
 
-def save_checkpoint(model: ActorCritic, path: str, obs_dim: int, n_actions: int) -> str:
+CHECKPOINT_VERSION = 2
+
+
+def save_checkpoint(
+    model: ActorCritic,
+    path: str,
+    obs_dim: int,
+    n_actions: int,
+    metadata: Optional[Dict] = None,
+) -> str:
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-    torch.save({"model_state": model.state_dict(), "obs_dim": obs_dim, "n_actions": n_actions}, path)
+    payload = {
+        "checkpoint_version": CHECKPOINT_VERSION,
+        "model_state": model.state_dict(),
+        "obs_dim": int(obs_dim),
+        "n_actions": int(n_actions),
+        "metadata": metadata or {},
+    }
+    torch.save(payload, path)
     return path
 
 
-def load_checkpoint(path: str) -> ActorCritic:
+def load_checkpoint(
+    path: str,
+    expected_obs_dim: Optional[int] = None,
+    expected_n_actions: Optional[int] = None,
+) -> ActorCritic:
     payload = torch.load(path, map_location="cpu", weights_only=False)
-    model = ActorCritic(obs_dim=payload["obs_dim"], n_actions=payload["n_actions"])
+    version = int(payload.get("checkpoint_version", 1))
+    if version > CHECKPOINT_VERSION:
+        raise ValueError(f"checkpoint version {version} is newer than loader {CHECKPOINT_VERSION}")
+    obs_dim = int(payload["obs_dim"])
+    n_actions = int(payload["n_actions"])
+    if expected_obs_dim is not None and obs_dim != int(expected_obs_dim):
+        raise ValueError(f"checkpoint obs_dim {obs_dim} != expected {expected_obs_dim}")
+    if expected_n_actions is not None and n_actions != int(expected_n_actions):
+        raise ValueError(f"checkpoint n_actions {n_actions} != expected {expected_n_actions}")
+    model = ActorCritic(obs_dim=obs_dim, n_actions=n_actions)
     model.load_state_dict(payload["model_state"])
     model.eval()
     return model
@@ -228,7 +272,17 @@ def main() -> None:
     model, env, history = train_ppo(frame, config=config, verbose=args.verbose)
 
     checkpoint = config["control"]["rl"].get("checkpoint_path", "models/ppo_policy.pt")
-    save_checkpoint(model, checkpoint, env.observation_size, env.n_actions)
+    save_checkpoint(
+        model,
+        checkpoint,
+        env.observation_size,
+        env.n_actions,
+        metadata={
+            "seed": config["control"]["rl"]["training"].get("seed", 42),
+            "episodes": config["control"]["rl"]["training"].get("episodes"),
+            "reward_weights": config["control"]["rl"].get("reward_weights", {}),
+        },
+    )
     print(json.dumps({"checkpoint": checkpoint, "best_mean_reward": history["best_mean_reward"]}, indent=2))
 
 

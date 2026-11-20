@@ -21,6 +21,7 @@ at most ``containers.max_change_per_cycle`` per step (R02).
 from __future__ import annotations
 
 import math
+from collections import deque
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
@@ -67,6 +68,9 @@ class ServerlessEnv:
         self.ms_per_shortfall = float(sim["ms_per_extra_container"])
         self.power_per_container = float(sim["power_per_container_w"])
         self.idle_power = float(sim["idle_power_w"])
+        self.lifecycle_delay_steps = max(0, int(sim.get("lifecycle_delay_steps", 0)))
+        self.cooldown_steps = max(0, int(sim.get("cooldown_steps", 0)))
+        self.cold_history_size = max(1, int(sim.get("cold_history_steps", 10)))
         self.p95_factor = 1.3
         # Load a single container can absorb per control interval.
         self.load_per_container = max(
@@ -88,6 +92,9 @@ class ServerlessEnv:
         self.warm = 0
         self.idx = 0
         self._forecast: Optional[np.ndarray] = None
+        self._pending_warm: deque = deque()
+        self._cold_history: deque = deque()
+        self._last_scale_step: Optional[int] = None
 
     # ------------------------------------------------------------------ setup
     @staticmethod
@@ -106,7 +113,50 @@ class ServerlessEnv:
 
     def set_forecast(self, forecast: Optional[np.ndarray]) -> None:
         """Optionally supply TFT predictions (one per step) for the PPO state."""
-        self._forecast = forecast
+        if forecast is None:
+            self._forecast = None
+            return
+        values = np.asarray(forecast, dtype=np.float64)
+        if values.ndim != 1 or len(values) != len(self.timeline):
+            raise ValueError("forecast must be a 1D array with one value per timeline step")
+        if not np.all(np.isfinite(values)) or np.any(values < 0):
+            raise ValueError("forecast must contain finite non-negative values")
+        self._forecast = values
+
+    def _promote_pending(self) -> None:
+        while self._pending_warm and self._pending_warm[0][0] <= self.idx:
+            _, count = self._pending_warm.popleft()
+            self.warm = min(self.max_capacity, self.warm + count)
+
+    def current_context(self) -> Tuple[Dict, Dict]:
+        """Return forecast/metrics mappings for the current (unstepped) state."""
+        row = self.timeline.iloc[min(self.idx, len(self.timeline) - 1)]
+        workload = float(row["workload"])
+        predicted = (
+            float(self._forecast[self.idx]) if self._forecast is not None else workload
+        )
+        required_raw = math.ceil(workload / self.load_per_container)
+        capacity = float(self.capacity)
+        shortfall = max(0.0, (workload / self.load_per_container) - capacity)
+        latency = self.base_latency + self.ms_per_shortfall * shortfall
+        p95 = latency * self.p95_factor
+        energy = self.power_per_container * capacity + self.idle_power
+        forecast = {
+            "predicted_workload": [predicted],
+            "trend": "stable",
+            "forecast_horizon": 1,
+        }
+        metrics = {
+            "current_workload": workload,
+            "cpu_utilization": float(row["cpu"]),
+            "memory_utilization": float(row["memory"]),
+            "active_containers": int(self.capacity),
+            "warm_containers": int(self.warm),
+            "p95_latency_ms": p95,
+            "required_capacity_raw": required_raw,
+            "energy": energy,
+        }
+        return forecast, metrics
 
     # ----------------------------------------------------------------- actions
     def _apply_action(self, action: int) -> Tuple[int, int]:
@@ -117,8 +167,17 @@ class ServerlessEnv:
         prev_capacity = self.capacity
         cold_starts = 0
 
+        reducing = action in {SCALE_IN, TERMINATE}
+        if (
+            reducing
+            and self.cooldown_steps > 0
+            and self._last_scale_step is not None
+            and (self.idx - self._last_scale_step) < self.cooldown_steps
+        ):
+            return 0, 0
+
         if action == PREWARM:
-            self.warm = min(self.warm + self.max_change, self.max_capacity)
+            self._pending_warm.append((self.idx + self.lifecycle_delay_steps, self.max_change))
         elif action == SCALE_OUT:
             increase = self.max_change
             cold_starts = max(0, increase - self.warm)  # warm reused, rest start cold
@@ -135,6 +194,8 @@ class ServerlessEnv:
             self.capacity = int(np.clip(self.capacity - self.max_change, self.min_capacity, self.max_capacity))
         # NOOP: nothing changes.
 
+        if self.capacity != prev_capacity:
+            self._last_scale_step = self.idx
         return cold_starts, self.capacity - prev_capacity
 
     # ------------------------------------------------------------------- reset
@@ -142,6 +203,9 @@ class ServerlessEnv:
         self.capacity = self.min_capacity
         self.warm = 0
         self.idx = 0
+        self._pending_warm.clear()
+        self._cold_history.clear()
+        self._last_scale_step = None
         return self._observe(0)[0]
 
     # -------------------------------------------------------------------- step
@@ -149,12 +213,16 @@ class ServerlessEnv:
         if self.idx >= len(self.timeline):
             raise RuntimeError("episode finished; call reset()")
 
+        self._promote_pending()
         row = self.timeline.iloc[self.idx]
         workload = float(row["workload"])
         required_raw = int(math.ceil(workload / self.load_per_container))
         required = int(np.clip(required_raw, self.min_capacity, self.max_capacity))
 
         cold_starts, _ = self._apply_action(action)
+        self._cold_history.append(float(cold_starts))
+        while len(self._cold_history) > self.cold_history_size:
+            self._cold_history.popleft()
         capacity = self.capacity
 
         # Use unclipped required for shortfall/latency so overload/SLA risk is not hidden
@@ -183,6 +251,8 @@ class ServerlessEnv:
             "action": ACTIONS[action],
             "capacity": capacity,
             "warm_containers": int(self.warm),
+            "pending_warm_containers": int(sum(count for _, count in self._pending_warm)),
+            "sla_margin_ms": sla_margin,
             "required_capacity": required,
             "required_capacity_raw": required_raw,
             "workload": workload,
@@ -219,7 +289,12 @@ class ServerlessEnv:
                 latency / self.sla_threshold,
                 p95 / self.sla_threshold,
                 capacity / self.max_capacity,
-                0.0,  # cold_starts is transient; exposed via step() info, 0 here
+                min(
+                    float(np.mean(self._cold_history)) / max(float(self.max_change), 1.0),
+                    1.0,
+                )
+                if self._cold_history
+                else 0.0,
                 energy / self.energy_ref,
                 sla_margin / self.sla_threshold,
             ],

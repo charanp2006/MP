@@ -17,6 +17,7 @@ from agent.planner import (
     build_planner,
 )
 from agent.schemas import Plan, StateSnapshot
+from agent.telemetry import PlannerCallRecord, redact_text
 from agent.validator import PlanValidation, PlanValidator
 
 __all__ = [
@@ -30,4 +31,6 @@ __all__ = [
     "build_planner",
     "PlanValidator",
     "PlanValidation",
+    "PlannerCallRecord",
+    "redact_text",
 ]

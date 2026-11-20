@@ -77,6 +77,9 @@ control:
       ms_per_extra_container: 8   # latency penalty per container of shortfall
       power_per_container_w: 15
       idle_power_w: 5
+      lifecycle_delay_steps: 1   # simulated steps before PreWarm containers become reusable
+      cooldown_steps: 0          # optional guard against rapid scale reductions
+      cold_history_steps: 10     # recent cold-start history exposed to PPO observation
     checkpoint_path: models/ppo_policy.pt
 
 agent:
@@ -89,6 +92,10 @@ agent:
   timeout_s: 30
   temperature: 0.0
   num_predict: 256
+  prompt_version: planner-v2
+  max_prompt_chars: 8000
+  max_metadata_keys: 12
+  max_metadata_chars: 200
   # Deterministic thresholds used by the offline stub planner.
   high_demand_ratio: 1.10   # forecast peak / current workload => scale out
   low_demand_ratio: 0.90    # forecast peak / current workload => scale in (if safe)
@@ -166,3 +173,4 @@ features:
 evaluation:
   repetitions: 5
   baseline: reactive
+  seeds: [42, 43, 44]
