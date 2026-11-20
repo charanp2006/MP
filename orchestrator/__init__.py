@@ -24,6 +24,7 @@ __all__ = [
     "SafetyShield",
     "ShieldDecision",
     "DecisionLogger",
+    "ExecutionAuditLogger",
     "DecisionLoop",
     "Decision",
     "run_episode",
@@ -31,6 +32,8 @@ __all__ = [
     "ExecutionResult",
     "NoOpExecutor",
     "KubernetesExecutor",
+    "OpenFaaSExecutor",
+    "DockerExecutor",
     "build_executor",
 ]
 
@@ -44,6 +47,7 @@ _EXPORTS: Dict[str, Tuple[str, str]] = {
     "SafetyShield": ("orchestrator.safety_shield", "SafetyShield"),
     "ShieldDecision": ("orchestrator.safety_shield", "ShieldDecision"),
     "DecisionLogger": ("orchestrator.decision_log", "DecisionLogger"),
+    "ExecutionAuditLogger": ("orchestrator.execution_audit", "ExecutionAuditLogger"),
     "DecisionLoop": ("orchestrator.decision_loop", "DecisionLoop"),
     "Decision": ("orchestrator.decision_loop", "Decision"),
     "run_episode": ("orchestrator.decision_loop", "run_episode"),
@@ -51,6 +55,8 @@ _EXPORTS: Dict[str, Tuple[str, str]] = {
     "ExecutionResult": ("orchestrator.executor", "ExecutionResult"),
     "NoOpExecutor": ("orchestrator.executor", "NoOpExecutor"),
     "KubernetesExecutor": ("orchestrator.executor", "KubernetesExecutor"),
+    "OpenFaaSExecutor": ("orchestrator.executor", "OpenFaaSExecutor"),
+    "DockerExecutor": ("orchestrator.executor", "DockerExecutor"),
     "build_executor": ("orchestrator.executor", "build_executor"),
 }
 

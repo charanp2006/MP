@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fn-checkout
+  namespace: serverless-mgmt
+  labels:
+    app: fn-checkout
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fn-checkout
+  template:
+    metadata:
+      labels:
+        app: fn-checkout
+    spec:
+      serviceAccountName: controller
+      containers:
+        - name: fn-checkout
+          image: fn-checkout:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

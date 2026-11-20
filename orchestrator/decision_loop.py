@@ -25,6 +25,7 @@ from monitoring.feedback import FeedbackLoop
 from monitoring.metrics import MetricsCollector
 from orchestrator.action_validator import ActionValidator
 from orchestrator.decision_log import DecisionLogger, sanitize_record
+from orchestrator.execution_audit import ExecutionAuditLogger
 from orchestrator.executor import Executor, build_executor
 from orchestrator.safety_shield import SafetyShield
 from orchestrator.sla_guard import SLAGuard
@@ -109,6 +110,7 @@ class DecisionLoop:
         feedback: Optional[FeedbackLoop] = None,
         safety_shield: Optional[SafetyShield] = None,
         logger: Optional[DecisionLogger] = None,
+        execution_audit: Optional[ExecutionAuditLogger] = None,
     ) -> None:
         self.config = config or {}
         self.planner = planner or build_planner(self.config)
@@ -123,6 +125,7 @@ class DecisionLoop:
             self.config, validator=self.action_validator, guard=self.sla_guard
         )
         self.logger = logger or DecisionLogger(self.config)
+        self.execution_audit = execution_audit or ExecutionAuditLogger(self.config)
 
     def _safe_plan(self, state: StateSnapshot) -> tuple[Plan, PlanValidation, bool]:
         used_fallback = False
@@ -228,6 +231,16 @@ class DecisionLoop:
         if execute:
             result = self.executor.execute(final_action, state, plan=plan, authorized=authorized)
             execution = result.to_dict()
+            self.execution_audit.log(
+                execution,
+                {
+                    "correlation_id": correlation,
+                    "final_action_name": ACTIONS[final_action],
+                    "authorized": authorized,
+                    "planner_strategy": plan.strategy,
+                    "forecast_source": forecast_source,
+                },
+            )
 
         signal = feedback_signal
         if step_info is not None and signal is None:

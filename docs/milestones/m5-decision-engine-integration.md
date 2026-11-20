@@ -3,11 +3,11 @@
 | Field | Value |
 |---|---|
 | Phase / Milestone | M5 — decision-engine integration |
-| Document version | v1.0 |
-| Status | Complete (implementation + simulation replay); uncommitted on feature branch |
+| Document version | v1.1 |
+| Status | Complete (implementation + simulation replay); merged |
 | Date | 2026-11-20 |
 | Branch | `feat/m5-decision-engine-integration` |
-| Base commit | `f2da3f1` |
+| Base commit | `f2da3f1` (pre-merge); merge `7f8e1e5`; feature `38f5297` |
 | Test IDs | I01–I04 (simulation), F02/F03/F06 (fallback/validation subsets) |
 | Architecture layers | 4–9: state → planner → plan validator → PPO → shield → executor hook → feedback/logging |
 | Evidence tier | Simulation replay only; no live cluster, telemetry, energy or latency measurements |
@@ -148,3 +148,4 @@ latency or cold-start measurements were taken from a live system.
 | Version | Date | Change |
 |---|---|---|
 | v1.0 | 2026-11-20 | Initial M5 decision-engine integration and replay report. |
+| v1.1 | 2026-11-20 | Recorded merged commits `7f8e1e5` / `38f5297` and final status. |
