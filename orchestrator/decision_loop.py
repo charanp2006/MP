@@ -11,8 +11,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Union
+from uuid import uuid4
 
 import numpy as np
 
@@ -23,10 +24,17 @@ from forecasting.inference import classify_trend
 from monitoring.feedback import FeedbackLoop
 from monitoring.metrics import MetricsCollector
 from orchestrator.action_validator import ActionValidator
+from orchestrator.decision_log import DecisionLogger, sanitize_record
 from orchestrator.executor import Executor, build_executor
+from orchestrator.safety_shield import SafetyShield
 from orchestrator.sla_guard import SLAGuard
 from orchestrator.state_builder import build_state
 from rl.environment import ACTIONS, NOOP, SCALE_IN, SCALE_OUT, PREWARM, TERMINATE, REUSE
+
+
+def _correlation_id(prefix: Optional[str], step: int) -> str:
+    suffix = uuid4().hex[:12]
+    return f"{prefix}-{step:04d}-{suffix}" if prefix else f"{step:04d}-{suffix}"
 
 
 @dataclass
@@ -48,11 +56,20 @@ class Decision:
     feedback: Optional[Dict] = None
     feedback_applied: bool = False
     planner_record: Optional[Dict] = None
+    forecast: Dict = field(default_factory=dict)
+    metrics: Dict = field(default_factory=dict)
+    correlation_id: str = ""
+    hierarchy: Dict = field(default_factory=dict)
+    outcome: Optional[Dict] = None
 
     def to_dict(self) -> Dict:
         data = {
-            "state": self.state.model_dump(),
-            "plan": self.plan.model_dump(),
+            "correlation_id": self.correlation_id,
+            "hierarchy": sanitize_record(self.hierarchy),
+            "forecast": sanitize_record(self.forecast),
+            "metrics": sanitize_record(self.metrics),
+            "state": sanitize_record(self.state.model_dump()),
+            "plan": sanitize_record(self.plan.model_dump()),
             "plan_valid": self.plan_valid,
             "plan_code": self.plan_code,
             "plan_reason": self.plan_reason,
@@ -69,9 +86,11 @@ class Decision:
         if self.execution is not None:
             data["execution"] = self.execution
         if self.feedback is not None:
-            data["feedback"] = self.feedback
+            data["feedback"] = sanitize_record(self.feedback)
         if self.planner_record is not None:
-            data["planner_record"] = self.planner_record
+            data["planner_record"] = sanitize_record(self.planner_record)
+        if self.outcome is not None:
+            data["outcome"] = sanitize_record(self.outcome)
         return data
 
 
@@ -88,6 +107,8 @@ class DecisionLoop:
         executor: Optional[Executor] = None,
         metrics: Optional[MetricsCollector] = None,
         feedback: Optional[FeedbackLoop] = None,
+        safety_shield: Optional[SafetyShield] = None,
+        logger: Optional[DecisionLogger] = None,
     ) -> None:
         self.config = config or {}
         self.planner = planner or build_planner(self.config)
@@ -98,6 +119,10 @@ class DecisionLoop:
         self.executor = executor or build_executor(self.config)
         self.metrics = metrics or MetricsCollector(self.config)
         self.feedback = feedback or FeedbackLoop(self.config)
+        self.safety_shield = safety_shield or SafetyShield(
+            self.config, validator=self.action_validator, guard=self.sla_guard
+        )
+        self.logger = logger or DecisionLogger(self.config)
 
     def _safe_plan(self, state: StateSnapshot) -> tuple[Plan, PlanValidation, bool]:
         used_fallback = False
@@ -167,10 +192,16 @@ class DecisionLoop:
         execute: bool = False,
         step_info: Optional[Dict] = None,
         feedback_signal: Optional[Dict] = None,
+        correlation_id: Optional[str] = None,
     ) -> Decision:
-        # Make validated planning context materially visible to the controller by
-        # enriching metrics with plan-derived hints before policy consumes obs/plan.
-        state = build_state(forecast, metrics, self.config)
+        correlation = str(correlation_id or uuid4())
+        forecast_source = str(forecast.get("source", forecast.get("forecast_source", "unspecified")))
+        state = build_state(
+            forecast,
+            metrics,
+            self.config,
+            metadata={"forecast_source": forecast_source, "correlation_id": correlation},
+        )
         plan, plan_validation, used_fallback = self._safe_plan(state)
         planner_record_obj = getattr(self.planner, "last_record", None)
         planner_record = (
@@ -181,15 +212,17 @@ class DecisionLoop:
             planner_record["plan_code"] = plan_validation.code
 
         ppo_action = self._select_action(policy, obs)
-        # Feedback is a soft signal; apply as a bounded bias, then still validate/guard.
         biased_action, feedback_applied = self._apply_feedback_bias(int(ppo_action), plan, feedback_signal)
-        action_validation = self.action_validator.validate(
-            biased_action, state, authorized=authorized, plan=plan
+        shield = self.safety_shield.filter(
+            biased_action,
+            state,
+            authorized=authorized,
+            plan=plan,
+            p95_latency_ms=metrics.get("p95_latency_ms", state.p95_latency_ms),
         )
-        candidate = action_validation.action if action_validation.ok else NOOP
-        guard = self.sla_guard.check(candidate, state.p95_latency_ms)
-        final_action = guard.action if not guard.allow else candidate
-        final_action = int(final_action) if final_action in range(len(ACTIONS)) else NOOP
+        final_action = int(shield.action) if int(shield.action) in range(len(ACTIONS)) else NOOP
+        guard_code = "sla_guard" if "sla_guard" in shield.codes else "ok"
+        action_code = shield.codes[0] if shield.codes else "ok"
 
         execution = None
         if execute:
@@ -214,6 +247,19 @@ class DecisionLoop:
             except Exception:
                 signal = None
 
+        hierarchy = {
+            "correlation_id": correlation,
+            "forecast_source": forecast_source,
+            "planner_role": "advisory",
+            "controller_role": "proposal",
+            "shield_role": "final_authority",
+            "planner_strategy": plan.strategy,
+            "proposed_action": int(ppo_action),
+            "biased_action": int(biased_action),
+            "feedback_bias_applied": bool(feedback_applied),
+            "shield": shield.to_dict(),
+        }
+
         return Decision(
             state=state,
             plan=plan,
@@ -221,89 +267,114 @@ class DecisionLoop:
             plan_code=plan_validation.code,
             plan_reason=plan_validation.reason,
             ppo_action=int(ppo_action),
-            ppo_action_name=ACTIONS[ppo_action] if int(ppo_action) in range(len(ACTIONS)) else "invalid",
+            ppo_action_name=ACTIONS[int(ppo_action)] if int(ppo_action) in range(len(ACTIONS)) else "invalid",
             final_action=final_action,
             final_action_name=ACTIONS[final_action],
-            guard_code=guard.code,
-            action_code=action_validation.code,
+            guard_code=guard_code,
+            action_code=action_code,
             used_fallback=used_fallback,
             authorized=authorized,
             execution=execution,
             feedback=signal,
             feedback_applied=feedback_applied,
             planner_record=planner_record,
+            forecast=dict(forecast),
+            metrics=dict(metrics),
+            correlation_id=correlation,
+            hierarchy=hierarchy,
         )
 
+    def record_outcome(self, decision: Decision, outcome: Dict) -> Decision:
+        decision.outcome = sanitize_record(dict(outcome))
+        self.logger.log(decision, decision.outcome)
+        return decision
 
-def run_episode(env, config: Dict, policy=None, steps: Optional[int] = None, use_tft: bool = False, tft_checkpoint: Optional[str] = None) -> List[Dict]:
-    """Run the decision loop over the simulator.
 
-    If ``use_tft`` is True and a checkpoint is available, forecasts come from
-    TFT model inference (no oracle future values). Otherwise uses oracle timeline
-    values and is explicitly labeled as smoke/simulation.
-    """
-    loop = DecisionLoop(config)
+def _persistence_forecast(current_workload: float, horizon: int) -> Dict:
+    predicted = [max(float(current_workload), 0.0)] * max(int(horizon), 1)
+    return {
+        "forecast_horizon": len(predicted),
+        "predicted_workload": predicted,
+        "trend": classify_trend(predicted),
+        "source": "persistence",
+        "fallback": False,
+        "fallback_reason": None,
+    }
+
+
+def _tft_forecast(env, service, horizon: int, scale_factor: float = 1.0) -> Dict:
+    idx = int(env.idx)
+    columns = ["workload", "cpu", "memory"]
+    start = max(0, idx - service.history)
+    hist = env.timeline.iloc[start:idx][columns].to_numpy(dtype=float)
+    if len(hist) < service.history:
+        pad = np.repeat(hist[:1], service.history - len(hist), axis=0) if len(hist) else np.zeros((service.history, len(columns)))
+        hist = np.vstack([pad, hist])
+    window = np.zeros((service.history, len(service.feature_columns)), dtype=np.float64)
+    mapping = {name: position for position, name in enumerate(service.feature_columns)}
+    values = {
+        "invocation_count": hist[:, 0],
+        "cpu_utilization": hist[:, 1],
+        "memory_utilization": hist[:, 2],
+        "active_containers": float(env.capacity),
+    }
+    for name, value in values.items():
+        if name in mapping:
+            window[:, mapping[name]] = value
+    observed_at = env.timeline.iloc[idx].get("timestamp") if "timestamp" in env.timeline.columns else None
+    forecast = service.forecast_history(window, observed_at=observed_at)
+    raw_predicted = [max(float(value), 0.0) for value in forecast["predicted_workload"]]
+    predicted = [value * float(scale_factor) for value in raw_predicted]
+    forecast["forecast_horizon"] = max(int(horizon), 1)
+    forecast["raw_predicted_workload"] = raw_predicted
+    forecast["predicted_workload"] = predicted
+    forecast["trend"] = classify_trend(predicted)
+    forecast["scale_factor"] = float(scale_factor)
+    return forecast
+
+
+def run_episode(
+    env,
+    config: Dict,
+    policy=None,
+    steps: Optional[int] = None,
+    use_tft: bool = False,
+    tft_checkpoint: Optional[str] = None,
+    execute: bool = False,
+    logger: Optional[DecisionLogger] = None,
+    loop: Optional[DecisionLoop] = None,
+    correlation_prefix: Optional[str] = None,
+    use_feedback: bool = True,
+    forecast_scale: float = 1.0,
+) -> List[Dict]:
+    """Replay a trace through the bounded decision loop with logged provenance."""
+    loop = loop or DecisionLoop(config, logger=logger)
     obs = env.reset()
     horizon = int(config["forecast"]["horizon"])
-    timeline = env.timeline["workload"].to_numpy(dtype=float)
-    env.set_forecast(timeline)
 
-    tft = None
-    checkpoint_path = tft_checkpoint or config.get("forecast", {}).get("checkpoint_path", "models/tft_checkpoint.pt")
-    if use_tft and os.path.exists(checkpoint_path):
+    service = None
+    checkpoint_path = tft_checkpoint or config.get("forecast", {}).get("checkpoint_path", "")
+    if use_tft and checkpoint_path and os.path.exists(str(checkpoint_path)):
         try:
             from forecasting.tft_service import TFTForecastService
-            tft = TFTForecastService(checkpoint_path)
+
+            service = TFTForecastService(str(checkpoint_path), max_staleness_s=None)
         except Exception:
-            tft = None
+            service = None
 
     records: List[Dict] = []
     done = False
     prev_info = None
     prev_feedback = None
     while not done and (steps is None or len(records) < steps):
-        idx = env.idx
+        idx = int(env.idx)
         row = env.timeline.iloc[idx]
-        forecast_source = "oracle"
-        if tft is not None:
-            # Build a simple multivariate history from env timeline; use last horizon-aligned window
-            start = max(0, idx - tft.history)
-            hist = env.timeline.iloc[start:idx].copy()
-            if len(hist) < tft.history:
-                # pad at front with first values
-                pad = env.timeline.iloc[[0] * (tft.history - len(hist))]
-                hist = np.vstack([pad[["workload","cpu","memory"]].to_numpy(dtype=float), hist[["workload","cpu","memory"]].to_numpy(dtype=float)])
-            else:
-                hist = hist[["workload","cpu","memory"]].to_numpy(dtype=float)
-            # align to checkpoint feature order (target first + covariates subset present)
-            # build with zeros for missing covariates
-            hw = np.zeros((tft.history, len(tft.feature_columns)), dtype=np.float64)
-            mapping = {name: i for i, name in enumerate(tft.feature_columns)}
-            if "invocation_count" in mapping and hist.shape[1] >= 1:
-                hw[:, mapping["invocation_count"]] = hist[:, 0]
-            if "cpu_utilization" in mapping and hist.shape[1] >= 2:
-                hw[:, mapping["cpu_utilization"]] = hist[:, 1]
-            if "memory_utilization" in mapping and hist.shape[1] >= 3:
-                hw[:, mapping["memory_utilization"]] = hist[:, 2]
-            if "active_containers" in mapping:
-                hw[:, mapping["active_containers"]] = float(env.capacity)
-            try:
-                forecast = tft.forecast_history(hw)
-                forecast_source = "tft"
-            except Exception:
-                tft = None
-                forecast = None
-        else:
-            forecast = None
-
-        if forecast is None:
-            future = timeline[idx + 1 : idx + 1 + horizon]
-            predicted = [float(value) for value in future] if len(future) else [float(row["workload"])]
-            forecast = {
-                "forecast_horizon": len(predicted),
-                "predicted_workload": predicted,
-                "trend": classify_trend(predicted),
-            }
+        forecast = (
+            _tft_forecast(env, service, horizon, forecast_scale)
+            if service is not None
+            else _persistence_forecast(row["workload"], horizon)
+        )
+        forecast_source = str(forecast.get("source", "tft" if service is not None else "persistence"))
         metrics = {
             "current_workload": float(row["workload"]),
             "cpu_utilization": float(row["cpu"]),
@@ -314,7 +385,7 @@ def run_episode(env, config: Dict, policy=None, steps: Optional[int] = None, use
             "cold_starts": 0.0,
             "energy": float(obs[8]) * env.energy_ref,
         }
-        if prev_info is not None:
+        if use_feedback and prev_info is not None:
             try:
                 loop.feedback.record(
                     float(prev_info.get("p95_latency", metrics["p95_latency_ms"])),
@@ -324,14 +395,45 @@ def run_episode(env, config: Dict, policy=None, steps: Optional[int] = None, use
                 prev_feedback = loop.feedback.signal()
             except Exception:
                 prev_feedback = None
-        decision = loop.decide(forecast, metrics, obs=obs, policy=policy, feedback_signal=prev_feedback)
+        else:
+            prev_feedback = None
+
+        decision = loop.decide(
+            forecast,
+            metrics,
+            obs=obs,
+            policy=policy,
+            execute=execute,
+            feedback_signal=prev_feedback,
+            correlation_id=_correlation_id(correlation_prefix, len(records)),
+        )
         obs, reward, done, info = env.step(decision.final_action)
         try:
             loop.metrics.record_step(info, decision.final_action_name)
         except Exception:
             pass
-        rec = {"decision": decision.to_dict(), "reward": float(reward), "info": info, "forecast_source": forecast_source}
-        records.append(rec)
+        outcome = {
+            "reward": float(reward),
+            "p95_latency_ms": float(info.get("p95_latency", metrics["p95_latency_ms"])),
+            "sla_violated": bool(info.get("sla_violated", False)),
+            "cold_starts": float(info.get("cold_starts", 0.0)),
+            "energy_w": float(info.get("energy", metrics["energy"])),
+            "capacity": int(info.get("capacity", env.capacity)),
+            "warm_containers": int(info.get("warm_containers", env.warm)),
+            "required_capacity": int(info.get("required_capacity", 0)),
+            "reward_components": info.get("reward_components", {}),
+        }
+        loop.record_outcome(decision, outcome)
+        records.append(
+            {
+                "correlation_id": decision.correlation_id,
+                "decision": decision.to_dict(),
+                "reward": float(reward),
+                "info": info,
+                "forecast_source": forecast_source,
+                "outcome": decision.outcome,
+            }
+        )
         prev_info = info
     return records
 
@@ -364,94 +466,31 @@ def main() -> None:
         if os.path.exists(checkpoint):
             policy = load_checkpoint(checkpoint)
 
-    records = run_episode(env, config, policy=policy, steps=args.steps, use_tft=args.use_tft)
-    if args.execute:
-        loop = DecisionLoop(config)
-        env2 = ServerlessEnv(frame, config)
-        obs = env2.reset()
-        records = run_episode(env2, config, policy=policy, steps=args.steps, use_tft=args.use_tft)
-        # add execution results by re-deciding? simpler: run_episode doesn't execute; call with execute via a wrapper
-        # keep safe: do a short executed pass
-        env3 = ServerlessEnv(frame, config)
-        obs = env3.reset()
-        horizon = int(config["forecast"]["horizon"])
-        timeline = env3.timeline["workload"].to_numpy(dtype=float)
-        env3.set_forecast(timeline)
-        records = []
-        done = False
-        count = 0
-        prev_info = None
-        prev_feedback = None
-        tft = None
-        ck = config.get("forecast", {}).get("checkpoint_path", "models/tft_checkpoint.pt")
-        if args.use_tft and os.path.exists(ck):
-            try:
-                from forecasting.tft_service import TFTForecastService
-                tft = TFTForecastService(ck)
-            except Exception:
-                tft = None
-        while not done and (args.steps is None or count < args.steps):
-            idx = env3.idx
-            row = env3.timeline.iloc[idx]
-            forecast_source = "oracle"
-            if tft is not None:
-                start = max(0, idx - tft.history)
-                hist = env3.timeline.iloc[start:idx].copy()
-                if len(hist) < tft.history:
-                    pad = env3.timeline.iloc[[0] * (tft.history - len(hist))]
-                    hist_arr = np.vstack([pad[["workload","cpu","memory"]].to_numpy(dtype=float), hist[["workload","cpu","memory"]].to_numpy(dtype=float)])
-                else:
-                    hist_arr = hist[["workload","cpu","memory"]].to_numpy(dtype=float)
-                hw = np.zeros((tft.history, len(tft.feature_columns)), dtype=np.float64)
-                mapping = {name: i for i, name in enumerate(tft.feature_columns)}
-                if "invocation_count" in mapping and hist_arr.shape[1] >= 1:
-                    hw[:, mapping["invocation_count"]] = hist_arr[:, 0]
-                if "cpu_utilization" in mapping and hist_arr.shape[1] >= 2:
-                    hw[:, mapping["cpu_utilization"]] = hist_arr[:, 1]
-                if "memory_utilization" in mapping and hist_arr.shape[1] >= 3:
-                    hw[:, mapping["memory_utilization"]] = hist_arr[:, 2]
-                if "active_containers" in mapping:
-                    hw[:, mapping["active_containers"]] = float(env3.capacity)
-                try:
-                    forecast = tft.forecast_history(hw); forecast_source = "tft"
-                except Exception:
-                    tft = None; forecast = None
-            else:
-                forecast = None
-            if forecast is None:
-                future = timeline[idx + 1 : idx + 1 + horizon]
-                predicted = [float(value) for value in future] if len(future) else [float(row["workload"])]
-                forecast = {"forecast_horizon": len(predicted), "predicted_workload": predicted, "trend": classify_trend(predicted)}
-            metrics = {
-                "current_workload": float(row["workload"]),
-                "cpu_utilization": float(row["cpu"]),
-                "memory_utilization": float(row["memory"]),
-                "active_containers": int(env3.capacity),
-                "warm_containers": int(getattr(env3, "warm", 0)),
-                "p95_latency_ms": float(obs[5]) * env3.sla_threshold,
-                "cold_starts": 0.0,
-                "energy": float(obs[8]) * env3.energy_ref,
-            }
-            if prev_info is not None:
-                try:
-                    loop.feedback.record(
-                        float(prev_info.get("p95_latency", metrics["p95_latency_ms"])),
-                        bool(prev_info.get("sla_violated", False)),
-                        float(prev_info.get("cold_starts", 0.0)),
-                    )
-                    prev_feedback = loop.feedback.signal()
-                except Exception:
-                    prev_feedback = None
-            decision = loop.decide(forecast, metrics, obs=obs, policy=policy, execute=True, feedback_signal=prev_feedback)
-            obs, reward, done, info = env3.step(decision.final_action)
-            try:
-                loop.metrics.record_step(info, decision.final_action_name)
-            except Exception:
-                pass
-            records.append({"decision": decision.to_dict(), "reward": float(reward), "info": info, "forecast_source": forecast_source})
-            prev_info = info
-            count += 1
-    print(json.dumps({"steps": len(records), "last": records[-1], "modes": {"tft": args.use_tft, "runtime": config.get('agent',{}).get('runtime')}}, indent=2, default=str))
+    records = run_episode(
+        ServerlessEnv(frame, config),
+        config,
+        policy=policy,
+        steps=args.steps,
+        use_tft=args.use_tft,
+        execute=args.execute,
+        correlation_prefix="cli",
+    )
+    last = records[-1] if records else None
+    print(
+        json.dumps(
+            {
+                "steps": len(records),
+                "last": last,
+                "modes": {
+                    "tft": args.use_tft,
+                    "runtime": config.get("agent", {}).get("runtime"),
+                    "execute": bool(args.execute),
+                },
+            },
+            indent=2,
+            default=str,
+        )
+    )
 
 
 if __name__ == "__main__":

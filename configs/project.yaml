@@ -174,3 +174,12 @@ evaluation:
   repetitions: 5
   baseline: reactive
   seeds: [42, 43, 44]
+
+decision_log:
+  enabled: true
+  path: results/decision/decisions.jsonl
+  replay_dir: results/decision/replay
+
+decision_engine:
+  forecast_source: persistence
+  ablations: [full, planner_off, policy_off, feedback_off, forecast_off]

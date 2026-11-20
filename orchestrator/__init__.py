@@ -3,7 +3,9 @@
 * ``state_builder``    --- combine forecast + observation into a state snapshot.
 * ``sla_guard``       --- deterministic protection against risky reductions.
 * ``action_validator``--- known/authorized/plan-consistent, bounded actions.
-* ``decision_loop``   --- planner -> validator -> PPO -> guard integration.
+* ``safety_shield``   --- single validation + SLA authority for proposed actions.
+* ``decision_log``    --- redacted JSONL provenance for complete replays.
+* ``decision_loop``   --- planner -> validator -> PPO -> shield integration.
 * ``executor``        --- bounded translation to platform ops (dry-run by default).
 """
 
@@ -21,6 +23,7 @@ __all__ = [
     "ActionValidation",
     "SafetyShield",
     "ShieldDecision",
+    "DecisionLogger",
     "DecisionLoop",
     "Decision",
     "run_episode",
@@ -40,6 +43,7 @@ _EXPORTS: Dict[str, Tuple[str, str]] = {
     "ActionValidation": ("orchestrator.action_validator", "ActionValidation"),
     "SafetyShield": ("orchestrator.safety_shield", "SafetyShield"),
     "ShieldDecision": ("orchestrator.safety_shield", "ShieldDecision"),
+    "DecisionLogger": ("orchestrator.decision_log", "DecisionLogger"),
     "DecisionLoop": ("orchestrator.decision_loop", "DecisionLoop"),
     "Decision": ("orchestrator.decision_loop", "Decision"),
     "run_episode": ("orchestrator.decision_loop", "run_episode"),
