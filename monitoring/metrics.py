@@ -31,11 +31,15 @@ class MetricsCollector:
         self._gauges: Dict[str, float] = {}
 
     def inc(self, name: str, value: float = 1.0, labels: Optional[Dict[str, str]] = None) -> None:
+        if not self.enabled:
+            return
         key = self._key(name, labels)
         self._counters[key] = self._counters.get(key, 0.0) + float(value)
         self._history.append(MetricPoint(name, self._counters[key], labels or {}, time.time()))
 
     def set_gauge(self, name: str, value: float, labels: Optional[Dict[str, str]] = None) -> None:
+        if not self.enabled:
+            return
         key = self._key(name, labels)
         self._gauges[key] = float(value)
         self._history.append(MetricPoint(name, self._gauges[key], labels or {}, time.time()))

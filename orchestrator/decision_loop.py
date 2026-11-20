@@ -21,6 +21,7 @@ from agent.planner import Planner, StubPlanner, build_planner
 from agent.schemas import Plan, StateSnapshot
 from agent.validator import PlanValidation, PlanValidator
 from forecasting.inference import classify_trend
+from monitoring.alerts import AlertManager
 from monitoring.feedback import FeedbackLoop
 from monitoring.metrics import MetricsCollector
 from orchestrator.action_validator import ActionValidator
@@ -62,6 +63,7 @@ class Decision:
     correlation_id: str = ""
     hierarchy: Dict = field(default_factory=dict)
     outcome: Optional[Dict] = None
+    alerts: List[Dict] = field(default_factory=list)
 
     def to_dict(self) -> Dict:
         data = {
@@ -92,6 +94,7 @@ class Decision:
             data["planner_record"] = sanitize_record(self.planner_record)
         if self.outcome is not None:
             data["outcome"] = sanitize_record(self.outcome)
+        data["alerts"] = sanitize_record(self.alerts)
         return data
 
 
@@ -111,6 +114,7 @@ class DecisionLoop:
         safety_shield: Optional[SafetyShield] = None,
         logger: Optional[DecisionLogger] = None,
         execution_audit: Optional[ExecutionAuditLogger] = None,
+        alerts: Optional[AlertManager] = None,
     ) -> None:
         self.config = config or {}
         self.planner = planner or build_planner(self.config)
@@ -126,6 +130,7 @@ class DecisionLoop:
         )
         self.logger = logger or DecisionLogger(self.config)
         self.execution_audit = execution_audit or ExecutionAuditLogger(self.config)
+        self.alerts = alerts or AlertManager(self.config)
 
     def _safe_plan(self, state: StateSnapshot) -> tuple[Plan, PlanValidation, bool]:
         used_fallback = False
@@ -231,6 +236,8 @@ class DecisionLoop:
         if execute:
             result = self.executor.execute(final_action, state, plan=plan, authorized=authorized)
             execution = result.to_dict()
+            if not execution.get("ok", False):
+                self.metrics.inc("execution_failures_total")
             self.execution_audit.log(
                 execution,
                 {
@@ -245,10 +252,14 @@ class DecisionLoop:
         signal = feedback_signal
         if step_info is not None and signal is None:
             try:
-                self.feedback.record(
-                    float(step_info.get("p95_latency", state.p95_latency_ms)),
-                    bool(step_info.get("sla_violated", False)),
-                    float(step_info.get("cold_starts", 0.0)),
+                self.feedback.record_cycle(
+                    correlation,
+                    step_info,
+                    {
+                        "forecast_source": forecast_source,
+                        "final_action": ACTIONS[final_action],
+                        "source": str(metrics.get("source", self.feedback.source)),
+                    },
                 )
                 signal = self.feedback.signal()
                 self.metrics.record_step(step_info, ACTIONS[final_action])
@@ -259,6 +270,17 @@ class DecisionLoop:
                 signal = self.feedback.signal()
             except Exception:
                 signal = None
+
+        alert_list = self.alerts.evaluate(
+            metrics={
+                "p95_latency_ms": metrics.get("p95_latency_ms", state.p95_latency_ms),
+                "stale": bool(metrics.get("stale", False)),
+            },
+            feedback=signal,
+            execution=execution,
+            correlation_id=correlation,
+        )
+        self.alerts.log(alert_list)
 
         hierarchy = {
             "correlation_id": correlation,
@@ -295,6 +317,7 @@ class DecisionLoop:
             metrics=dict(metrics),
             correlation_id=correlation,
             hierarchy=hierarchy,
+            alerts=alert_list,
         )
 
     def record_outcome(self, decision: Decision, outcome: Dict) -> Decision:
@@ -379,6 +402,7 @@ def run_episode(
     done = False
     prev_info = None
     prev_feedback = None
+    prev_decision = None
     while not done and (steps is None or len(records) < steps):
         idx = int(env.idx)
         row = env.timeline.iloc[idx]
@@ -400,10 +424,14 @@ def run_episode(
         }
         if use_feedback and prev_info is not None:
             try:
-                loop.feedback.record(
-                    float(prev_info.get("p95_latency", metrics["p95_latency_ms"])),
-                    bool(prev_info.get("sla_violated", False)),
-                    float(prev_info.get("cold_starts", 0.0)),
+                loop.feedback.record_cycle(
+                    getattr(prev_decision, "correlation_id", ""),
+                    prev_info,
+                    {
+                        "forecast_source": getattr(prev_decision, "hierarchy", {}).get("forecast_source", ""),
+                        "final_action": getattr(prev_decision, "final_action_name", ""),
+                        "source": str(metrics.get("source", loop.feedback.source)),
+                    },
                 )
                 prev_feedback = loop.feedback.signal()
             except Exception:
@@ -420,6 +448,7 @@ def run_episode(
             feedback_signal=prev_feedback,
             correlation_id=_correlation_id(correlation_prefix, len(records)),
         )
+        prev_decision = decision
         obs, reward, done, info = env.step(decision.final_action)
         try:
             loop.metrics.record_step(info, decision.final_action_name)

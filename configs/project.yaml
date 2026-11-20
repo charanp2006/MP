@@ -126,7 +126,9 @@ monitoring:
     host: 127.0.0.1
     port: 9090
     scrape_interval_s: 15
+    exporter_port: 8000
     adapter_enabled: false
+    timeout_s: 5
     queries:
       p95_latency_ms: 'histogram_quantile(0.95, sum(rate(fn_latency_ms_bucket[5m])) by (le))'
       current_workload: 'sum(rate(fn_invocations_total[5m])) * 60'
@@ -136,14 +138,28 @@ monitoring:
   grafana:
     host: 127.0.0.1
     port: 3000
+    dashboard_uid: control-loop
+  alerts:
+    enabled: true
+    log_enabled: true
+    log_path: results/monitoring/alerts.jsonl
+    rules:
+      sla_violation_rate:
+        enabled: true
+        severity: critical
+        threshold: 0.1
   metrics:
     export_interval_s: 60
     history_size: 1000
   feedback:
     enabled: true
-    window: 10        # number of recent steps used for feedback
+    window: 10        # number of recent steps used by feedback
     degrade_threshold: 0.2  # relative increase in p95/violations to trigger caution
     min_samples: 5
+    record_enabled: true
+    record_path: results/monitoring/feedback.jsonl
+    source: simulated
+
 
 baseline:
   # Reactive autoscaler (agreed step 2) used as the comparison baseline.
