@@ -1,0 +1,27 @@
+services:
+  fn_checkout:
+    build: .
+    image: m9-sample-service:latest
+    environment:
+      SERVICE_NAME: fn_checkout
+      SERVICE_PORT: "8080"
+    ports:
+      - "8081:8080"
+
+  fn_search:
+    build: .
+    image: m9-sample-service:latest
+    environment:
+      SERVICE_NAME: fn_search
+      SERVICE_PORT: "8080"
+    ports:
+      - "8082:8080"
+
+  fn_recommend:
+    build: .
+    image: m9-sample-service:latest
+    environment:
+      SERVICE_NAME: fn_recommend
+      SERVICE_PORT: "8080"
+    ports:
+      - "8083:8080"

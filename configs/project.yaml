@@ -223,3 +223,18 @@ decision_log:
 decision_engine:
   forecast_source: persistence
   ablations: [full, planner_off, policy_off, feedback_off, forecast_off]
+
+demo:
+  out_dir: results/demo/m9
+  steps: 24
+  scenario: mixed
+  interval_s: 60
+  rate_per_interval: 120
+  seed: 42
+  use_tft: false
+  require_ingest_auth: false
+  ingest_token_env: M9_INGEST_TOKEN
+  services: [fn_checkout, fn_search, fn_recommend]
+  payload_classes: [small, medium, large]
+  burst_multiplier: 2.5
+  error_rate: 0.01
