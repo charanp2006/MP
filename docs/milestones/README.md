@@ -35,8 +35,8 @@ from `IMPLEMENTATION_PLAN.md` track the current integration and validation plan.
 | M2 | [m2-tft-forecast-model.md](m2-tft-forecast-model.md) | Complete (official run, baselines, plots, fallback) | 2026-11-20 | `b3624ba4` (merge), `06245d5` (feature) |
 | M3 | [m3-qwen3-planner.md](m3-qwen3-planner.md) | Complete (offline hardening/evaluation; Qwen3 unavailable, fallback validated) | 2026-11-20 | `f2da3f1` (merge), `4542726` (feature) |
 | M4 | [m4-ppo-controller.md](m4-ppo-controller.md) | Complete (simulation/PPO evaluation; no live measurements) | 2026-11-20 | `f2da3f1` (merge), `4542726` (feature) |
-| M5 | [m5-decision-engine-integration.md](m5-decision-engine-integration.md) | Complete (simulation replay/provenance; no live execution) | 2026-11-20 | `f2da3f1` (base, uncommitted) |
-| M6 | _pending_ | Not started | — | — |
+| M5 | [m5-decision-engine-integration.md](m5-decision-engine-integration.md) | Complete (simulation replay/provenance; no live execution) | 2026-11-20 | `7f8e1e5` (merge), `38f5297` (feature) |
+| M6 | [m6-execution-layer.md](m6-execution-layer.md) | Complete for adapters/dry-run audit; live cluster validation pending | 2026-11-20 | `7f8e1e5` (base, uncommitted) |
 | M7 | _pending_ | Not started | — | — |
 | M8 | _pending_ | Not started | — | — |
 | M9 | _pending_ | Not started | — | — |
