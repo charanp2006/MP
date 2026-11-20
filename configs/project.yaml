@@ -205,6 +205,15 @@ evaluation:
   repetitions: 5
   baseline: reactive
   seeds: [42, 43, 44]
+  m8:
+    out_dir: results/evaluation/m8
+    steps: 12
+    scenarios: [mixed, burst]
+    include_trace: false
+    trace_csv: data/processed/azure_features.csv
+    tft_checkpoint: results/forecast/azure2019_total/checkpoint.pt
+    policy_checkpoint: models/ppo_policy.pt
+    qwen3_available: false
 
 decision_log:
   enabled: true

@@ -38,5 +38,5 @@ from `IMPLEMENTATION_PLAN.md` track the current integration and validation plan.
 | M5 | [m5-decision-engine-integration.md](m5-decision-engine-integration.md) | Complete (simulation replay/provenance; no live execution) | 2026-11-20 | `7f8e1e5` (merge), `38f5297` (feature) |
 | M6 | [m6-execution-layer.md](m6-execution-layer.md) | Complete for adapters/dry-run audit; live cluster validation pending | 2026-11-20 | `7f8e1e5` (base, uncommitted) |
 | M7 | [m7-monitoring-feedback.md](m7-monitoring-feedback.md) | Complete for local exporter/feedback/alerts/dashboard provisioning; live dashboard pending | 2026-11-20 | `1ac69d4` (base, uncommitted) |
-| M8 | _pending_ | Not started | — | — |
+| M8 | [m8-consolidated-evaluation.md](m8-consolidated-evaluation.md) | Complete for simulated consolidated evaluation; live E7 deferred | 2026-11-20 | `db8d8a6` (base, uncommitted) |
 | M9 | _pending_ | Not started | — | — |
