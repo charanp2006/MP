@@ -39,4 +39,4 @@ from `IMPLEMENTATION_PLAN.md` track the current integration and validation plan.
 | M6 | [m6-execution-layer.md](m6-execution-layer.md) | Complete for adapters/dry-run audit; live cluster validation pending | 2026-11-20 | `7f8e1e5` (base, uncommitted) |
 | M7 | [m7-monitoring-feedback.md](m7-monitoring-feedback.md) | Complete for local exporter/feedback/alerts/dashboard provisioning; live dashboard pending | 2026-11-20 | `1ac69d4` (base, uncommitted) |
 | M8 | [m8-consolidated-evaluation.md](m8-consolidated-evaluation.md) | Complete for simulated consolidated evaluation; live E7 deferred | 2026-11-20 | `db8d8a6` (base, uncommitted) |
-| M9 | _pending_ | Not started | — | — |
+| M9 | [m9-deferred-demo-integration.md](m9-deferred-demo-integration.md) | Complete for simulated end-to-end demo integration; live deployment/deck deferred | 2026-11-20 | `0b7cb69` (base, uncommitted) |

@@ -1,0 +1,9 @@
+{
+  "services": [
+    {"service_id": "fn_checkout", "image": "m9-sample-service:latest", "route": "/invoke", "weight": 0.4},
+    {"service_id": "fn_search", "image": "m9-sample-service:latest", "route": "/invoke", "weight": 0.35},
+    {"service_id": "fn_recommend", "image": "m9-sample-service:latest", "route": "/invoke", "weight": 0.25}
+  ],
+  "payload_classes": ["small", "medium", "large"],
+  "deployment": "scaffolding_only_live_validation_deferred"
+}
