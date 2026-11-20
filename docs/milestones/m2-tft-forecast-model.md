@@ -1,8 +1,8 @@
-# M3 — TFT Workload Forecasting and Baseline Evaluation
+# M2 — TFT Workload Forecasting and Baseline Evaluation
 
 | Field | Value |
 |---|---|
-| Phase / Milestone | M3 — TFT forecast model |
+| Phase / Milestone | M2 — TFT forecast model |
 | Doc version | v1.0 |
 | Status | **Complete (official-data training/evaluation, baselines, plots, inference fallback)** |
 | Date | 2026-11-20 |
@@ -15,13 +15,13 @@
 
 | Version | Date | Change |
 |---|---|---|
-| v1.0 | 2026-11-20 | Initial M3 completion report: baselines, extended metrics, plots, fallback service, official Azure run. |
+| v1.0 | 2026-11-20 | Initial completion report: baselines, extended metrics, plots, fallback service, official Azure run. |
 | v1.1 | 2026-11-20 | Corrected status to merged after PR #8; recorded merge/feature commits. |
+| v1.2 | 2026-11-20 | Renumbered from M3 to M2 to follow `IMPLEMENTATION_PLAN.md`. |
 
-> Milestone numbering note: `IMPLEMENTATION_AGENT_PROMPT.md` defines Milestone 3 as the
-> TFT forecast model, while `IMPLEMENTATION_PLAN.md` uses a different numbering for
-> its research milestones. This report follows the agent prompt and the
-> `docs/milestones/README.md` slot (M3 = TFT forecasting).
+> Milestone numbering note: numbering follows `IMPLEMENTATION_PLAN.md`, which
+> defines Milestone 2 as forecasting research (TFT + baselines). The older
+> `IMPLEMENTATION_AGENT_PROMPT.md` used a different internal numbering.
 
 ## Objective
 
@@ -129,14 +129,14 @@ coverage `0.847`, under-coverage `0.063`, over-coverage `0.090`, mean width
 - T03: chronological splits and non-overlapping windows; raw test IDs support baselines.
 - T04: core metrics plus extended metrics, zero handling, interval calibration/coverage.
 - F01: invalid/stale/non-finite input and model-error fallback paths.
-- M3 artifact test: four models evaluated, CSV/JSON/checkpoint/plots written.
+- M2 artifact test: four models evaluated, CSV/JSON/checkpoint/plots written.
 - Full suite result: `py -m pytest -q` → **120 passed, 1 warning** (pre-existing ingestion date-format warning).
 
 ## Limitations and next steps
 
 - Historical Azure invocation counts are real, but latency, CPU, energy, cold starts, and SLA outcomes are absent; no such measurements are claimed.
 - TFT was trained only once (seed 42). Multi-seed distributions and rolling-origin folds remain M9 work.
-- Only `total` aggregation was trained; `by_app`/`top_k_total` remain unvalidated at official scale from M2.
+- Only `total` aggregation was trained; `by_app`/`top_k_total` remain unvalidated at official scale from M1.
 - Peak underprediction is unresolved; investigate log-target training, longer training, or a peak-aware loss before relying on TFT for burst control.
-- No live deployment, Prometheus/Grafana, or Qwen3/PPO integration was exercised in M3.
-- Next milestone: M4 (Qwen3 planner with strict schema, timeout, and fallback).
+- No live deployment, Prometheus/Grafana, or Qwen3/PPO integration was exercised in M2.
+- Next milestone: M3 (Qwen3 planner with strict schema, timeout, and fallback).

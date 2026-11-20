@@ -1,21 +1,22 @@
-# Milestone 1 — Repository Audit and Contract Harmonization
+# Pre-flight — Repository Audit and Contract Harmonization
 
 | Field | Value |
 |---|---|
-| Milestone | M1 — Repository audit and contract harmonization |
+| Milestone | M0 — Pre-flight repository audit and contract harmonization |
 | Status | **Complete (audit/verification only)** |
 | Date | 2026-11-19 |
 | Branch | `feat/m1-audit-contract-harmonization` |
 | Base/HEAD commit (audited) | `f41feecb2433b9a304ee1ee37b118b24fc0182bc` — "Merge pull request #5 from charanp2006/dev" |
-| Scope of work | Inspection, test/smoke verification, contract/unit/schema/status audit. **No model training, no large dataset downloads, no M2+ implementation.** |
+| Scope of work | Inspection, test/smoke verification, contract/unit/schema/status audit. **No model training, no large dataset downloads, no M1+ implementation.** |
 
 ## Changelog
 
 | Version | Date | Change |
 |---|---|---|
-| v1.0 | 2026-11-19 | Initial M1 audit report recorded from repository inspection and verification run. |
+| v1.0 | 2026-11-19 | Initial pre-flight audit report recorded from repository inspection and verification run. |
+| v1.1 | 2026-11-20 | Renumbered as pre-flight M0 to follow `IMPLEMENTATION_PLAN.md`. |
 
-## 1. Objective (M1)
+## 1. Objective (M0)
 
 - Inspect current implementation and test status.
 - Identify and reuse existing modules.
@@ -29,7 +30,7 @@
 2. Inspected repository docs, configs, CI, tests, modules, branches, artifacts, and working-tree state.
 3. Ran existing tests and small smoke checks to verify current behavior.
 4. Mapped implemented modules vs stubs/gaps; reviewed schemas/units/metrics/config/result contracts and reproducibility/artifact layout.
-5. Reported findings and next concrete step only (no M2+ work).
+5. Reported findings and next concrete step only (no M1+ work).
 
 ## 3. Files inspected (evidence)
 
@@ -49,7 +50,7 @@
 
 ## 4. Files changed
 
-- **Git refs only:** created branch `feat/m1-audit-contract-harmonization` (pointing at `f41feecb`). No tracked source/config logic modified in M1 audit.
+- **Git refs only:** created branch `feat/m1-audit-contract-harmonization` (pointing at `f41feecb`). No tracked source/config logic modified in the pre-flight audit.
 - **Documentation added (this milestone reporting):** `docs/milestones/README.md`, `docs/milestones/m1-repository-audit-and-contract-harmonization.md` (audit record + milestone reporting convention).
 - **Pre-existing/untracked working-tree items (not created/modified by this audit, preserved):** `IMPLEMENTATION_AGENT_PROMPT.md`, `IMPLEMENTATION_PLAN.md`, `FINAL_IMPLEMENTATION_REPORT.md`, `file.png`, and accidental path-artifact files (`CCharanMP*` / `C:CharanMP*`) plus `C:CharanMPscripts/` — left untouched; must be cleaned/excluded deliberately (not committed as-is).
 
@@ -64,12 +65,12 @@ No implementation changes to runtime logic. Verified current flow:
 - PPO observation: 10-dim normalized vector (`rl/environment.py`) — predicted/current workload, CPU, memory, latency/SLA, p95/SLA, active/max, cold_starts placeholder (0 in obs; transient in step info), energy/ref, sla_margin/SLA.
 - Decision/execution/metrics emitted as JSON-able records.
 
-**Units/semantics observed (to harmonize explicitly in M2+):** control interval 60s; latency/p95 in ms; SLA 250ms (+20ms safety margin in guard); CPU/memory in [0,1]; capacities/counts ints (min 2 / max 30 / max_change 5); workload target `invocation_count` (env aggregates per-timestamp sum); energy/power simulated/proxy in env/metrics (not measured). Some fields have dual meanings across modules (e.g. `energy` gauge/unit, cold-start count vs rate, oracle vs TFT forecast source).
+**Units/semantics observed (to harmonize explicitly in M1+):** control interval 60s; latency/p95 in ms; SLA 250ms (+20ms safety margin in guard); CPU/memory in [0,1]; capacities/counts ints (min 2 / max 30 / max_change 5); workload target `invocation_count` (env aggregates per-timestamp sum); energy/power simulated/proxy in env/metrics (not measured). Some fields have dual meanings across modules (e.g. `energy` gauge/unit, cold-start count vs rate, oracle vs TFT forecast source).
 
 ## 6. Dataset/model (current, verified)
 
 - **Dataset:** no official Azure Public Dataset acquisition pipeline/manifest/hash/license record in code. Default `data.source: sample` synthetic trace (`data/sample.py`, 7d/30s/3 functions). `data.source: file` + `source_path` supported by ingestion, but no real trace bundled/validated. `data/processed/features.csv` exists locally (artifact); `data/raw/` empty except `.gitkeep`.
-- **Models:** compact TFT and custom PyTorch PPO implementations present; local gitignored checkpoints exist (`models/tft_checkpoint.pt`, `models/ppo_policy.pt`, smoke/not production). Forecasting dataset uses chronological split/windowing; PPO trains in simulated env. **No M1 training performed.**
+- **Models:** compact TFT and custom PyTorch PPO implementations present; local gitignored checkpoints exist (`models/tft_checkpoint.pt`, `models/ppo_policy.pt`, smoke/not production). Forecasting dataset uses chronological split/windowing; PPO trains in simulated env. **No pre-flight training performed.**
 - **Planner:** Qwen3/Ollama adapter implemented but not exercised (Ollama/model unavailable in this audit); deterministic stub/fallback available.
 
 ## 7. Commands executed

@@ -45,10 +45,15 @@ class ShieldDecision:
 class SafetyShield:
     """Apply action validation followed by the deterministic SLA guard."""
 
-    def __init__(self, config: Optional[Dict] = None) -> None:
+    def __init__(
+        self,
+        config: Optional[Dict] = None,
+        validator: Optional[ActionValidator] = None,
+        guard: Optional[SLAGuard] = None,
+    ) -> None:
         self.config = config or {}
-        self.validator = ActionValidator(self.config)
-        self.guard = SLAGuard(self.config)
+        self.validator = validator or ActionValidator(self.config)
+        self.guard = guard or SLAGuard(self.config)
 
     def filter(
         self,

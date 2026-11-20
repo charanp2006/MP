@@ -1,23 +1,27 @@
-# M4 — Qwen3 Agentic Planner Hardening and Offline Evaluation
+# M3 — Qwen3 Agentic Planner Hardening and Offline Evaluation
 
 | Field | Value |
 |---|---|
-| Phase / Milestone | M4 — Qwen3 planner with bounded context and validated fallback |
+| Phase / Milestone | M3 — Qwen3 planner with bounded context and validated fallback |
 | Doc version | v1.0 |
 | Status | **Complete (offline hardening/evaluation; real Qwen3 inference unavailable)** |
 | Date | 2026-11-20 |
-| Branch | `feat/m4-qwen3-planner` (uncommitted changes) |
+| Branch | `feat/m4-qwen3-planner` (merged) |
 | Base commit | `b3624ba410c1f88663d011eefe5aef0a8f520c0e` |
+| Merge commit | `f2da3f1` |
+| Feature commit | `4542726 feat(m4 & m5): Add synthetic workload scenarios, safety shield, and evaluation scripts` |
 | Test IDs | Q01-Q06, R01-R04, S01-S06 (planner safety/validation/telemetry subset) |
 | Architecture layers touched | L4 state contract, L5 agent/planner, L6 validation, orchestrator decision telemetry, config, scripts, tests |
 
 | Version | Date | Change |
 |---|---|---|
-| v1.0 | 2026-11-20 | Initial M4 completion report: bounded/redacted prompts, call telemetry, stronger failure tests, offline rule-vs-Qwen3 harness. |
+| v1.0 | 2026-11-20 | Initial completion report: bounded/redacted prompts, call telemetry, stronger failure tests, offline rule-vs-Qwen3 harness. |
+| v1.1 | 2026-11-20 | Corrected status to merged after PR #9; recorded merge/feature commits. |
+| v1.2 | 2026-11-20 | Renumbered from M4 to M3 to follow `IMPLEMENTATION_PLAN.md`. |
 
-> Milestone numbering note: `IMPLEMENTATION_AGENT_PROMPT.md` defines M4 as the
-> Qwen3 agentic planner, while `IMPLEMENTATION_PLAN.md` numbers milestones
-> differently. This report follows the agent prompt and `docs/milestones/README.md`.
+> Milestone numbering note: numbering follows `IMPLEMENTATION_PLAN.md`, which
+> defines Milestone 3 as agentic-planner research. The older
+> `IMPLEMENTATION_AGENT_PROMPT.md` used a different internal numbering.
 
 ## Objective
 
@@ -39,7 +43,7 @@ offline scenario suite without claiming live model or Kubernetes validation.
 | `orchestrator/decision_loop.py` | `Decision.planner_record` captures redacted telemetry and validation code for every cycle. |
 | `configs/project.yaml` | New agent keys: `prompt_version`, `max_prompt_chars`, `max_metadata_keys`, `max_metadata_chars`. |
 | `scripts/evaluate_planner.py` | Offline evaluation CLI: six scenarios, validity/fallback/strategy/latency/guard/action metrics, JSON + CSV artifacts. |
-| `tests/test_agent_m4.py` | M4 tests for prompt bounding/redaction, timeout telemetry, refusal fallback, decision telemetry, unsafe plan rejection, and evaluation artifacts. |
+| `tests/test_agent_m4.py` | Planner tests (filename retained from original milestone numbering) for prompt bounding/redaction, timeout telemetry, refusal fallback, decision telemetry, unsafe plan rejection, and evaluation artifacts. |
 
 ## Design and data contracts
 
@@ -118,7 +122,7 @@ Full suite: `127 passed, 1 warning in 28.97s`; the warning is the pre-existing
 - **Measured:** full pytest result; stub planning latency; JSON/CSV artifact generation; validation/telemetry records from actual code execution.
 - **Simulated/offline:** all six scenario states, decisions, final actions, guard/action codes, and strategy distributions.
 - **Unavailable/not measured:** real Qwen3 inference, real Ollama latency, token usage, live Kubernetes/OpenFaaS execution, live Prometheus/Grafana observation, hardware energy, and cold-start measurements.
-- **Estimated/modeled:** none added in M4; M3/M2 proxy limitations still apply.
+- **Estimated/modeled:** none added in M3; M2/M1 proxy limitations still apply.
 
 ## Security and safety notes
 
@@ -133,7 +137,7 @@ Full suite: `127 passed, 1 warning in 28.97s`; the warning is the pre-existing
 - Real Qwen3 quality cannot be assessed until Ollama/Qwen3 is available; current Ollama numbers measure fallback behavior only.
 - The offline scenario suite is small and hand-designed; it validates safety mechanics, not production planning quality.
 - Final actions in the evaluation are all `NoOp` because no PPO policy was supplied; downstream metric coverage is limited to validator/guard outcomes.
-- Next milestone: M5 PPO controller with SLA-aware reward/penalty, then reuse this planner harness for controlled baseline-vs-proposed experiments.
+- Next milestone: M4 PPO controller with SLA-aware reward/penalty, then reuse this planner harness for controlled baseline-vs-proposed experiments.
 
 ## Changelog
 
