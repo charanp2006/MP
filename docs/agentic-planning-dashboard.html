@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agentic AI Planning (Qwen3) Dashboard</title>
+
+<style>
+:root { color-scheme: dark; --bg:#0c0f14; --panel:#151a21; --line:#2b333e; --text:#e8eef7; --muted:#94a3b8; --accent:#7dd3fc; --good:#86efac; --warn:#fcd34d; --bad:#fca5a5; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:Inter,Segoe UI,Arial,sans-serif; line-height:1.5; }
+.wrap { max-width:1280px; margin:0 auto; padding:32px 24px 72px; }
+h1 { margin:0 0 8px; font-size:2rem; }
+h2 { margin:38px 0 14px; font-size:1.25rem; color:var(--accent); }
+h3 { margin:0 0 8px; font-size:1rem; }
+p, li { color:var(--muted); }
+.sub { color:var(--muted); margin-bottom:28px; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; }
+.card span { display:block; color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; }
+.card strong { display:block; margin-top:6px; font-size:1.05rem; word-break:break-all; }
+table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+th, td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:right; font-variant-numeric:tabular-nums; }
+th:first-child, td:first-child { text-align:left; }
+th { color:var(--accent); font-size:.85rem; text-transform:uppercase; letter-spacing:.04em; }
+tbody tr:last-child td { border-bottom:0; }
+.best { color:var(--good); font-weight:700; }
+.bad { color:var(--bad); }
+.warn { color:var(--warn); }
+.grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:18px; }
+.gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); gap:16px; }
+figure { margin:0; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px; }
+figure img { width:100%; height:auto; border-radius:8px; background:white; }
+figcaption { margin-top:8px; color:var(--muted); font-size:.9rem; }
+code { background:#0a0d12; border:1px solid var(--line); border-radius:6px; padding:2px 6px; color:var(--good); }
+pre { background:#0a0d12; border:1px solid var(--line); border-radius:10px; padding:14px; overflow:auto; }
+ol { padding-left:22px; }
+.tag { display:inline-block; padding:3px 9px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:.8rem; margin-right:6px; }
+.footer { margin-top:42px; color:var(--muted); font-size:.85rem; border-top:1px solid var(--line); padding-top:18px; }
+</style>
+
+
+<style>
+.bar { background:#0a0d12; border:1px solid var(--line); border-radius:999px; height:10px; overflow:hidden; min-width:180px; }
+.bar > i { display:block; height:100%; background:linear-gradient(90deg,#38bdf8,#86efac); }
+.bar.warn > i { background:linear-gradient(90deg,#fbbf24,#f87171); }
+.barcell { display:flex; align-items:center; gap:10px; }
+.note { border-left:3px solid var(--warn); padding-left:12px; }
+.code-small { font-size:.82rem; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<h1>Agentic AI Planning (Qwen3) Dashboard</h1>
+<p class="sub">Offline hardening dashboard &middot; adapter implemented, no trained planner, no validated live Qwen3 inference</p>
+
+<div class="cards">
+  <div class="card"><span>Status</span><strong>adapter implemented; real Qwen3 unavailable</strong></div>
+  <div class="card"><span>Default runtime</span><strong>stub</strong></div>
+  <div class="card"><span>Configured model</span><strong>qwen3:4b</strong></div>
+  <div class="card"><span>Prompt version</span><strong>planner-v2</strong></div>
+  <div class="card"><span>Allowed strategies</span><strong>6</strong></div>
+  <div class="card"><span>Offline scenarios</span><strong>6</strong></div>
+</div>
+
+<h2>1. What it does</h2>
+<p>The planner is an <strong>advisory component</strong>. It reads a bounded forecast/state snapshot and returns one high-level strategy. It never emits shell commands, Kubernetes YAML, URLs, scripts, or direct infrastructure actions. The final action is chosen later by PPO plus the safety shield.</p>
+<p><strong>Control-flow:</strong> TFT/persistence forecast &rarr; <code>build_state</code> &rarr; planner proposal &rarr; <code>PlanValidator</code> &rarr; PPO/feedback bias &rarr; <code>SafetyShield</code> &rarr; executor adapter. Planner output is advisory only.</p>
+
+<h2>2. How it is implemented</h2>
+<table><thead><tr><th>Module</th><th>Role</th></tr></thead><tbody><tr><td>agent/schemas.py</td><td>Strict StateSnapshot and Plan models; extra fields rejected</td></tr><tr><td>agent/planner.py</td><td>StubPlanner, Qwen3OllamaPlanner, FallbackPlanner, build_planner</td></tr><tr><td>agent/prompts/planner.txt</td><td>System prompt: allowlist, SLA rule, untrusted metadata, NoOp fallback</td></tr><tr><td>agent/prompts/__init__.py</td><td>Bounded/redacted prompt construction with planner-v2 version</td></tr><tr><td>agent/validator.py</td><td>Schema, allowlist, bounds, rate-limit, direction and capacity checks</td></tr><tr><td>agent/telemetry.py</td><td>Redacted provider/model/status/latency/fallback call records</td></tr><tr><td>orchestrator/decision_loop.py</td><td>Captures planner telemetry and converts validated plans into PPO context</td></tr></tbody></table>
+
+<h2>3. Training / testing status</h2>
+<p class="note"><strong>No training was performed.</strong> Qwen3 is an external LLM accessed through a provider adapter; there is no fine-tuning, local checkpoint, or learned planner weights in this repository. Real Qwen3/Ollama inference was unavailable during the recorded experiments, so the Ollama artifacts measure timeout fallback behavior only.</p>
+<table><thead><tr><th>Check</th><th>Status / evidence</th></tr></thead><tbody><tr><td>Qwen3 provider adapter</td><td>Implemented: POST to Ollama /api/chat, strict Plan.model_validate</td></tr><tr><td>Real Qwen3 inference</td><td>Not validated; Ollama evaluation fallback_rate = 100%</td></tr><tr><td>Prompt-injection tests</td><td>Q05 string treated as untrusted metadata</td></tr><tr><td>Invalid/unsafe plan tests</td><td>Q01/Q02/Q06 plus excessive scale-in rejection</td></tr><tr><td>Timeout/refusal fallback</td><td>FallbackPlanner + DecisionLoop._safe_plan + validate_or_noop</td></tr><tr><td>Telemetry</td><td>Provider, model, prompt version, status, latency, fallback and redacted reason</td></tr><tr><td>Component milestone suite</td><td>M3 recorded 127 passed, 1 warning</td></tr></tbody></table>
+
+<h2>4. Input contract</h2>
+<p>The planner consumes a strict <code>StateSnapshot</code>. Unknown fields are rejected. Numeric fields are bounded; metadata is treated as untrusted data.</p>
+<table><thead><tr><th>Field</th><th>Type</th><th>Meaning</th></tr></thead><tbody><tr><td>forecast_workload</td><td><class 'float'></td><td>bounded state value</td></tr><tr><td>forecast_peak</td><td><class 'float'></td><td>bounded state value</td></tr><tr><td>current_workload</td><td><class 'float'></td><td>bounded state value</td></tr><tr><td>trend</td><td>typing.Literal['increasing', 'decreasing', 'stable']</td><td>bounded state value</td></tr><tr><td>cpu_utilization</td><td><class 'float'></td><td>bounded state value</td></tr><tr><td>memory_utilization</td><td><class 'float'></td><td>bounded state value</td></tr><tr><td>active_containers</td><td><class 'int'></td><td>bounded state value</td></tr><tr><td>warm_containers</td><td><class 'int'></td><td>bounded state value</td></tr><tr><td>p95_latency_ms</td><td><class 'float'></td><td>bounded state value</td></tr><tr><td>cold_start_rate</td><td><class 'float'></td><td>bounded state value</td></tr><tr><td>energy</td><td><class 'float'></td><td>bounded state value</td></tr><tr><td>sla_threshold_ms</td><td><class 'float'></td><td>bounded state value</td></tr><tr><td>sla_margin_ms</td><td><class 'float'></td><td>bounded state value</td></tr><tr><td>forecast_horizon</td><td><class 'int'></td><td>bounded state value</td></tr><tr><td>metadata</td><td>typing.Dict[str, str]</td><td>bounded state value</td></tr></tbody></table>
+<pre class="code-small">{
+  &quot;forecast_workload&quot;: 820.0,
+  &quot;forecast_peak&quot;: 1040.0,
+  &quot;current_workload&quot;: 760.0,
+  &quot;trend&quot;: &quot;increasing&quot;,
+  &quot;cpu_utilization&quot;: 0.81,
+  &quot;memory_utilization&quot;: 0.74,
+  &quot;active_containers&quot;: 12,
+  &quot;warm_containers&quot;: 8,
+  &quot;p95_latency_ms&quot;: 238.0,
+  &quot;cold_start_rate&quot;: 0.08,
+  &quot;energy&quot;: 180.0,
+  &quot;sla_threshold_ms&quot;: 250,
+  &quot;sla_margin_ms&quot;: 20,
+  &quot;forecast_horizon&quot;: 5,
+  &quot;metadata&quot;: {
+    &quot;source&quot;: &quot;synthetic_client&quot;,
+    &quot;scenario&quot;: &quot;burst&quot;
+  }
+}</pre>
+
+<h2>5. Output contract</h2>
+<p>The planner returns exactly one <code>Plan</code> object. Extra fields are forbidden, the strategy must be one of <code>NoOp, PreWarm, ScaleOut, Reuse, ScaleIn, Terminate</code>, and the reason is capped at 500 characters.</p>
+<table><thead><tr><th>Field</th><th>Type</th><th>Meaning</th></tr></thead><tbody><tr><td>strategy</td><td><class 'str'></td><td>validated plan value</td></tr><tr><td>desired_capacity_change</td><td><class 'int'></td><td>validated plan value</td></tr><tr><td>priority</td><td>typing.Literal['sla', 'energy', 'cost', 'balanced']</td><td>validated plan value</td></tr><tr><td>urgency</td><td>typing.Literal['low', 'medium', 'high']</td><td>validated plan value</td></tr><tr><td>reason</td><td><class 'str'></td><td>validated plan value</td></tr><tr><td>constraints_respected</td><td><class 'bool'></td><td>validated plan value</td></tr></tbody></table>
+<pre class="code-small">{
+  &quot;strategy&quot;: &quot;ScaleOut&quot;,
+  &quot;desired_capacity_change&quot;: 3,
+  &quot;priority&quot;: &quot;sla&quot;,
+  &quot;urgency&quot;: &quot;high&quot;,
+  &quot;reason&quot;: &quot;P95 is near the SLA during a forecast burst&quot;,
+  &quot;constraints_respected&quot;: true
+}</pre>
+<p><strong>Telemetry example</strong> recorded with each call:</p>
+<pre class="code-small">{
+  &quot;provider&quot;: &quot;ollama&quot;,
+  &quot;model&quot;: &quot;qwen3:4b&quot;,
+  &quot;prompt_version&quot;: &quot;planner-v2&quot;,
+  &quot;status&quot;: &quot;fallback&quot;,
+  &quot;latency_ms&quot;: 4018.56,
+  &quot;fallback&quot;: true,
+  &quot;reason&quot;: &quot;timeout: ollama unavailable&quot;,
+  &quot;strategy&quot;: &quot;ScaleOut&quot;,
+  &quot;plan_code&quot;: &quot;ok&quot;
+}</pre>
+
+<h2>6. Validation and safety</h2>
+<ul>
+<li><code>PlanValidator</code> checks schema, strategy allowlist, desired change bounds, capacity bounds, direction, max change per cycle, and SLA-safe reductions.</li>
+<li>Capacity bounds from config: min <code>2</code>, max <code>30</code>, max change/cycle <code>5</code>.</li>
+<li>SLA threshold <code>250 ms</code>, margin <code>20 ms</code>.</li>
+<li>Prompt instructs refusal/NoOp for unsafe or incomplete input; malformed output triggers deterministic fallback.</li>
+<li>No planner output can bypass PPO/action validation/SLA guard/authorization.</li>
+</ul>
+
+<h2>7. Offline evaluation results</h2>
+<table><thead><tr><th>Metric</th><th>Stub runtime</th><th>Ollama runtime</th></tr></thead><tbody><tr><td>Runtime</td><td>Stub</td><td>Ollama adapter</td></tr><tr><td>Scenarios</td><td>6</td><td>6</td></tr><tr><td>Plan validity rate</td><td>100.00%</td><td>100.00%</td></tr><tr><td>Fallback rate</td><td>0.00%</td><td>100.00%</td></tr><tr><td>Mean planning latency</td><td>0.01 ms</td><td>4,043.89 ms</td></tr><tr><td>P95 planning latency</td><td>0.02 ms</td><td>4,147.96 ms</td></tr><tr><td>Providers</td><td>stub=6</td><td>ollama=6</td></tr><tr><td>Statuses</td><td>ok=6</td><td>fallback=6</td></tr><tr><td>Strategies</td><td>NoOp=2, PreWarm=1, ScaleIn=1, ScaleOut=2</td><td>NoOp=2, PreWarm=1, ScaleIn=1, ScaleOut=2</td></tr><tr><td>Final actions</td><td>NoOp=6</td><td>NoOp=6</td></tr></tbody></table>
+<h3>Fallback and latency comparison</h3>
+<table><thead><tr><th>Measure</th><th>Relative bar</th></tr></thead><tbody><tr><td>Stub fallback rate</td><td><div class="barcell"><div class="bar"><i style="width:2.0%"></i></div><span>0.0000</span></div></td></tr><tr><td>Ollama fallback rate</td><td><div class="barcell"><div class="bar warn"><i style="width:100.0%"></i></div><span>1.0000</span></div></td></tr><tr><td>Stub mean latency (ms)</td><td><div class="barcell"><div class="bar"><i style="width:2.0%"></i></div><span>0.0107</span></div></td></tr><tr><td>Ollama mean latency (ms)</td><td><div class="barcell"><div class="bar warn"><i style="width:100.0%"></i></div><span>4043.8900</span></div></td></tr></tbody></table>
+<h3>Per-scenario outcomes</h3>
+<table><thead><tr><th>Scenario</th><th>Stub status</th><th>Strategy</th><th>Capacity change</th><th>Validation</th><th>Final action</th><th>Ollama status</th><th>Ollama latency (ms)</th></tr></thead><tbody><tr><td>normal</td><td>ok</td><td>NoOp</td><td>0</td><td>ok</td><td>NoOp</td><td>fallback</td><td>4,190.56</td></tr><tr><td>high_demand</td><td>ok</td><td>ScaleOut</td><td>5</td><td>ok</td><td>NoOp</td><td>fallback</td><td>4,018.56</td></tr><tr><td>sla_risk</td><td>ok</td><td>ScaleOut</td><td>5</td><td>ok</td><td>NoOp</td><td>fallback</td><td>4,015.21</td></tr><tr><td>low_demand</td><td>ok</td><td>ScaleIn</td><td>-5</td><td>ok</td><td>NoOp</td><td>fallback</td><td>4,011.63</td></tr><tr><td>max_capacity</td><td>ok</td><td>PreWarm</td><td>0</td><td>ok</td><td>NoOp</td><td>fallback</td><td>4,007.21</td></tr><tr><td>injection_metadata</td><td>ok</td><td>NoOp</td><td>0</td><td>ok</td><td>NoOp</td><td>fallback</td><td>4,020.16</td></tr></tbody></table>
+<p class="warn">Interpretation: the stub planner passes the offline safety harness. The Ollama run used fallback plans for all six scenarios; these numbers do not measure Qwen3 planning quality.</p>
+
+<h2>8. Live-use boundary</h2>
+<ul>
+<li>A live deployment can set <code>agent.runtime: ollama</code> and point <code>base_url</code> to a real provider, but that path was not validated here.</li>
+<li>The planner receives no cluster credentials and has no executor path.</li>
+<li>Execution defaults remain <code>enabled=false</code>, <code>dry_run=true</code>, <code>allow_live=false</code>.</li>
+<li>M8 rows E3 and E6 are labelled <code>stub_proxy</code>, not real Qwen3 results.</li>
+</ul>
+
+<h2>9. Limitations</h2>
+<ul>
+<li>Real Qwen3 quality, latency, token usage, and model-version behavior are unmeasured.</li>
+<li>The six offline states are hand-designed safety scenarios, not production workload evidence.</li>
+<li>All final actions in the planner harness are NoOp because no PPO policy was supplied.</li>
+<li>No live Kubernetes/OpenFaaS execution, Prometheus/Grafana telemetry, or measured energy/cold-start outcomes are claimed.</li>
+</ul>
+
+<h2>10. Reproduce</h2>
+<pre>py -m pytest -q tests/test_agent.py tests/test_agent_m4.py tests/test_orchestrator.py
+py -m scripts.evaluate_planner --runtime stub --out-dir results/planner/stub
+py -m scripts.evaluate_planner --runtime ollama --timeout-s 2 --out-dir results/planner/ollama
+py -m scripts.generate_component_dashboards</pre>
+
+<div class="footer">Generated from tracked code and saved experiment artifacts. All runtime diagrams describe contracts, not validated live deployments.</div>
+</div>
+</body>
+</html>

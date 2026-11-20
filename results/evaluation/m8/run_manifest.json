@@ -1,0 +1,97 @@
+{
+  "artifacts": [
+    "runs.csv",
+    "aggregates.csv",
+    "workloads.json",
+    "report.md",
+    "figures/",
+    "figures/mean_reward_by_experiment.png",
+    "figures/sla_violation_rate_by_experiment.png",
+    "figures/mean_energy_w_by_experiment.png",
+    "figures/mean_capacity_by_experiment.png"
+  ],
+  "config_sha256": "8351693e068085e8d09c47afefb18ce16063229c4948ca38f0b7a575722adf51",
+  "evidence_tier": "simulated",
+  "experiments": {
+    "E0": {
+      "controller": "rules",
+      "executor": "simulator",
+      "forecast": "none",
+      "planner": "rules"
+    },
+    "E1": {
+      "controller": "rules",
+      "executor": "simulator",
+      "forecast": "persistence",
+      "planner": "rules"
+    },
+    "E2": {
+      "controller": "rules",
+      "executor": "simulator",
+      "forecast": "tft",
+      "planner": "rules"
+    },
+    "E3": {
+      "controller": "rules",
+      "executor": "simulator",
+      "forecast": "tft",
+      "planner": "qwen3_stub"
+    },
+    "E4": {
+      "controller": "ppo",
+      "executor": "simulator",
+      "forecast": "persistence",
+      "planner": "rules"
+    },
+    "E5": {
+      "controller": "ppo",
+      "executor": "simulator",
+      "forecast": "tft",
+      "planner": "rules"
+    },
+    "E6": {
+      "controller": "ppo",
+      "executor": "simulator",
+      "forecast": "tft",
+      "planner": "qwen3_stub"
+    },
+    "E7": {
+      "controller": "selected",
+      "executor": "live_deferred",
+      "forecast": "selected",
+      "planner": "selected"
+    }
+  },
+  "git_commit": "db8d8a6",
+  "include_trace": false,
+  "out_dir": "results\\evaluation\\m8",
+  "policy": {
+    "available": true,
+    "path": "models/ppo_policy.pt",
+    "sha256": "b3a94a54e4ee05b8cab797154910b4f9c46a571ec944ac51557718cd5234ed17",
+    "source": "models/ppo_policy.pt"
+  },
+  "python": "3.14.3",
+  "qwen3_available": false,
+  "scenarios": [
+    "mixed"
+  ],
+  "seeds": [
+    42
+  ],
+  "steps": 4,
+  "tft": {
+    "available": false,
+    "path": null,
+    "sha256": null
+  },
+  "timestamp": "2026-11-20T08:13:11.824682+00:00",
+  "trace_csv": "data/processed/azure_features.csv",
+  "trace_sha256": "b674433d83e923f82b688830cfb3efa9fbbe4f629d6ba210947bed38a91ba8b5",
+  "units": {
+    "capacity": "container count",
+    "energy": "simulated watts from configured simulator constants",
+    "latency": "simulated milliseconds",
+    "reward": "configured weighted simulated objective"
+  }
+}

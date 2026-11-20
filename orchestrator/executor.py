@@ -403,10 +403,14 @@ def build_executor(config: Optional[Dict] = None) -> Executor:
         return NoOpExecutor()
     if backend == "kubernetes":
         return KubernetesExecutor(config)
+    if backend == "kubernetes_live":
+        from orchestrator.live_executor import LiveKubernetesExecutor
+
+        return LiveKubernetesExecutor(config)
     if backend == "openfaas":
         return OpenFaaSExecutor(config)
     if backend == "docker":
         return DockerExecutor(config)
     raise ValueError(
-        f"unknown execution.backend {backend!r}; expected 'noop', 'kubernetes', 'openfaas' or 'docker'"
+        f"unknown execution.backend {backend!r}; expected 'noop', 'kubernetes', 'kubernetes_live', 'openfaas' or 'docker'"
     )

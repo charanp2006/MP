@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI-Driven Decision Engine Dashboard</title>
+
+<style>
+:root { color-scheme: dark; --bg:#0c0f14; --panel:#151a21; --line:#2b333e; --text:#e8eef7; --muted:#94a3b8; --accent:#7dd3fc; --good:#86efac; --warn:#fcd34d; --bad:#fca5a5; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:Inter,Segoe UI,Arial,sans-serif; line-height:1.5; }
+.wrap { max-width:1280px; margin:0 auto; padding:32px 24px 72px; }
+h1 { margin:0 0 8px; font-size:2rem; }
+h2 { margin:38px 0 14px; font-size:1.25rem; color:var(--accent); }
+h3 { margin:0 0 8px; font-size:1rem; }
+p, li { color:var(--muted); }
+.sub { color:var(--muted); margin-bottom:28px; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; }
+.card span { display:block; color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; }
+.card strong { display:block; margin-top:6px; font-size:1.05rem; word-break:break-all; }
+table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+th, td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:right; font-variant-numeric:tabular-nums; }
+th:first-child, td:first-child { text-align:left; }
+th { color:var(--accent); font-size:.85rem; text-transform:uppercase; letter-spacing:.04em; }
+tbody tr:last-child td { border-bottom:0; }
+.best { color:var(--good); font-weight:700; }
+.bad { color:var(--bad); }
+.warn { color:var(--warn); }
+.grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:18px; }
+.gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); gap:16px; }
+figure { margin:0; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px; }
+figure img { width:100%; height:auto; border-radius:8px; background:white; }
+figcaption { margin-top:8px; color:var(--muted); font-size:.9rem; }
+code { background:#0a0d12; border:1px solid var(--line); border-radius:6px; padding:2px 6px; color:var(--good); }
+pre { background:#0a0d12; border:1px solid var(--line); border-radius:10px; padding:14px; overflow:auto; }
+ol { padding-left:22px; }
+.tag { display:inline-block; padding:3px 9px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:.8rem; margin-right:6px; }
+.footer { margin-top:42px; color:var(--muted); font-size:.85rem; border-top:1px solid var(--line); padding-top:18px; }
+</style>
+
+
+<style>
+.bar { background:#0a0d12; border:1px solid var(--line); border-radius:999px; height:10px; overflow:hidden; min-width:180px; }
+.bar > i { display:block; height:100%; background:linear-gradient(90deg,#38bdf8,#86efac); }
+.bar.warn > i { background:linear-gradient(90deg,#fbbf24,#f87171); }
+.barcell { display:flex; align-items:center; gap:10px; }
+.note { border-left:3px solid var(--warn); padding-left:12px; }
+.code-small { font-size:.82rem; }
+</style>
+
+<style>
+.flow { display:flex; flex-wrap:wrap; align-items:stretch; gap:8px; margin:18px 0; }
+.stage { flex:1 1 170px; border:1px solid var(--line); border-radius:12px; padding:12px; background:#0e131a; min-width:165px; }
+.stage b { display:block; color:var(--fg); margin-bottom:6px; }
+.stage span { display:block; color:var(--muted); font-size:.86rem; line-height:1.4; }
+.stage em { display:inline-block; margin-top:8px; font-style:normal; font-size:.72rem; color:#7dd3fc; border:1px solid #164e63; border-radius:999px; padding:2px 8px; }
+.arrow { align-self:center; color:var(--muted); font-size:1.3rem; }
+.pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:2px 9px; margin:2px; font-size:.78rem; color:var(--muted); }
+.ok { color:#86efac; }
+.bad { color:#fca5a5; }
+.warn { color:#fcd34d; }
+.timeline li { margin-bottom:9px; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<h1>AI-Driven Decision Engine Dashboard</h1>
+<p class="sub">TFT + Qwen3 + PPO in one bounded control loop &middot; implementation, evidence and live-use boundary</p>
+
+<div class="cards">
+  <div class="card"><span>Decision engine</span><strong>TFT + Qwen3 + PPO + shield</strong></div>
+  <div class="card"><span>Forecast</span><strong>history 30 / horizon 5</strong></div>
+  <div class="card"><span>Planner</span><strong>stub runtime</strong></div>
+  <div class="card"><span>Controller</span><strong>6 evaluation arms</strong></div>
+  <div class="card"><span>Control interval</span><strong>60 s</strong></div>
+  <div class="card"><span>SLA</span><strong>250 ms P95</strong></div>
+  <div class="card"><span>Execution</span><strong>dry-run / disabled by default</strong></div>
+  <div class="card"><span>Evidence</span><strong>offline + simulated</strong></div>
+</div>
+
+<h2>1. Executive summary</h2>
+<p><strong>There is no single all-powerful AI model in this project.</strong> The decision engine is a set of bounded specialists: TFT predicts near-term workload, Qwen3 proposes a high-level strategy, PPO selects a concrete bounded action, and deterministic validators/shield decide what is actually allowed. The executor only runs an approved, authorized action.</p>
+<table><thead><tr><th>Component</th><th>Question it answers</th><th>How it works</th><th>Contract</th><th>Status</th></tr></thead><tbody><tr><td>TFT workload forecaster</td><td>What workload is likely to arrive next?</td><td>Trained compact Transformer over historical invocation windows</td><td>history 30 &rarr; horizon 5</td><td><span class='ok'>trained / offline tested</span></td></tr><tr><td>Qwen3 planner</td><td>What high-level strategy should be considered?</td><td>Prompted LLM adapter with deterministic stub fallback; no fine-tuning</td><td>StateSnapshot &rarr; strict Plan</td><td><span class='bad'>adapter only / real inference unavailable</span></td></tr><tr><td>PPO controller</td><td>What bounded action should be taken this cycle?</td><td>Actor-critic trained by clipped PPO in the simulator</td><td>float32[10] &rarr; action id 0-5</td><td><span class='warn'>smoke-trained / simulated</span></td></tr></tbody></table>
+<p><span class="pill">TFT = perception/forecast</span><span class="pill">Qwen3 = advisory reasoning</span><span class="pill">PPO = bounded control</span><span class="pill">Shield = final authority</span></p>
+
+<h2>2. Closed-loop architecture</h2>
+<div class="flow"><div class="stage"><b>1. Observe</b><span>Prometheus adapter or simulator metrics: workload, CPU, memory, P95, containers</span><em>Layer 1-3</em></div><div class="arrow">&rarr;</div><div class="stage"><b>2. Forecast</b><span>TFT or persistence predicts the next workload window</span><em>TFT</em></div><div class="arrow">&rarr;</div><div class="stage"><b>3. Plan</b><span>Qwen3/stub converts state into a high-level Plan</span><em>Qwen3</em></div><div class="arrow">&rarr;</div><div class="stage"><b>4. Control</b><span>PPO proposes one of six bounded actions</span><em>PPO</em></div><div class="arrow">&rarr;</div><div class="stage"><b>5. Validate</b><span>Plan validator, safety shield, SLA guard, authorization</span><em>Deterministic</em></div><div class="arrow">&rarr;</div><div class="stage"><b>6. Act</b><span>Simulator or dry-run executor applies the final action</span><em>Layer 10</em></div><div class="arrow">&rarr;</div><div class="stage"><b>7. Learn/Observe</b><span>Feedback, alerts, decision log and outcome feed the next cycle</span><em>Layer 8-11</em></div></div>
+<p>Code path: <code>orchestrator/decision_loop.py:193</code> (<code>DecisionLoop.decide</code>) and <code>orchestrator/decision_loop.py:372</code> (<code>run_episode</code>) wire the full cycle. Every cycle receives a correlation ID and writes a structured decision record.</p>
+
+<h2>3. What each AI component contributes</h2>
+<div class="grid2">
+<div class="card">
+<h3>TFT: workload forecast</h3>
+<ul>
+<li>Trained on chronological Azure Functions invocation windows; no shuffle.</li>
+<li>Input: 30 observed steps with 4 engineered features.</li>
+<li>Output: 5 predicted invocation counts, trend and source/fallback metadata.</li>
+<li>In the loop, <code>_tft_forecast</code> builds the window and scales predictions; missing/stale/model-error inputs fall back to persistence.</li>
+<li>It does not decide capacity and never touches infrastructure.</li>
+</ul>
+</div>
+<div class="card">
+<h3>Qwen3: high-level planner</h3>
+<ul>
+<li>Reads the bounded StateSnapshot and emits a strict JSON Plan.</li>
+<li>Strategies: NoOp, PreWarm, ScaleOut, Reuse, ScaleIn, Terminate.</li>
+<li>Default runtime is deterministic stub; Ollama adapter exists but real Qwen3 was unavailable.</li>
+<li>Plan is advisory and is validated before PPO sees it.</li>
+<li>Invalid, timeout, refusal, or unsafe output becomes stub fallback, then NoOp if still invalid.</li>
+</ul>
+</div>
+<div class="card">
+<h3>PPO: bounded controller</h3>
+<ul>
+<li>Actor-critic policy maps a 10-value observation to one of six action IDs.</li>
+<li>Reward penalizes energy, latency, cold starts, resources, underutilization, and SLA violations most heavily.</li>
+<li>Produces a proposal only; feedback may bias it, but the shield can override it.</li>
+<li>Evidence checkpoint is smoke-trained for 3 episodes/seed, not a converged production policy.</li>
+</ul>
+</div>
+<div class="card">
+<h3>Deterministic guardrails</h3>
+<ul>
+<li><code>PlanValidator</code>: schema, allowlist, direction, bounds and rate limits.</li>
+<li><code>ActionValidator</code>: legal/authorized/plan-consistent action.</li>
+<li><code>SLAGuard</code>: blocks risky scale-in/terminate near the SLA.</li>
+<li><code>SafetyShield</code>: combines validator + guard and has final authority.</li>
+<li><code>Executor</code>: disabled by default; no AI component can call it directly.</li>
+</ul>
+</div>
+</div>
+
+<h2>4. How the components hand off data</h2>
+<table><thead><tr><th>Handoff</th><th>Input</th><th>Output</th><th>Consumer</th><th>Guard / boundary</th></tr></thead><tbody><tr><td>Forecast &rarr; state</td><td>forecast dict + runtime metrics</td><td>StateSnapshot</td><td>DecisionLoop.decide</td><td>build_state validates/bounds fields</td></tr><tr><td>State &rarr; planner</td><td>StateSnapshot + untrusted metadata</td><td>Plan</td><td>DecisionLoop._safe_plan</td><td>PlanValidator + stub/NoOp fallback</td></tr><tr><td>State &rarr; PPO</td><td>normalized obs float32[10]</td><td>action id</td><td>DecisionLoop._select_action</td><td>policy.greedy_action or callable</td></tr><tr><td>Plan + PPO &rarr; shield</td><td>action, plan, authorized, P95</td><td>final bounded action</td><td>SafetyShield.filter</td><td>ActionValidator + SLAGuard</td></tr><tr><td>Final action &rarr; environment/executor</td><td>action id + state + plan</td><td>step outcome or dry-run result</td><td>ServerlessEnv.step / Executor</td><td>execution.enabled=false by default</td></tr><tr><td>Outcome &rarr; monitoring</td><td>reward, SLA, energy proxy, cold starts</td><td>feedback/alerts/audit records</td><td>FeedbackLoop + AlertManager + DecisionLogger</td><td>append-only telemetry</td></tr></tbody></table>
+<h3>TFT output example</h3>
+<pre class="code-small">{
+  &quot;forecast_horizon&quot;: 5,
+  &quot;predicted_workload&quot;: [
+    520.0,
+    548.0,
+    571.0,
+    559.0,
+    603.0
+  ],
+  &quot;trend&quot;: &quot;increasing&quot;,
+  &quot;source&quot;: &quot;tft&quot;,
+  &quot;fallback&quot;: false,
+  &quot;fallback_reason&quot;: null
+}</pre>
+<h3>Qwen3/Planner output example</h3>
+<pre class="code-small">{
+  &quot;strategy&quot;: &quot;ScaleOut&quot;,
+  &quot;desired_capacity_change&quot;: 3,
+  &quot;priority&quot;: &quot;sla&quot;,
+  &quot;urgency&quot;: &quot;high&quot;,
+  &quot;reason&quot;: &quot;P95 is near SLA during forecast burst&quot;,
+  &quot;constraints_respected&quot;: true
+}</pre>
+<h3>Final hierarchy record example</h3>
+<pre class="code-small">{
+  &quot;forecast_source&quot;: &quot;tft&quot;,
+  &quot;planner_role&quot;: &quot;advisory&quot;,
+  &quot;controller_role&quot;: &quot;proposal&quot;,
+  &quot;shield_role&quot;: &quot;final_authority&quot;,
+  &quot;planner_strategy&quot;: &quot;ScaleOut&quot;,
+  &quot;proposed_action&quot;: 2,
+  &quot;biased_action&quot;: 2,
+  &quot;final_action&quot;: 2,
+  &quot;final_action_name&quot;: &quot;ScaleOut&quot;,
+  &quot;guard_code&quot;: &quot;ok&quot;,
+  &quot;action_code&quot;: &quot;ok&quot;,
+  &quot;used_fallback&quot;: false,
+  &quot;authorized&quot;: true
+}</pre>
+
+<h2>5. One decision cycle, step by step</h2>
+<ol class="timeline">
+<li>run_episode chooses a forecast: TFT checkpoint when available, otherwise persistence fallback.</li><li>The simulator exposes runtime metrics and a normalized observation vector.</li><li>build_state merges forecast + metrics into a strict StateSnapshot with forecast source metadata.</li><li>_safe_plan calls the planner, falls back to stub, then to NoOp if validation still fails.</li><li>The planner call record is captured with provider, model, prompt version, status and latency.</li><li>_select_action asks PPO for a greedy action id; no policy means NoOp.</li><li>_apply_feedback_bias may soften a risky action under caution, but never bypasses validation.</li><li>SafetyShield.filter applies ActionValidator and SLAGuard; final action can become NoOp.</li><li>Executor is optional and disabled by default; simulator step applies the final action.</li><li>Outcome, decision, execution audit, alerts and feedback are logged for the next cycle.</li>
+</ol>
+<p><strong>Hierarchy recorded by the code:</strong> planner is <code>advisory</code>, controller is <code>proposal</code>, shield is <code>final_authority</code>. This is the key design decision that keeps the AI components from directly controlling infrastructure.</p>
+
+<h2>6. Learning and adaptation status</h2>
+<table><thead><tr><th>Component</th><th>Learned weights?</th><th>Evidence source</th><th>Training / setup</th><th>Adaptation in runtime</th></tr></thead><tbody><tr><td>TFT</td><td>Yes</td><td>Azure Functions 2019 invocation windows</td><td>8 epochs, chronological split, seed 42</td><td>No online training in the loop</td></tr><tr><td>Qwen3</td><td>No</td><td>External model; no weights stored here</td><td>Prompt version planner-v2; safety tests only</td><td>Fallback to stub on timeout/refusal/invalid JSON</td></tr><tr><td>PPO</td><td>Yes (smoke)</td><td>Synthetic scenarios + scaled Azure trace segment</td><td>3 episodes/seed; 3 seeds</td><td>Feedback only biases the decision; it does not retrain the policy</td></tr></tbody></table>
+<p class="note"><strong>Feedback is not online training.</strong> <code>FeedbackLoop.signal()</code> produces a caution signal used by <code>_apply_feedback_bias</code>; it may change a proposal from ScaleIn/Terminate to PreWarm/ScaleOut, but it does not update TFT, Qwen3, or PPO weights during the loop.</p>
+
+<h2>7. Safety and governance</h2>
+<table><thead><tr><th>Boundary</th><th>Rule</th><th>Implementation</th></tr></thead><tbody><tr><td>Planner output</td><td>Strict Pydantic Plan, extra fields forbidden, allowlisted strategies, bounded capacity change</td><td>agent/schemas.py, agent/validator.py</td></tr><tr><td>Qwen3 prompt</td><td>No shell/Kubernetes commands, metadata labelled untrusted, secret-like keys redacted</td><td>agent/prompts/planner.txt, agent/prompts/__init__.py</td></tr><tr><td>PPO output</td><td>Integer action id mapped to six fixed actions; no direct command capability</td><td>rl/environment.py, rl/policy.py</td></tr><tr><td>SLA guard</td><td>Blocks ScaleIn/Terminate when P95 &ge; 230 ms</td><td>orchestrator/sla_guard.py</td></tr><tr><td>Capacity bounds</td><td>min 2, max 30, change &le; 5 per cycle</td><td>configs/project.yaml, validators</td></tr><tr><td>Execution gate</td><td>enabled=False, dry_run=True, allow_live=False</td><td>orchestrator/executor.py</td></tr><tr><td>Audit</td><td>Correlation ID links forecast, plan, PPO action, final action, execution and outcome</td><td>orchestrator/decision_log.py</td></tr></tbody></table>
+<p>No component can emit arbitrary shell/Kubernetes commands. Planner metadata is treated as untrusted, telemetry is redacted, and execution remains gated by config plus authorization.</p>
+
+<h2>8. Evidence: component results</h2>
+<h3>8.1 TFT forecast accuracy (offline test set)</h3>
+<table><thead><tr><th>Model</th><th>Trained?</th><th>WAPE</th><th>MAPE</th><th>RMSE</th><th>Peak underprediction</th></tr></thead><tbody><tr><td>TFT (trained)</td><td>Yes</td><td>3.4092</td><td>3.3471</td><td>30540.0619</td><td>96.79%</td></tr><tr><td>Persistence</td><td>No</td><td>4.1214</td><td>4.0492</td><td>37505.4707</td><td>83.68%</td></tr><tr><td>Seasonal persistence</td><td>No</td><td>7.4763</td><td>7.4416</td><td>62602.0516</td><td>84.15%</td></tr><tr><td>Moving average</td><td>No</td><td>3.8496</td><td>3.7792</td><td>34507.8907</td><td>93.24%</td></tr></tbody></table>
+<p>TFT is the trained forecaster; the other rows are deterministic baselines on the same chronological test rows. Azure supplies invocation counts only; latency/energy are simulated elsewhere.</p>
+
+<h3>8.2 Qwen3 planner harness</h3>
+<table><thead><tr><th>Metric</th><th>Stub runtime</th><th>Ollama runtime</th></tr></thead><tbody><tr><td>Validity rate</td><td>100.00%</td><td>100.00%</td></tr><tr><td>Fallback rate</td><td>0.00%</td><td>100.00%</td></tr><tr><td>Mean latency</td><td>0.01 ms</td><td>4,043.89 ms</td></tr><tr><td>Strategies</td><td>NoOp, PreWarm, ScaleIn, ScaleOut</td><td>NoOp, PreWarm, ScaleIn, ScaleOut</td></tr><tr><td>Final actions</td><td>NoOp</td><td>NoOp</td></tr></tbody></table>
+<p class="bad">The Ollama rows are fallback behavior: real Qwen3 inference was unavailable. Do not interpret them as Qwen3 planning quality.</p>
+
+<h3>8.3 PPO controller evaluation (simulation)</h3>
+<table><thead><tr><th>Arm</th><th>Reward</th><th>SLA violation</th><th>Energy proxy</th><th>Capacity</th><th>Cold starts</th></tr></thead><tbody><tr><td>fixed_noop</td><td>-1.1564</td><td>25.56%</td><td>35.0000</td><td>2.0000</td><td>0.0000</td></tr><tr><td>persistence_rule</td><td>-1.5315</td><td>4.44%</td><td>227.8333</td><td>14.8556</td><td>1.2778</td></tr><tr><td>ppo_shielded</td><td>-1.1564</td><td>25.56%</td><td>35.0000</td><td>2.0000</td><td>0.0000</td></tr><tr><td>reactive</td><td>-1.7725</td><td>5.56%</td><td>222.5000</td><td>14.5000</td><td>2.1667</td></tr><tr><td>trace_persistence_rule</td><td>-0.6384</td><td>0.00%</td><td>35.0000</td><td>2.0000</td><td>0.0000</td></tr><tr><td>trace_tft_rule</td><td>-0.6384</td><td>0.00%</td><td>35.0000</td><td>2.0000</td><td>0.0000</td></tr></tbody></table>
+<p class="warn">The PPO arm is NoOp-like after the smoke training run. Rule/reactive arms reduce simulated SLA violations by using more capacity and energy.</p>
+
+<h3>8.4 Consolidated E0-E7 ablation smoke</h3>
+<table><thead><tr><th>ID</th><th>Forecast</th><th>Planner</th><th>Controller</th><th>Reward</th><th>SLA</th><th>Energy</th><th>Status</th></tr></thead><tbody><tr><td>E0</td><td>none</td><td>rules</td><td>rules</td><td>-1.7786</td><td>0.00%</td><td>166.2500</td><td><span class="ok">ok</span></td></tr><tr><td>E1</td><td>persistence</td><td>rules</td><td>rules</td><td>-1.7786</td><td>0.00%</td><td>166.2500</td><td><span class="ok">ok</span></td></tr><tr><td>E2</td><td>tft</td><td>rules</td><td>rules</td><td>-1.7786</td><td>0.00%</td><td>166.2500</td><td><span class="bad">degraded tft fallback</span></td></tr><tr><td>E3</td><td>tft</td><td>qwen3_stub</td><td>rules</td><td>-1.7786</td><td>0.00%</td><td>166.2500</td><td><span class="bad">degraded tft fallback,stub proxy</span></td></tr><tr><td>E4</td><td>persistence</td><td>rules</td><td>ppo</td><td>-1.3351</td><td>50.00%</td><td>35.0000</td><td><span class="ok">ok</span></td></tr><tr><td>E5</td><td>tft</td><td>rules</td><td>ppo</td><td>-1.3351</td><td>50.00%</td><td>35.0000</td><td><span class="bad">degraded tft fallback</span></td></tr><tr><td>E6</td><td>tft</td><td>qwen3_stub</td><td>ppo</td><td>-1.3351</td><td>50.00%</td><td>35.0000</td><td><span class="bad">degraded tft fallback,stub proxy</span></td></tr><tr><td>E7</td><td>selected</td><td>selected</td><td>selected</td><td>n/a</td><td>n/a</td><td>n/a</td><td><span class="bad">not run requires live cluster</span></td></tr></tbody></table>
+<p>M8 smoke used one seed, four steps, mixed workload and <code>--no-tft</code>. E2/E3/E5/E6 are degraded TFT fallbacks; E3/E6 are stub proxies; E7 is deferred until a live cluster exists.</p>
+
+<h2>9. Generated evidence plots</h2>
+<div class="gallery"><figure><img src="../results/forecast/azure2019_total/plots/actual_vs_predicted.png" alt="TFT: actual vs predicted"><figcaption>TFT: actual vs predicted</figcaption></figure><figure><img src="../results/forecast/azure2019_total/plots/horizons_side_by_side.png" alt="TFT: horizon-by-horizon forecasts"><figcaption>TFT: horizon-by-horizon forecasts</figcaption></figure><figure><img src="../results/ppo/m5/plots/learning_curve.png" alt="PPO: smoke training curve"><figcaption>PPO: smoke training curve</figcaption></figure><figure><img src="../results/ppo/m5/plots/action_frequencies.png" alt="PPO: action frequencies"><figcaption>PPO: action frequencies</figcaption></figure><figure><img src="../results/evaluation/m8/figures/mean_reward_by_experiment.png" alt="M8: reward by ablation arm"><figcaption>M8: reward by ablation arm</figcaption></figure><figure><img src="../results/evaluation/m8/figures/sla_violation_rate_by_experiment.png" alt="M8: SLA violation by ablation arm"><figcaption>M8: SLA violation by ablation arm</figcaption></figure></div>
+
+<h2>10. Illustrative burst walkthrough</h2>
+<p class="note">Illustrative values only — this is an explanation of the data path, not a measured experiment result.</p>
+<div class="flow"><div class="stage"><b>1. Forecast</b><span>P95 near SLA; predicted workload rises from 760 to 1040 over 5 steps</span><em>TFT or persistence</em></div><div class="arrow">&rarr;</div><div class="stage"><b>2. State</b><span>forecast_peak=1040, current=760, p95=238 ms, containers=12</span><em>StateSnapshot</em></div><div class="arrow">&rarr;</div><div class="stage"><b>3. Plan</b><span>ScaleOut +3, priority=sla, urgency=high</span><em>Qwen3/stub proposal</em></div><div class="arrow">&rarr;</div><div class="stage"><b>4. PPO</b><span>greedy_action(obs) = 2</span><em>ScaleOut proposal</em></div><div class="arrow">&rarr;</div><div class="stage"><b>5. Shield</b><span>ScaleOut allowed; SLA guard only blocks risky scale-down</span><em>final action = ScaleOut</em></div><div class="arrow">&rarr;</div><div class="stage"><b>6. Outcome</b><span>Simulator applies action; reward/SLA/energy/cold starts are logged</span><em>next cycle feedback</em></div></div>
+
+<h2>11. What is implemented vs not validated</h2>
+<table><thead><tr><th>Implemented and tested</th><th>Not validated / deferred</th></tr></thead><tbody><tr><td>Data pipeline, chronological splits and Azure trace preprocessing</td><td>Live Prometheus scrape backed by deployed functions</td></tr><tr><td>TFT training/evaluation and forecast service with fallback</td><td>Live Grafana decisions from real system metrics</td></tr><tr><td>Qwen3 adapter, stub, fallback, prompt bounding and telemetry</td><td>Real Qwen3 model quality or latency</td></tr><tr><td>PPO environment, reward, training path, checkpoint and shield</td><td>Long multi-seed PPO convergence result</td></tr><tr><td>Decision loop, validators, audit, feedback and alerts</td><td>Live Kubernetes/OpenFaaS/Docker execution</td></tr><tr><td>M0-M9 simulated/dry-run integration</td><td>E7 live evaluation and measured energy/cold starts</td></tr></tbody></table>
+
+<h2>12. Reproduce the whole path</h2>
+<pre>py -m scripts.evaluate_forecast --data-source azure_functions_2019 --out-dir results/forecast/azure2019_total --run-id azure2019_total_h30_h5 --epochs 8
+py -m scripts.evaluate_planner --runtime stub --out-dir results/planner/stub
+py -m experiments.evaluate_ppo_m5 --out-dir results/ppo/m5
+py -m orchestrator.decision_loop --steps 8 --policy checkpoint --use-tft
+py -m experiments.evaluate_m8 --out-dir results/evaluation/m8 --seeds 42 --steps 4 --scenarios mixed
+py -m scripts.generate_decision_engine_dashboard</pre>
+<p>Related detailed dashboards: <a href="forecasting-dashboard.html">TFT forecast dashboard</a>, <a href="agentic-planning-dashboard.html">Qwen3 planner dashboard</a>, <a href="ppo-controller-dashboard.html">PPO controller dashboard</a>.</p>
+
+<div class="footer">Generated from tracked code and saved experiment artifacts. All runtime diagrams describe contracts, not validated live deployments.</div>
+</div>
+</body>
+</html>

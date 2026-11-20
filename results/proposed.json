@@ -1,0 +1,518 @@
+{
+  "summary": {
+    "mode": "simulation",
+    "steps": 3,
+    "forecast_sources": [
+      "oracle"
+    ],
+    "planner_runtime": "stub",
+    "records_tail": [
+      {
+        "decision": {
+          "state": {
+            "forecast_workload": 1126.0,
+            "forecast_peak": 1166.0,
+            "current_workload": 1181.0,
+            "trend": "increasing",
+            "cpu_utilization": 0.5536445012595067,
+            "memory_utilization": 0.5196025086015509,
+            "active_containers": 2,
+            "warm_containers": 0,
+            "p95_latency_ms": 276.8479883670807,
+            "cold_start_rate": 0.0,
+            "energy": 35.000001303851604,
+            "sla_threshold_ms": 250.0,
+            "sla_margin_ms": -26.84798836708069,
+            "forecast_horizon": 5,
+            "metadata": {}
+          },
+          "plan": {
+            "strategy": "ScaleOut",
+            "desired_capacity_change": 5,
+            "priority": "sla",
+            "urgency": "high",
+            "reason": "P95 is at/near the SLA threshold and demand is not falling",
+            "constraints_respected": true
+          },
+          "plan_valid": true,
+          "plan_code": "ok",
+          "plan_reason": "ScaleOut accepted",
+          "ppo_action": 1,
+          "ppo_action_name": "PreWarm",
+          "final_action": 1,
+          "final_action_name": "PreWarm",
+          "guard_code": "ok",
+          "action_code": "ok",
+          "used_fallback": false,
+          "authorized": true,
+          "feedback_applied": false,
+          "feedback": {
+            "caution": 0.0,
+            "violation_rate": 0.0,
+            "p95_trend": 0.0
+          }
+        },
+        "reward": -1.5911111111111114,
+        "info": {
+          "action": "PreWarm",
+          "capacity": 2,
+          "warm_containers": 5,
+          "required_capacity": 24,
+          "required_capacity_raw": 24,
+          "workload": 1181.0,
+          "latency": 216.0,
+          "p95_latency": 280.8,
+          "energy": 35.0,
+          "cold_starts": 0,
+          "sla_violated": true,
+          "reward_components": {
+            "reward": -1.5911111111111114,
+            "energy": 0.07777777777777778,
+            "latency": 0.864,
+            "cold_start": 0.0,
+            "resource": 0.06666666666666667,
+            "underutil": 0.0,
+            "sla_violation": 0.12320000000000005,
+            "weighted_cost": 0.9751111111111112,
+            "sla_penalty": 0.6160000000000002
+          },
+          "obs_names": [
+            "predicted_workload",
+            "current_workload",
+            "cpu",
+            "memory",
+            "latency",
+            "p95_latency",
+            "active_containers",
+            "cold_starts",
+            "energy",
+            "sla_margin"
+          ]
+        },
+        "forecast_source": "oracle"
+      },
+      {
+        "decision": {
+          "state": {
+            "forecast_workload": 1166.0,
+            "forecast_peak": 1166.0,
+            "current_workload": 1126.0,
+            "trend": "decreasing",
+            "cpu_utilization": 0.546622984567632,
+            "memory_utilization": 0.4664234005861611,
+            "active_containers": 2,
+            "warm_containers": 5,
+            "p95_latency_ms": 265.4080092906952,
+            "cold_start_rate": 0.0,
+            "energy": 35.000001303851604,
+            "sla_threshold_ms": 250.0,
+            "sla_margin_ms": -15.40800929069519,
+            "forecast_horizon": 5,
+            "metadata": {}
+          },
+          "plan": {
+            "strategy": "ScaleOut",
+            "desired_capacity_change": 5,
+            "priority": "sla",
+            "urgency": "high",
+            "reason": "P95 is at/near the SLA threshold and demand is not falling",
+            "constraints_respected": true
+          },
+          "plan_valid": true,
+          "plan_code": "ok",
+          "plan_reason": "ScaleOut accepted",
+          "ppo_action": 1,
+          "ppo_action_name": "PreWarm",
+          "final_action": 1,
+          "final_action_name": "PreWarm",
+          "guard_code": "ok",
+          "action_code": "ok",
+          "used_fallback": false,
+          "authorized": true,
+          "feedback_applied": false,
+          "feedback": {
+            "caution": 0.0,
+            "violation_rate": 0.0,
+            "p95_trend": 0.0
+          }
+        },
+        "reward": -1.3511111111111118,
+        "info": {
+          "action": "PreWarm",
+          "capacity": 2,
+          "warm_containers": 10,
+          "required_capacity": 23,
+          "required_capacity_raw": 23,
+          "workload": 1126.0,
+          "latency": 208.0,
+          "p95_latency": 270.40000000000003,
+          "energy": 35.0,
+          "cold_starts": 0,
+          "sla_violated": true,
+          "reward_components": {
+            "reward": -1.3511111111111118,
+            "energy": 0.07777777777777778,
+            "latency": 0.832,
+            "cold_start": 0.0,
+            "resource": 0.06666666666666667,
+            "underutil": 0.0,
+            "sla_violation": 0.08160000000000013,
+            "weighted_cost": 0.9431111111111111,
+            "sla_penalty": 0.40800000000000064
+          },
+          "obs_names": [
+            "predicted_workload",
+            "current_workload",
+            "cpu",
+            "memory",
+            "latency",
+            "p95_latency",
+            "active_containers",
+            "cold_starts",
+            "energy",
+            "sla_margin"
+          ]
+        },
+        "forecast_source": "oracle"
+      },
+      {
+        "decision": {
+          "state": {
+            "forecast_workload": 1161.0,
+            "forecast_peak": 1161.0,
+            "current_workload": 1166.0,
+            "trend": "decreasing",
+            "cpu_utilization": 0.5702642903028851,
+            "memory_utilization": 0.5294354827096551,
+            "active_containers": 2,
+            "warm_containers": 10,
+            "p95_latency_ms": 273.72801303863525,
+            "cold_start_rate": 0.0,
+            "energy": 35.000001303851604,
+            "sla_threshold_ms": 250.0,
+            "sla_margin_ms": -23.728013038635254,
+            "forecast_horizon": 5,
+            "metadata": {}
+          },
+          "plan": {
+            "strategy": "PreWarm",
+            "desired_capacity_change": 0,
+            "priority": "sla",
+            "urgency": "high",
+            "reason": "P95 is at/near the SLA threshold; warm capacity without scaling",
+            "constraints_respected": true
+          },
+          "plan_valid": true,
+          "plan_code": "ok",
+          "plan_reason": "PreWarm accepted",
+          "ppo_action": 1,
+          "ppo_action_name": "PreWarm",
+          "final_action": 1,
+          "final_action_name": "PreWarm",
+          "guard_code": "ok",
+          "action_code": "ok",
+          "used_fallback": false,
+          "authorized": true,
+          "feedback_applied": false,
+          "feedback": {
+            "caution": 0.0,
+            "violation_rate": 0.0,
+            "p95_trend": 0.0
+          }
+        },
+        "reward": -1.5911111111111114,
+        "info": {
+          "action": "PreWarm",
+          "capacity": 2,
+          "warm_containers": 15,
+          "required_capacity": 24,
+          "required_capacity_raw": 24,
+          "workload": 1166.0,
+          "latency": 216.0,
+          "p95_latency": 280.8,
+          "energy": 35.0,
+          "cold_starts": 0,
+          "sla_violated": true,
+          "reward_components": {
+            "reward": -1.5911111111111114,
+            "energy": 0.07777777777777778,
+            "latency": 0.864,
+            "cold_start": 0.0,
+            "resource": 0.06666666666666667,
+            "underutil": 0.0,
+            "sla_violation": 0.12320000000000005,
+            "weighted_cost": 0.9751111111111112,
+            "sla_penalty": 0.6160000000000002
+          },
+          "obs_names": [
+            "predicted_workload",
+            "current_workload",
+            "cpu",
+            "memory",
+            "latency",
+            "p95_latency",
+            "active_containers",
+            "cold_starts",
+            "energy",
+            "sla_margin"
+          ]
+        },
+        "forecast_source": "oracle"
+      }
+    ]
+  },
+  "records": [
+    {
+      "decision": {
+        "state": {
+          "forecast_workload": 1126.0,
+          "forecast_peak": 1166.0,
+          "current_workload": 1181.0,
+          "trend": "increasing",
+          "cpu_utilization": 0.5536445012595067,
+          "memory_utilization": 0.5196025086015509,
+          "active_containers": 2,
+          "warm_containers": 0,
+          "p95_latency_ms": 276.8479883670807,
+          "cold_start_rate": 0.0,
+          "energy": 35.000001303851604,
+          "sla_threshold_ms": 250.0,
+          "sla_margin_ms": -26.84798836708069,
+          "forecast_horizon": 5,
+          "metadata": {}
+        },
+        "plan": {
+          "strategy": "ScaleOut",
+          "desired_capacity_change": 5,
+          "priority": "sla",
+          "urgency": "high",
+          "reason": "P95 is at/near the SLA threshold and demand is not falling",
+          "constraints_respected": true
+        },
+        "plan_valid": true,
+        "plan_code": "ok",
+        "plan_reason": "ScaleOut accepted",
+        "ppo_action": 1,
+        "ppo_action_name": "PreWarm",
+        "final_action": 1,
+        "final_action_name": "PreWarm",
+        "guard_code": "ok",
+        "action_code": "ok",
+        "used_fallback": false,
+        "authorized": true,
+        "feedback_applied": false,
+        "feedback": {
+          "caution": 0.0,
+          "violation_rate": 0.0,
+          "p95_trend": 0.0
+        }
+      },
+      "reward": -1.5911111111111114,
+      "info": {
+        "action": "PreWarm",
+        "capacity": 2,
+        "warm_containers": 5,
+        "required_capacity": 24,
+        "required_capacity_raw": 24,
+        "workload": 1181.0,
+        "latency": 216.0,
+        "p95_latency": 280.8,
+        "energy": 35.0,
+        "cold_starts": 0,
+        "sla_violated": true,
+        "reward_components": {
+          "reward": -1.5911111111111114,
+          "energy": 0.07777777777777778,
+          "latency": 0.864,
+          "cold_start": 0.0,
+          "resource": 0.06666666666666667,
+          "underutil": 0.0,
+          "sla_violation": 0.12320000000000005,
+          "weighted_cost": 0.9751111111111112,
+          "sla_penalty": 0.6160000000000002
+        },
+        "obs_names": [
+          "predicted_workload",
+          "current_workload",
+          "cpu",
+          "memory",
+          "latency",
+          "p95_latency",
+          "active_containers",
+          "cold_starts",
+          "energy",
+          "sla_margin"
+        ]
+      },
+      "forecast_source": "oracle"
+    },
+    {
+      "decision": {
+        "state": {
+          "forecast_workload": 1166.0,
+          "forecast_peak": 1166.0,
+          "current_workload": 1126.0,
+          "trend": "decreasing",
+          "cpu_utilization": 0.546622984567632,
+          "memory_utilization": 0.4664234005861611,
+          "active_containers": 2,
+          "warm_containers": 5,
+          "p95_latency_ms": 265.4080092906952,
+          "cold_start_rate": 0.0,
+          "energy": 35.000001303851604,
+          "sla_threshold_ms": 250.0,
+          "sla_margin_ms": -15.40800929069519,
+          "forecast_horizon": 5,
+          "metadata": {}
+        },
+        "plan": {
+          "strategy": "ScaleOut",
+          "desired_capacity_change": 5,
+          "priority": "sla",
+          "urgency": "high",
+          "reason": "P95 is at/near the SLA threshold and demand is not falling",
+          "constraints_respected": true
+        },
+        "plan_valid": true,
+        "plan_code": "ok",
+        "plan_reason": "ScaleOut accepted",
+        "ppo_action": 1,
+        "ppo_action_name": "PreWarm",
+        "final_action": 1,
+        "final_action_name": "PreWarm",
+        "guard_code": "ok",
+        "action_code": "ok",
+        "used_fallback": false,
+        "authorized": true,
+        "feedback_applied": false,
+        "feedback": {
+          "caution": 0.0,
+          "violation_rate": 0.0,
+          "p95_trend": 0.0
+        }
+      },
+      "reward": -1.3511111111111118,
+      "info": {
+        "action": "PreWarm",
+        "capacity": 2,
+        "warm_containers": 10,
+        "required_capacity": 23,
+        "required_capacity_raw": 23,
+        "workload": 1126.0,
+        "latency": 208.0,
+        "p95_latency": 270.40000000000003,
+        "energy": 35.0,
+        "cold_starts": 0,
+        "sla_violated": true,
+        "reward_components": {
+          "reward": -1.3511111111111118,
+          "energy": 0.07777777777777778,
+          "latency": 0.832,
+          "cold_start": 0.0,
+          "resource": 0.06666666666666667,
+          "underutil": 0.0,
+          "sla_violation": 0.08160000000000013,
+          "weighted_cost": 0.9431111111111111,
+          "sla_penalty": 0.40800000000000064
+        },
+        "obs_names": [
+          "predicted_workload",
+          "current_workload",
+          "cpu",
+          "memory",
+          "latency",
+          "p95_latency",
+          "active_containers",
+          "cold_starts",
+          "energy",
+          "sla_margin"
+        ]
+      },
+      "forecast_source": "oracle"
+    },
+    {
+      "decision": {
+        "state": {
+          "forecast_workload": 1161.0,
+          "forecast_peak": 1161.0,
+          "current_workload": 1166.0,
+          "trend": "decreasing",
+          "cpu_utilization": 0.5702642903028851,
+          "memory_utilization": 0.5294354827096551,
+          "active_containers": 2,
+          "warm_containers": 10,
+          "p95_latency_ms": 273.72801303863525,
+          "cold_start_rate": 0.0,
+          "energy": 35.000001303851604,
+          "sla_threshold_ms": 250.0,
+          "sla_margin_ms": -23.728013038635254,
+          "forecast_horizon": 5,
+          "metadata": {}
+        },
+        "plan": {
+          "strategy": "PreWarm",
+          "desired_capacity_change": 0,
+          "priority": "sla",
+          "urgency": "high",
+          "reason": "P95 is at/near the SLA threshold; warm capacity without scaling",
+          "constraints_respected": true
+        },
+        "plan_valid": true,
+        "plan_code": "ok",
+        "plan_reason": "PreWarm accepted",
+        "ppo_action": 1,
+        "ppo_action_name": "PreWarm",
+        "final_action": 1,
+        "final_action_name": "PreWarm",
+        "guard_code": "ok",
+        "action_code": "ok",
+        "used_fallback": false,
+        "authorized": true,
+        "feedback_applied": false,
+        "feedback": {
+          "caution": 0.0,
+          "violation_rate": 0.0,
+          "p95_trend": 0.0
+        }
+      },
+      "reward": -1.5911111111111114,
+      "info": {
+        "action": "PreWarm",
+        "capacity": 2,
+        "warm_containers": 15,
+        "required_capacity": 24,
+        "required_capacity_raw": 24,
+        "workload": 1166.0,
+        "latency": 216.0,
+        "p95_latency": 280.8,
+        "energy": 35.0,
+        "cold_starts": 0,
+        "sla_violated": true,
+        "reward_components": {
+          "reward": -1.5911111111111114,
+          "energy": 0.07777777777777778,
+          "latency": 0.864,
+          "cold_start": 0.0,
+          "resource": 0.06666666666666667,
+          "underutil": 0.0,
+          "sla_violation": 0.12320000000000005,
+          "weighted_cost": 0.9751111111111112,
+          "sla_penalty": 0.6160000000000002
+        },
+        "obs_names": [
+          "predicted_workload",
+          "current_workload",
+          "cpu",
+          "memory",
+          "latency",
+          "p95_latency",
+          "active_containers",
+          "cold_starts",
+          "energy",
+          "sla_margin"
+        ]
+      },
+      "forecast_source": "oracle"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: control-loop-exporter
+  namespace: monitoring
+  labels:
+    app: control-loop-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: control-loop-exporter
+  template:
+    metadata:
+      labels:
+        app: control-loop-exporter
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8000"
+    spec:
+      containers:
+        - name: exporter
+          image: control-loop-exporter:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: control-loop-exporter
+  namespace: monitoring
+  labels:
+    app: control-loop-exporter
+spec:
+  type: NodePort
+  selector:
+    app: control-loop-exporter
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      nodePort: 30080
+      protocol: TCP

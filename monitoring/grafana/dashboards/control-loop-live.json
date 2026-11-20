@@ -1,0 +1,151 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "reqps", "color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "values": false}},
+      "title": "Fn invocations / min",
+      "type": "stat",
+      "targets": [{"expr": "sum(rate(fn_invocations_total{function_name=\"fn-checkout\"}[1m])) * 60", "refId": "A"}]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "ms", "color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 18, "x": 6, "y": 0},
+      "id": 2,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "title": "P95 latency vs SLA (250 ms)",
+      "type": "timeseries",
+      "targets": [
+        {"expr": "histogram_quantile(0.95, sum by (le) (rate(fn_request_duration_ms_bucket{function_name=\"fn-checkout\"}[5m])))", "legendFormat": "p95_ms", "refId": "A"},
+        {"expr": "histogram_quantile(0.50, sum by (le) (rate(fn_request_duration_ms_bucket{function_name=\"fn-checkout\"}[5m])))", "legendFormat": "p50_ms", "refId": "B"},
+        {"expr": "vector(250)", "legendFormat": "SLA", "refId": "C"}
+      ]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "id": 3,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "title": "Capacity and warm pool",
+      "type": "timeseries",
+      "targets": [
+        {"expr": "sum(kube_deployment_status_replicas{namespace=\"openfaas-fn\",deployment=\"fn-checkout\"})", "legendFormat": "active_replicas", "refId": "A"},
+        {"expr": "sum(kube_deployment_status_replicas{namespace=\"serverless-mgmt\",deployment=\"fn-checkout-warm\"})", "legendFormat": "warm_replicas", "refId": "B"},
+        {"expr": "sum(fn_warm_replicas{function_name=\"fn-checkout\"})", "legendFormat": "fn_warm_replicas", "refId": "C"}
+      ]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "id": 4,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "title": "Cold starts and errors",
+      "type": "timeseries",
+      "targets": [
+        {"expr": "sum(increase(fn_cold_starts_total{function_name=\"fn-checkout\"}[5m]))", "legendFormat": "cold_starts_5m", "refId": "A"},
+        {"expr": "sum(rate(fn_invocations_total{function_name=\"fn-checkout\",code!=\"200\"}[5m])) * 60", "legendFormat": "errors_per_min", "refId": "B"},
+        {"expr": "sum(rate(fn_invocations_total{function_name=\"fn-checkout\",code=\"500\"}[5m])) * 60", "legendFormat": "worker_500_per_min", "refId": "C"}
+      ]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "id": 5,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "title": "OpenFaaS CPU and memory",
+      "type": "timeseries",
+      "targets": [
+        {"expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"openfaas-fn\",pod=~\"fn-checkout-.*\"}[5m]))", "legendFormat": "cpu_cores", "refId": "A"},
+        {"expr": "sum(container_memory_working_set_bytes{namespace=\"openfaas-fn\",pod=~\"fn-checkout-.*\"}) / 1024 / 1024", "legendFormat": "memory_mib", "refId": "B"}
+      ]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "watt", "color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "id": 6,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "title": "Energy proxy",
+      "type": "timeseries",
+      "targets": [{"expr": "sum(fn_energy_w{function_name=\"fn-checkout\"})", "legendFormat": "energy_w", "refId": "A"}]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+      "id": 7,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "title": "Selected PPO actions",
+      "type": "timeseries",
+      "targets": [{"expr": "sum by (action) (rate(action_selected_total[1m])) * 60", "legendFormat": "{{action}}", "refId": "A"}]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+      "id": 8,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "title": "Safety interventions and SLA violations",
+      "type": "timeseries",
+      "targets": [
+        {"expr": "sum(increase(guard_interventions_total[5m]))", "legendFormat": "guard_interventions_5m", "refId": "A"},
+        {"expr": "sum(increase(sla_violations_total[5m]))", "legendFormat": "sla_violations_5m", "refId": "B"},
+        {"expr": "sum(increase(planner_fallback_total[5m]))", "legendFormat": "planner_fallback_5m", "refId": "C"}
+      ]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "percentunit", "color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32},
+      "id": 9,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "title": "Forecast error",
+      "type": "timeseries",
+      "targets": [{"expr": "forecast_error", "legendFormat": "forecast_error", "refId": "A"}]
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "ms", "color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32},
+      "id": 10,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "title": "Planner latency",
+      "type": "timeseries",
+      "targets": [{"expr": "planner_latency_ms", "legendFormat": "planner_latency_ms", "refId": "A"}]
+    }
+  ],
+  "refresh": "15s",
+  "schemaVersion": 39,
+  "tags": ["phase-g", "phase-h", "live"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "label": "Prometheus",
+        "name": "DS_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+      }
+    ]
+  },
+  "time": {"from": "now-15m", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Predictive Serverless - Live Control Loop",
+  "uid": "control-loop-live",
+  "version": 1
+}

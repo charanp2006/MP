@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forecast Model Dashboard</title>
+
+<style>
+:root { color-scheme: dark; --bg:#0c0f14; --panel:#151a21; --line:#2b333e; --text:#e8eef7; --muted:#94a3b8; --accent:#7dd3fc; --good:#86efac; --warn:#fcd34d; --bad:#fca5a5; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:Inter,Segoe UI,Arial,sans-serif; line-height:1.5; }
+.wrap { max-width:1280px; margin:0 auto; padding:32px 24px 72px; }
+h1 { margin:0 0 8px; font-size:2rem; }
+h2 { margin:38px 0 14px; font-size:1.25rem; color:var(--accent); }
+h3 { margin:0 0 8px; font-size:1rem; }
+p, li { color:var(--muted); }
+.sub { color:var(--muted); margin-bottom:28px; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; }
+.card span { display:block; color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; }
+.card strong { display:block; margin-top:6px; font-size:1.05rem; word-break:break-all; }
+table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+th, td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:right; font-variant-numeric:tabular-nums; }
+th:first-child, td:first-child { text-align:left; }
+th { color:var(--accent); font-size:.85rem; text-transform:uppercase; letter-spacing:.04em; }
+tbody tr:last-child td { border-bottom:0; }
+.best { color:var(--good); font-weight:700; }
+.bad { color:var(--bad); }
+.warn { color:var(--warn); }
+.grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:18px; }
+.gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); gap:16px; }
+figure { margin:0; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px; }
+figure img { width:100%; height:auto; border-radius:8px; background:white; }
+figcaption { margin-top:8px; color:var(--muted); font-size:.9rem; }
+code { background:#0a0d12; border:1px solid var(--line); border-radius:6px; padding:2px 6px; color:var(--good); }
+pre { background:#0a0d12; border:1px solid var(--line); border-radius:10px; padding:14px; overflow:auto; }
+ol { padding-left:22px; }
+.tag { display:inline-block; padding:3px 9px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:.8rem; margin-right:6px; }
+.footer { margin-top:42px; color:var(--muted); font-size:.85rem; border-top:1px solid var(--line); padding-top:18px; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<h1>Forecast Model Dashboard</h1>
+<p class="sub">Azure Functions 2019 total invocation trace &middot; run <code>azure2019_total_h30_h5</code> &middot; evidence: historical invocation counts, no measured latency/energy</p>
+
+<div class="cards">
+  <div class="card"><span>Trained model</span><strong>compact TFT (PyTorch)</strong></div>
+  <div class="card"><span>Tested models</span><strong>TFT + 3 deterministic baselines</strong></div>
+  <div class="card"><span>History / horizon</span><strong>30 / 5 steps</strong></div>
+  <div class="card"><span>Control interval</span><strong>60 s</strong></div>
+  <div class="card"><span>Test targets</span><strong>14,935</strong></div>
+  <div class="card"><span>Best validation loss</span><strong>0.254306</strong></div>
+</div>
+
+<h2>1. What was trained and what was tested</h2>
+<table><thead><tr><th>Model</th><th>Trained?</th><th>Design</th></tr></thead><tbody><tr><td>TFT (trained)</td><td>Yes</td><td>Trained compact PyTorch TFT; selected best-validation checkpoint.</td></tr><tr><td>Persistence</td><td>No</td><td>Not trained; repeats the last observed invocation count.</td></tr><tr><td>Seasonal persistence</td><td>No</td><td>Not trained; reuses the value from seasonal_period=1440 steps.</td></tr><tr><td>Moving average</td><td>No</td><td>Not trained; repeats the 5-step moving average.</td></tr></tbody></table>
+<p><span class="tag">trained</span> Only the TFT has learned weights. The three baselines are deterministic rules evaluated on the exact same chronological test rows.</p>
+
+<h2>2. How the model was designed</h2>
+<div class="grid2">
+<div class="card">
+<h3>Compact TFT</h3>
+<ul>
+<li>PyTorch implementation with variable selection, GRN, LSTM encoder and attention.</li>
+<li><code>d_model=32</code>, <code>heads=2</code>, <code>dropout=0.1</code>, variable selection <code>True</code>.</li>
+<li>Input window: 30 steps; output: 5 future invocation-count steps.</li>
+<li>Features: <code>invocation_count, hour, day_of_week, peak_period</code>.</li>
+</ul>
+</div>
+<div class="card">
+<h3>Baselines and inference service</h3>
+<ul>
+<li>Persistence: repeat last observed value.</li>
+<li>Seasonal persistence: value from 1440 steps earlier, with persistence fallback.</li>
+<li>Moving average: mean of last 5 steps.</li>
+<li><code>TFTForecastService</code> loads the checkpoint, validates feature order, and falls back to persistence for stale, non-finite, or model-error inputs.</li>
+</ul>
+</div>
+</div>
+
+<h2>3. Input / output contract and live-use boundary</h2>
+<p><span class="tag">contract only</span> The forecast service exists today, but live telemetry wiring, cluster execution and Grafana-backed measurements are not validated in this experiment. This section describes what a live adapter must provide and what the controller receives.</p>
+<div class="grid2">
+<div class="card">
+<h3>Training input</h3>
+<ul>
+<li>Official Azure prepared trace CSV with <code>timestamp</code>, <code>function_id</code>, <code>invocation_count</code> and engineered calendar features.</li>
+<li>Chronological windows: 30 observed steps &rarr; 5 future targets.</li>
+<li>Only historical invocation counts are real; no measured CPU, memory, latency or energy.</li>
+</ul>
+</div>
+<div class="card">
+<h3>Live/inference input</h3>
+<ul>
+<li>Telemetry events: timestamp, service/function ID, invocation count, duration, error count, resource fields and source metadata.</li>
+<li>Generic adapter aggregates events into fixed 60s windows.</li>
+<li><code>TFTForecastService.forecast_history()</code> requires a 2D <code>history_window</code> with exact feature order and an optional <code>observed_at</code> timestamp.</li>
+<li>Input rejected/fallback when non-finite, wrong shape, wrong feature count, or stale beyond <code>max_staleness_s</code>.</li>
+</ul>
+</div>
+</div>
+<table><thead><tr><th>Runtime input</th><th>Type / shape</th><th>Purpose</th></tr></thead><tbody><tr><td>history_window</td><td>float32[30][4]</td><td>Recent normalized feature rows in chronological order</td></tr><tr><td>feature_columns</td><td>list[str]</td><td>Validates feature order against the checkpoint</td></tr><tr><td>observed_at</td><td>ISO-8601 timestamp</td><td>Used for freshness/staleness checks</td></tr><tr><td>max_staleness_s</td><td>float</td><td>Rejects old observations and triggers persistence fallback</td></tr></tbody></table>
+<pre>{
+  &quot;history_window&quot;: &quot;float32[30][4]&quot;,
+  &quot;feature_columns&quot;: [
+    &quot;invocation_count&quot;,
+    &quot;hour&quot;,
+    &quot;day_of_week&quot;,
+    &quot;peak_period&quot;
+  ],
+  &quot;observed_at&quot;: &quot;2026-11-20T09:00:00+00:00&quot;,
+  &quot;max_staleness_s&quot;: 300
+}</pre>
+<p><strong>Live path:</strong> telemetry events &rarr; generic ingestion adapter &rarr; fixed-window trace &rarr; feature builder &rarr; forecast service &rarr; planner/PPO &rarr; safety shield &rarr; executor adapter. The forecast returns advisory workload values only; it never issues infrastructure commands.</p>
+<table><thead><tr><th>Output field</th><th>Type</th><th>Meaning used by the decision loop</th></tr></thead><tbody><tr><td>forecast_horizon</td><td>int</td><td>Number of future control steps covered</td></tr><tr><td>predicted_workload</td><td>list[float]</td><td>5 forecast invocation counts</td></tr><tr><td>trend</td><td>increasing/decreasing/stable</td><td>Compact directional summary</td></tr><tr><td>source</td><td>tft or fallback_persistence</td><td>Whether the model or deterministic fallback produced values</td></tr><tr><td>fallback / fallback_reason</td><td>bool / str|null</td><td>Audit trail for degraded inference</td></tr><tr><td>model_id / checkpoint_path</td><td>str</td><td>Model provenance</td></tr><tr><td>feature_columns / observed_at</td><td>list[str] / str</td><td>Input-order and freshness provenance</td></tr></tbody></table>
+<pre>{
+  &quot;forecast_horizon&quot;: 5,
+  &quot;predicted_workload&quot;: [
+    520.0,
+    548.0,
+    571.0,
+    559.0,
+    603.0
+  ],
+  &quot;trend&quot;: &quot;increasing&quot;,
+  &quot;source&quot;: &quot;tft&quot;,
+  &quot;fallback&quot;: false,
+  &quot;fallback_reason&quot;: null,
+  &quot;model_id&quot;: &quot;compact_tft_pytorch&quot;,
+  &quot;checkpoint_path&quot;: &quot;results\\forecast\\azure2019_total\\checkpoint.pt&quot;,
+  &quot;feature_columns&quot;: [
+    &quot;invocation_count&quot;,
+    &quot;hour&quot;,
+    &quot;day_of_week&quot;,
+    &quot;peak_period&quot;
+  ],
+  &quot;observed_at&quot;: &quot;2026-11-20T09:00:00+00:00&quot;
+}</pre>
+<p><strong>Fallback example</strong> (stale input):</p>
+<pre>{
+  &quot;forecast_horizon&quot;: 5,
+  &quot;predicted_workload&quot;: [
+    520.0,
+    520.0,
+    520.0,
+    520.0,
+    520.0
+  ],
+  &quot;trend&quot;: &quot;stable&quot;,
+  &quot;source&quot;: &quot;fallback_persistence&quot;,
+  &quot;fallback&quot;: true,
+  &quot;fallback_reason&quot;: &quot;stale_input: age=412.0s &gt; 300.0s&quot;,
+  &quot;model_id&quot;: &quot;compact_tft_pytorch&quot;
+}</pre>
+
+<h2>4. How it was trained</h2>
+<div class="cards">
+<div class="card"><span>Epochs</span><strong>8</strong></div>
+<div class="card"><span>Batch size</span><strong>64</strong></div>
+<div class="card"><span>Learning rate</span><strong>0.001</strong></div>
+<div class="card"><span>Optimizer / loss</span><strong>Adam / MSE</strong></div>
+<div class="card"><span>Gradient clipping</span><strong>1.0</strong></div>
+<div class="card"><span>Seed</span><strong>42</strong></div>
+</div>
+<p>Chronological split <code>[0.7, 0.15, 0.15]</code>. Scaler fit on train rows only. Training batches are shuffled within the train split; windows never cross split boundaries. Best validation checkpoint restored before testing.</p>
+<table><thead><tr><th>Split</th><th>Windows</th></tr></thead><tbody><tr><td>Train</td><td>14,057</td></tr><tr><td>Validation</td><td>2,985</td></tr><tr><td>Test</td><td>2,987</td></tr></tbody></table>
+<table><thead><tr><th>Split</th><th>Start (UTC)</th><th>End (UTC)</th></tr></thead><tbody><tr><td>Train</td><td>2019-07-01 00:29:00+00:00</td><td>2019-07-10 19:19:00+00:00</td></tr><tr><td>Validation</td><td>2019-07-10 19:20:00+00:00</td><td>2019-07-12 21:38:00+00:00</td></tr><tr><td>Test</td><td>2019-07-12 21:39:00+00:00</td><td>2019-07-14 23:59:00+00:00</td></tr></tbody></table>
+<table><thead><tr><th>Epoch</th><th>Train MSE</th><th>Validation MSE</th><th>Selected</th></tr></thead><tbody><tr><td>1</td><td>0.3753</td><td>0.2902</td><td></td></tr><tr><td>2</td><td>0.3065</td><td>0.2765</td><td></td></tr><tr><td>3</td><td>0.2869</td><td>0.2704</td><td></td></tr><tr><td>4</td><td>0.2772</td><td>0.2661</td><td></td></tr><tr><td>5</td><td>0.2714</td><td>0.2543</td><td>best</td></tr><tr><td>6</td><td>0.2675</td><td>0.2579</td><td></td></tr><tr><td>7</td><td>0.2633</td><td>0.2730</td><td></td></tr><tr><td>8</td><td>0.2624</td><td>0.2549</td><td></td></tr></tbody></table>
+
+<h2>5. How it was tested</h2>
+<p>All four models were evaluated on the same <strong>14,935 flattened test targets</strong> (2,987 windows &times; 5 horizon steps). Metrics include MAE, RMSE, MAPE, WAPE, sMAPE, bias, and peak-underprediction rate. Peak subset is the top decile (<code>peak_quantile=0.9</code>, n=1,495). Prediction intervals were calibrated on validation residuals at <code>alpha=0.2</code>.</p>
+<p>Unit/integration coverage: T01/T02 history and horizon shape, T03 chronological non-overlapping splits, T04 metrics/zero handling/interval calibration, F01 stale/non-finite/model-error fallback paths, and an artifact test confirming four models plus CSV/JSON/checkpoint/plots are written.</p>
+<table><thead><tr><th>Replication item</th><th>Value</th></tr></thead><tbody><tr><td>Dataset SHA-256</td><td>b674433d83e923f82b688830cfb3efa9fbbe4f629d6ba210947bed38a91ba8b5</td></tr><tr><td>Config SHA-256</td><td>f9310ac68bfe24675598918ee9a5e8465266f5da6abf13f86203eca98329c3ab</td></tr><tr><td>Commit</td><td>b7ccce5f21249ea359775de625bac2cf53b5c6ea</td></tr><tr><td>Target column</td><td>invocation_count</td></tr><tr><td>Interval seconds</td><td>60</td></tr></tbody></table>
+
+<h2>6. Overall test results</h2>
+<table><thead><tr><th>Model</th><th>MAE</th><th>RMSE</th><th>MAPE %</th><th>WAPE %</th><th>sMAPE %</th><th>Bias</th><th>Peak underpred.</th></tr></thead><tbody><tr><td>TFT (trained)</td><td><span class="best">22,105.1</span></td><td><span class="best">30,540.1</span></td><td><span class="best">3.35%</span></td><td><span class="best">3.41%</span></td><td><span class="best">3.37%</span></td><td><span class="best">-40.5766</span></td><td>96.8%</td></tr><tr><td>Persistence</td><td>26,723.4</td><td>37,505.5</td><td>4.05%</td><td>4.12%</td><td>4.05%</td><td>142.5286</td><td><span class="best">83.7%</span></td></tr><tr><td>Seasonal persistence</td><td>48,476.2</td><td>62,602.1</td><td>7.44%</td><td>7.48%</td><td>7.70%</td><td>-20,820.2</td><td>84.1%</td></tr><tr><td>Moving average</td><td>24,961.1</td><td>34,507.9</td><td>3.78%</td><td>3.85%</td><td>3.79%</td><td>206.6609</td><td>93.2%</td></tr></tbody></table>
+<p class="warn">TFT is best on overall MAE/RMSE/WAPE/sMAPE, but its peak-underprediction rate is worse than persistence and seasonal persistence.</p>
+
+<h2>7. Peak-subset results</h2>
+<table><thead><tr><th>Model</th><th>MAE</th><th>RMSE</th><th>MAPE %</th><th>WAPE %</th><th>sMAPE %</th><th>Bias</th><th>Peak underpred.</th></tr></thead><tbody><tr><td>TFT (trained)</td><td>57,499.1</td><td><span class="best">65,944.9</span></td><td>7.76%</td><td>7.83%</td><td>8.17%</td><td>-56,629.2</td><td>99.3%</td></tr><tr><td>Persistence</td><td><span class="best">55,461.9</span></td><td>66,545.3</td><td><span class="best">7.51%</span></td><td><span class="best">7.55%</span></td><td><span class="best">7.90%</span></td><td><span class="best">-46,971.8</span></td><td>92.7%</td></tr><tr><td>Seasonal persistence</td><td>79,667.9</td><td>97,678.3</td><td>10.82%</td><td>10.85%</td><td>11.75%</td><td>-70,110.8</td><td><span class="best">90.0%</span></td></tr><tr><td>Moving average</td><td>57,319.3</td><td>66,111.9</td><td>7.74%</td><td>7.81%</td><td>8.15%</td><td>-54,437.7</td><td>100.0%</td></tr></tbody></table>
+<p class="bad">On the top-decile peak subset, persistence has the lowest WAPE (7.55%) versus TFT (7.83%).</p>
+
+<h2>8. TFT by forecast horizon</h2>
+<table><thead><tr><th>Step</th><th>MAE</th><th>RMSE</th><th>MAPE %</th><th>WAPE %</th><th>sMAPE %</th><th>Bias</th><th>Peak underpred.</th></tr></thead><tbody><tr><td>1</td><td>18,488.0</td><td>26,159.0</td><td>2.80%</td><td>2.85%</td><td>2.82%</td><td>791.8800</td><td>93.3%</td></tr><tr><td>2</td><td>21,360.4</td><td>30,142.0</td><td>3.22%</td><td>3.29%</td><td>3.25%</td><td>-1,291.6</td><td>95.7%</td></tr><tr><td>3</td><td>23,138.9</td><td>31,836.2</td><td>3.50%</td><td>3.57%</td><td>3.53%</td><td>-1,672.1</td><td>98.3%</td></tr><tr><td>4</td><td>23,867.1</td><td>32,193.9</td><td>3.62%</td><td>3.68%</td><td>3.64%</td><td>950.0193</td><td>97.7%</td></tr><tr><td>5</td><td>23,671.1</td><td>31,947.6</td><td>3.59%</td><td>3.65%</td><td>3.61%</td><td>1,018.9</td><td>99.0%</td></tr></tbody></table>
+
+<h2>9. Interval diagnostics</h2>
+<table><thead><tr><th>Diagnostic</th><th>Value</th></tr></thead><tbody><tr><td>alpha</td><td>0.2000</td></tr><tr><td>coverage</td><td>0.8469</td></tr><tr><td>under-coverage rate</td><td>0.0633</td></tr><tr><td>over-coverage rate</td><td>0.0898</td></tr><tr><td>mean interval width</td><td>77,626.5</td></tr></tbody></table>
+
+<h2>10. Generated plots</h2>
+<div class="gallery"><figure><img src="../results/forecast/azure2019_total/plots/actual_vs_predicted.png" alt="Actual vs predicted"><figcaption>Actual vs predicted</figcaption></figure><figure><img src="../results/forecast/azure2019_total/plots/peak_zoom.png" alt="Peak zoom"><figcaption>Peak zoom</figcaption></figure><figure><img src="../results/forecast/azure2019_total/plots/error_over_time.png" alt="Error over time"><figcaption>Error over time</figcaption></figure><figure><img src="../results/forecast/azure2019_total/plots/residual_distribution.png" alt="Residual distribution"><figcaption>Residual distribution</figcaption></figure><figure><img src="../results/forecast/azure2019_total/plots/metrics_comparison_absolute.png" alt="Absolute metric comparison"><figcaption>Absolute metric comparison</figcaption></figure><figure><img src="../results/forecast/azure2019_total/plots/metrics_comparison_wape.png" alt="WAPE comparison"><figcaption>WAPE comparison</figcaption></figure><figure><img src="../results/forecast/azure2019_total/plots/peak_underprediction.png" alt="Peak underprediction"><figcaption>Peak underprediction</figcaption></figure><figure><img src="../results/forecast/azure2019_total/plots/horizons_side_by_side.png" alt="Horizon-by-horizon forecasts"><figcaption>Horizon-by-horizon forecasts</figcaption></figure><figure><img src="../results/forecast/azure2019_total/plots/learning_curve.png" alt="Training / validation loss"><figcaption>Training / validation loss</figcaption></figure><figure><img src="../results/forecast/azure2019_total/plots/prediction_interval_coverage.png" alt="Interval coverage"><figcaption>Interval coverage</figcaption></figure></div>
+
+<h2>11. Limitations</h2>
+<ul>
+<li>Azure invocation counts are real historical data; CPU, memory, latency, cold starts and energy are not measured in this dataset.</li>
+<li>TFT was trained once with seed 42; no multi-seed distribution or rolling-origin folds were run.</li>
+<li>Only the <code>total</code> aggregation was trained and evaluated at official scale.</li>
+<li>Peak underprediction remains a known weakness; do not rely on this checkpoint for burst control without further work.</li>
+<li>No live deployment, Prometheus/Grafana, Qwen3, or PPO integration was exercised in this forecast experiment.</li>
+</ul>
+
+<h2>12. Reproduce</h2>
+<pre>py -m scripts.evaluate_forecast \
+  --data-source azure_functions_2019 \
+  --out-dir results/forecast/azure2019_total \
+  --run-id azure2019_total_h30_h5 \
+  --epochs 8
+
+py -m scripts.generate_forecast_dashboard</pre>
+
+<div class="footer">Generated from <code>results\forecast\azure2019_total\metrics.json</code>. Plots are read from <code>../results/forecast/azure2019_total/plots/</code>; rerun the evaluation command if those ignored artifacts are absent.</div>
+</div>
+</body>
+</html>

@@ -7,7 +7,10 @@ tests/simulations.
 
 from __future__ import annotations
 
+import json
+import threading
 import time
+import urllib.request
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
@@ -25,10 +28,15 @@ class MetricsCollector:
     def __init__(self, config: Optional[Dict] = None) -> None:
         cfg = (config or {}).get("monitoring", {})
         self.enabled = bool(cfg.get("enabled", False))
-        self.history_size = int(cfg.get("metrics", {}).get("history_size", 1000))
+        metrics_cfg = cfg.get("metrics", {})
+        self.history_size = int(metrics_cfg.get("history_size", 1000))
+        self.push_url = str(metrics_cfg.get("push_url", ""))
+        self.push_interval_s = float(metrics_cfg.get("push_interval_s", 1.0))
         self._history: deque[MetricPoint] = deque(maxlen=self.history_size)
         self._counters: Dict[str, float] = {}
         self._gauges: Dict[str, float] = {}
+        self._last_push = 0.0
+        self._push_lock = threading.Lock()
 
     def inc(self, name: str, value: float = 1.0, labels: Optional[Dict[str, str]] = None) -> None:
         if not self.enabled:
@@ -36,6 +44,7 @@ class MetricsCollector:
         key = self._key(name, labels)
         self._counters[key] = self._counters.get(key, 0.0) + float(value)
         self._history.append(MetricPoint(name, self._counters[key], labels or {}, time.time()))
+        self._maybe_push()
 
     def set_gauge(self, name: str, value: float, labels: Optional[Dict[str, str]] = None) -> None:
         if not self.enabled:
@@ -43,6 +52,7 @@ class MetricsCollector:
         key = self._key(name, labels)
         self._gauges[key] = float(value)
         self._history.append(MetricPoint(name, self._gauges[key], labels or {}, time.time()))
+        self._maybe_push()
 
     def observe(self, name: str, value: float, labels: Optional[Dict[str, str]] = None) -> None:
         self.set_gauge(name, value, labels)
@@ -69,6 +79,30 @@ class MetricsCollector:
             parts.append(f'{k}="{MetricsCollector._escape_label(str(labels[k]))}"')
         return f"{name}{{{','.join(parts)}}}"
 
+    def _maybe_push(self) -> None:
+        if not self.push_url:
+            return
+        now = time.monotonic()
+        with self._push_lock:
+            if now - self._last_push < self.push_interval_s:
+                return
+            self._last_push = now
+        payload = json.dumps(self.snapshot()).encode("utf-8")
+        request = urllib.request.Request(
+            self.push_url,
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+
+        def _post() -> None:
+            try:
+                with urllib.request.urlopen(request, timeout=2):
+                    pass
+            except Exception:
+                pass
+
+        threading.Thread(target=_post, daemon=True).start()
 
     def record_step(self, info: Dict, final_action_name: str) -> None:
         if not self.enabled:

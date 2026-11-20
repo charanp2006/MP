@@ -1,0 +1,36 @@
+{
+  "mode": "simulation",
+  "generated_by": "experiments.evaluate_decision_engine",
+  "config_sha256": "926d994cbd82aff3a89588a079475a1da8215299cff79800aa8c23999f373871",
+  "git_commit": "f2da3f1",
+  "steps": 24,
+  "trace_csv": "data/processed/azure_features.csv",
+  "trace_source": "azure_historical",
+  "trace_workload_scale_factor": 0.0010724772158173706,
+  "tft_checkpoint": "results/forecast/azure2019_total/checkpoint.pt",
+  "tft_used": true,
+  "policy_checkpoint": "models/ppo_policy.pt",
+  "policy_source": "models/ppo_policy.pt",
+  "execute": false,
+  "ablations": [
+    "full",
+    "planner_off",
+    "policy_off",
+    "feedback_off",
+    "forecast_off"
+  ],
+  "decision_logs": "results\\decision\\m5\\decisions",
+  "artifacts": {
+    "replay_csv": "results\\decision\\m5\\replay.csv",
+    "replay_json": "results\\decision\\m5\\replay.json",
+    "replay_md": "results\\decision\\m5\\replay.md",
+    "replay_html": "results\\decision\\m5\\replay.html",
+    "replay_plot": "results\\decision\\m5\\replay_timeline.png"
+  },
+  "units": {
+    "energy_w": "simulated proxy watts",
+    "p95_latency_ms": "simulated latency milliseconds",
+    "cold_starts": "simulated container starts",
+    "reward": "normalized control objective (higher is better)"
+  }
+}

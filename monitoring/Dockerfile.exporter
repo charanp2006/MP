@@ -1,0 +1,7 @@
+FROM python:3.11-slim
+WORKDIR /app
+ENV PYTHONUNBUFFERED=1
+COPY monitoring /app/monitoring
+COPY configs /app/configs
+EXPOSE 8000
+CMD ["python", "-m", "monitoring.prometheus_exporter", "--host", "0.0.0.0", "--port", "8000"]

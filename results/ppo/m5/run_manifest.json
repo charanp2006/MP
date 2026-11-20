@@ -1,0 +1,44 @@
+{
+  "mode": "simulation",
+  "generated_by": "experiments.evaluate_ppo_m5",
+  "config_sha256": "aaf3f0565875491e3160ea2c62a13a038ba9da11192453cad1155678a59b5464",
+  "git_commit": "b3624ba",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "episodes_per_seed": 3,
+  "scenario_steps": 48,
+  "scenarios": [
+    "ramp",
+    "burst",
+    "periodic",
+    "sparse",
+    "stress",
+    "mixed"
+  ],
+  "trace_csv": "data/processed/azure_features.csv",
+  "trace_resource_columns": "simulated_from_invocations_when_absent",
+  "trace_workload_scale_factor": 0.0010724772158173706,
+  "tft_checkpoint": "results/forecast/azure2019_total/checkpoint.pt",
+  "tft": {
+    "attempted": true,
+    "available": true,
+    "reason": "tft_checkpoint_loaded"
+  },
+  "arms": [
+    "fixed_noop",
+    "persistence_rule",
+    "ppo_shielded",
+    "reactive",
+    "trace_persistence_rule",
+    "trace_tft_rule"
+  ],
+  "units": {
+    "energy_w": "simulated proxy watts",
+    "p95_latency_ms": "simulated latency milliseconds",
+    "cold_starts": "simulated container starts",
+    "reward": "normalized control objective (higher is better)"
+  }
+}

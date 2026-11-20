@@ -1,0 +1,9 @@
+{
+  "42:mixed": {
+    "id": "mixed",
+    "scale_factor": 1.0,
+    "seed": 42,
+    "sha256": "767a514499195b96d7a282caa4ff92e4ba3568b1b692ccb9af879010767131e4",
+    "source": "synthetic"
+  }
+}

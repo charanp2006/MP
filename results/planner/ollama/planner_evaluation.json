@@ -1,0 +1,126 @@
+{
+  "summary": {
+    "runtime": "ollama",
+    "model": "qwen3:4b",
+    "scenarios": 6,
+    "valid_rate": 1.0,
+    "fallback_rate": 1.0,
+    "mean_planning_latency_ms": 4043.89,
+    "p95_planning_latency_ms": 4147.96175,
+    "strategy_counts": {
+      "NoOp": 2,
+      "ScaleOut": 2,
+      "ScaleIn": 1,
+      "PreWarm": 1
+    },
+    "final_action_counts": {
+      "NoOp": 6
+    },
+    "guard_override_rate": 0.0,
+    "action_reject_rate": 0.0,
+    "provider_counts": {
+      "ollama": 6
+    },
+    "status_counts": {
+      "fallback": 6
+    }
+  },
+  "rows": [
+    {
+      "scenario": "normal",
+      "provider": "ollama",
+      "model": "qwen3:4b",
+      "prompt_version": "planner-v2",
+      "status": "fallback",
+      "latency_ms": 4190.562,
+      "fallback": true,
+      "strategy": "NoOp",
+      "capacity_change": 0,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "high_demand",
+      "provider": "ollama",
+      "model": "qwen3:4b",
+      "prompt_version": "planner-v2",
+      "status": "fallback",
+      "latency_ms": 4018.562,
+      "fallback": true,
+      "strategy": "ScaleOut",
+      "capacity_change": 5,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "sla_risk",
+      "provider": "ollama",
+      "model": "qwen3:4b",
+      "prompt_version": "planner-v2",
+      "status": "fallback",
+      "latency_ms": 4015.21,
+      "fallback": true,
+      "strategy": "ScaleOut",
+      "capacity_change": 5,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "low_demand",
+      "provider": "ollama",
+      "model": "qwen3:4b",
+      "prompt_version": "planner-v2",
+      "status": "fallback",
+      "latency_ms": 4011.634,
+      "fallback": true,
+      "strategy": "ScaleIn",
+      "capacity_change": -5,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "max_capacity",
+      "provider": "ollama",
+      "model": "qwen3:4b",
+      "prompt_version": "planner-v2",
+      "status": "fallback",
+      "latency_ms": 4007.211,
+      "fallback": true,
+      "strategy": "PreWarm",
+      "capacity_change": 0,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "injection_metadata",
+      "provider": "ollama",
+      "model": "qwen3:4b",
+      "prompt_version": "planner-v2",
+      "status": "fallback",
+      "latency_ms": 4020.161,
+      "fallback": true,
+      "strategy": "NoOp",
+      "capacity_change": 0,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    }
+  ]
+}

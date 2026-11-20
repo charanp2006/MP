@@ -56,9 +56,16 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 - `docs/validation-report.md` - image-vs-docs audit + implementation-readiness checklist.
 - `docs/references.md` - recommended research papers mapped to components.
 - `docs/tech-stack.md` - technology stack, tools and per-stage mapping.
+- `docs/PROJECT_STATUS_SUMMARY.md` - consolidated status of all completed work, live G/H evidence, limitations and delivery metadata.
+- `docs/ai-driven-decision-engine-dashboard.html` - unified TFT + Qwen3 + PPO decision engine dashboard (roles, handoffs, safety, evidence).
+- `docs/forecasting-dashboard.html` - TFT forecasting model dashboard (offline trained/evaluated evidence).
+- `docs/agentic-planning-dashboard.html` - Qwen3 planning dashboard (adapter/safety evidence; real inference unavailable).
+- `docs/ppo-controller-dashboard.html` - PPO controller dashboard (smoke-trained policy, simulated evaluation evidence).
 - `docs/implementation/` - **versioned implementation records, one doc per
   completed phase** (see "Phase documentation" below; start at
-  `docs/implementation/README.md`; includes [P4 execution](docs/implementation/p4-v1.0-execution.md)).
+  `docs/implementation/README.md`; includes [P4 execution](docs/implementation/p4-v1.0-execution.md)
+  and [P6 live G/H](docs/implementation/p6-v1.0-live-execution-and-monitoring.md)).
+- `docs/runbooks/live-g-h.md` - exact local commands for live Kubernetes/OpenFaaS execution and in-cluster monitoring.
 - `docs/milestones/README.md` - current M0-M9 integration/validation milestone reports.
 - `configs/project.yaml` - experiment configuration defaults.
 

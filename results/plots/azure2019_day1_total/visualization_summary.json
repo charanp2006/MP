@@ -1,0 +1,67 @@
+{
+  "csv": "data/processed/azure2019_day1_total.csv",
+  "rows": 1440,
+  "functions": 1,
+  "unique_timestamps": 1440,
+  "expected_rows_function_x_time": 1440,
+  "observed_rows": 1440,
+  "missing_intervals_function_x_time": 0,
+  "start": "2019-07-01 00:00:00+00:00",
+  "end": "2019-07-01 23:59:00+00:00",
+  "invocation_count_min": 501568,
+  "invocation_count_max": 801572,
+  "invocation_count_mean": 631794.0131944445,
+  "plots": [
+    "hourly_pattern.png",
+    "invocation_distribution.png",
+    "split_boundaries.png",
+    "top_functions.png",
+    "total_invocations_over_time.png"
+  ],
+  "manifest_cleaning": {
+    "rows_in": 1440,
+    "rows_out": 1440,
+    "duplicate_key_rows": 0,
+    "duplicates_resolved": false,
+    "invalid_numeric": 0,
+    "negative_values": 0,
+    "monotonic_per_function": true,
+    "functions": 1,
+    "unique_timestamps": 1440,
+    "expected_rows_function_x_time": 1440,
+    "missing_intervals_function_x_time": 0,
+    "nan_counts": {},
+    "start": "2019-07-01 00:00:00+00:00",
+    "end": "2019-07-01 23:59:00+00:00"
+  },
+  "manifest_split": {
+    "boundaries": {
+      "train": {
+        "start_index": 0,
+        "end_index": 1007,
+        "start_time": "2019-07-01 00:00:00+00:00",
+        "end_time_exclusive": "2019-07-01 16:47:00+00:00",
+        "n_unique_timestamps": 1007
+      },
+      "val": {
+        "start_index": 1007,
+        "end_index": 1224,
+        "start_time": "2019-07-01 16:47:00+00:00",
+        "end_time_exclusive": "2019-07-01 20:24:00+00:00",
+        "n_unique_timestamps": 217
+      },
+      "test": {
+        "start_index": 1224,
+        "end_index": 1440,
+        "start_time": "2019-07-01 20:24:00+00:00",
+        "end_time_exclusive": "2019-07-01 23:59:00+00:00",
+        "n_unique_timestamps": 216
+      }
+    },
+    "row_counts": {
+      "train": 1007,
+      "val": 217,
+      "test": 216
+    }
+  }
+}

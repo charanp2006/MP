@@ -1,0 +1,9 @@
+experiment_id,forecast,planner,controller,executor,runs,degraded_runs,mean_reward,reward_std,reward_ci95,sla_violation_rate,mean_energy_w,mean_capacity,mean_cold_starts,shield_intervention_rate,status
+E0,none,rules,rules,simulator,1,0,-1.7786111111111111,0.0,0.0,0.0,166.25,10.75,2.5,0.0,ok
+E1,persistence,rules,rules,simulator,1,0,-1.7786111111111111,0.0,0.0,0.0,166.25,10.75,2.5,0.0,ok
+E2,tft,rules,rules,simulator,1,1,-1.7786111111111111,0.0,0.0,0.0,166.25,10.75,2.5,0.0,degraded_tft_fallback
+E3,tft,qwen3_stub,rules,simulator,1,1,-1.7786111111111111,0.0,0.0,0.0,166.25,10.75,2.5,0.0,"degraded_tft_fallback,stub_proxy"
+E4,persistence,rules,ppo,simulator,1,0,-1.3351111111111111,0.0,0.0,0.5,35.0,2.0,0.0,0.0,ok
+E5,tft,rules,ppo,simulator,1,1,-1.3351111111111111,0.0,0.0,0.5,35.0,2.0,0.0,0.0,degraded_tft_fallback
+E6,tft,qwen3_stub,ppo,simulator,1,1,-1.3351111111111111,0.0,0.0,0.5,35.0,2.0,0.0,0.0,"degraded_tft_fallback,stub_proxy"
+E7,selected,selected,selected,live_deferred,0,0,,,,,,,,,not_run_requires_live_cluster

@@ -1,0 +1,156 @@
+{
+  "mode": "simulation",
+  "metrics": {
+    "mean_reward": -1.2023756619020773,
+    "sla_violation_rate": 0.14615461148144462,
+    "mean_energy_w": 162.79026962491295,
+    "mean_capacity": 10.51935130832753,
+    "mean_cold_starts": 0.4875136802308228,
+    "mean_p95_latency_ms": 125.40531290418865,
+    "steps": 10051
+  },
+  "data_report": {
+    "ingest": {
+      "rows": 60480,
+      "functions": [
+        "fn_checkout",
+        "fn_recommend",
+        "fn_search"
+      ],
+      "start": "2026-01-05 00:00:00",
+      "end": "2026-01-11 23:59:30",
+      "columns": [
+        "timestamp",
+        "function_id",
+        "invocation_count",
+        "execution_duration_ms",
+        "cpu_utilization",
+        "memory_utilization",
+        "active_containers",
+        "warm_containers",
+        "cold_starts",
+        "latency_ms",
+        "p95_latency_ms",
+        "power_w"
+      ],
+      "normative_present": [
+        "invocation_count",
+        "cpu_utilization",
+        "memory_utilization",
+        "latency_ms"
+      ],
+      "normative_missing": []
+    },
+    "preprocess": {
+      "rows_in": 60480,
+      "duplicates": {
+        "policy": "last",
+        "rows_with_duplicates": 0,
+        "rows_removed": 0
+      },
+      "outliers": {
+        "invocation_count": 0,
+        "execution_duration_ms": 0,
+        "cpu_utilization": 0,
+        "memory_utilization": 0,
+        "latency_ms": 0,
+        "p95_latency_ms": 0,
+        "active_containers": 0,
+        "warm_containers": 0,
+        "cold_starts": 0,
+        "power_w": 0
+      },
+      "missing_raw": {
+        "nan_counts": {},
+        "absent_columns": []
+      },
+      "missing_resampled": {
+        "nan_counts": {},
+        "absent_columns": []
+      },
+      "missing_after_fill": {
+        "nan_counts": {},
+        "absent_columns": []
+      },
+      "rows_out": 30240,
+      "interval_seconds": 60,
+      "chronological": true
+    },
+    "features": {
+      "target": "invocation_count",
+      "lags": [
+        1,
+        2,
+        3
+      ],
+      "lag_columns": [
+        "invocation_count_lag_1",
+        "invocation_count_lag_2",
+        "invocation_count_lag_3"
+      ],
+      "rolling_windows": [
+        5,
+        10,
+        30
+      ],
+      "rolling_columns": [
+        "invocation_count_roll5_mean",
+        "invocation_count_roll5_max",
+        "invocation_count_roll5_min",
+        "invocation_count_roll5_std",
+        "invocation_count_roll10_mean",
+        "invocation_count_roll10_max",
+        "invocation_count_roll10_min",
+        "invocation_count_roll10_std",
+        "invocation_count_roll30_mean",
+        "invocation_count_roll30_max",
+        "invocation_count_roll30_min",
+        "invocation_count_roll30_std"
+      ],
+      "temporal_columns": [
+        "hour",
+        "day_of_week",
+        "weekend",
+        "peak_period"
+      ],
+      "system_columns": [
+        "cpu_utilization",
+        "memory_utilization",
+        "active_containers",
+        "latency_ms",
+        "cold_starts"
+      ],
+      "feature_columns": [
+        "invocation_count_lag_1",
+        "invocation_count_lag_2",
+        "invocation_count_lag_3",
+        "invocation_count_roll5_mean",
+        "invocation_count_roll5_max",
+        "invocation_count_roll5_min",
+        "invocation_count_roll5_std",
+        "invocation_count_roll10_mean",
+        "invocation_count_roll10_max",
+        "invocation_count_roll10_min",
+        "invocation_count_roll10_std",
+        "invocation_count_roll30_mean",
+        "invocation_count_roll30_max",
+        "invocation_count_roll30_min",
+        "invocation_count_roll30_std",
+        "hour",
+        "day_of_week",
+        "weekend",
+        "peak_period",
+        "cpu_utilization",
+        "memory_utilization",
+        "active_containers",
+        "latency_ms",
+        "cold_starts"
+      ],
+      "n_features": 24,
+      "rows_in": 30240,
+      "rows_dropped_warmup": 87,
+      "rows_out": 30153,
+      "normalization": "deferred: scaler is fit on the train split only (P2, see data.normalize)"
+    }
+  }
+}

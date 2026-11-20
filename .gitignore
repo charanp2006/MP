@@ -30,9 +30,9 @@ htmlcov/
 .nox/
 
 # ---- ML / RL artifacts (do not commit models, checkpoints or runs) ----
-models/
+# models/
 checkpoints/
-*.pt
+# *.pt
 *.pth
 *.ckpt
 *.onnx
@@ -44,17 +44,17 @@ mlruns/
 # ---- Experiment outputs & logs ----
 logs/
 *.log
-results/
+# results/
 experiments/output/
-*.jsonl
+# *.jsonl
 !**/.gitkeep
 
 # ---- Data (raw and processed datasets are not committed) ----
 data/raw/*
 !data/raw/.gitkeep
-data/processed/*
+# data/processed/*
 !data/processed/.gitkeep
-*.csv
+# *.csv
 !tests/fixtures/*.csv
 *.parquet
 *.feather
@@ -90,3 +90,10 @@ desktop.ini
 
 # ---- Docker ----
 *.dockerfile.bak
+
+# ------------------------------------------------------------------------
+# uncommented few lines above for the reference how the results are generated, etc.,
+# ------------------------------------------------------------------------
+
+# ---- Miscellaneous ----
+CCharanMPscripts

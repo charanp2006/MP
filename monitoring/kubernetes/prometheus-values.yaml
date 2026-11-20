@@ -1,0 +1,59 @@
+grafana:
+  enabled: true
+  adminPassword: admin
+  persistence:
+    enabled: false
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: ALL
+      createWatcher: false
+    datasources:
+      enabled: true
+      searchNamespace: ALL
+prometheus:
+  prometheusSpec:
+    secrets: ["openfaas-basic-auth"]
+    retention: 6h
+    scrapeInterval: 15s
+    evaluationInterval: 15s
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    additionalScrapeConfigs:
+      - job_name: openfaas-gateway
+        metrics_path: /metrics
+        scrape_interval: 15s
+        basic_auth:
+          username: admin
+          password_file: /etc/prometheus/secrets/openfaas-basic-auth/password
+        static_configs:
+          - targets: ["gateway.openfaas.svc.cluster.local:8080"]
+      - job_name: control-loop-exporter
+        metrics_path: /metrics
+        scrape_interval: 15s
+        static_configs:
+          - targets: ["control-loop-exporter.monitoring.svc.cluster.local:8000"]
+      - job_name: fn-checkout-function
+        metrics_path: /metrics
+        scrape_interval: 15s
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names: ["openfaas-fn", "serverless-mgmt"]
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: "true"
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            target_label: __address__
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+alertmanager:
+  enabled: true

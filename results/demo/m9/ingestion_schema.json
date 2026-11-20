@@ -1,0 +1,36 @@
+{
+  "version": "m9-event-v1",
+  "required": [
+    "timestamp",
+    "service_id",
+    "function_id",
+    "invocation_count"
+  ],
+  "optional": [
+    "request_id",
+    "payload_class",
+    "execution_duration_ms",
+    "error_count",
+    "source",
+    "scenario"
+  ],
+  "types": {
+    "timestamp": "ISO-8601 string with timezone",
+    "service_id": "non-empty string",
+    "function_id": "non-empty string",
+    "invocation_count": "non-negative finite number",
+    "execution_duration_ms": "non-negative finite number",
+    "error_count": "non-negative finite number",
+    "payload_class": [
+      "small",
+      "medium",
+      "large"
+    ],
+    "source": "string source metadata"
+  },
+  "privacy": {
+    "allow_user_identity": false,
+    "allow_request_payload": false,
+    "allow_auth_data_in_artifacts": false
+  }
+}

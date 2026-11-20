@@ -1,0 +1,8 @@
+{
+  "feature_columns": [
+    "invocation_count",
+    "hour",
+    "day_of_week",
+    "peak_period"
+  ]
+}

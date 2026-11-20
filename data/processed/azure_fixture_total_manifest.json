@@ -1,0 +1,137 @@
+{
+  "dataset": "azurefunctions-dataset-2019",
+  "source": {
+    "repo": "https://github.com/Azure/AzurePublicDataset",
+    "dataset_doc": "https://raw.githubusercontent.com/Azure/AzurePublicDataset/master/AzureFunctionsDataset2019.md",
+    "release_tag": "dataset-functions-2019",
+    "asset_name": "azurefunctions_dataset2019_azurefunctions-dataset2019.tar.xz",
+    "asset_url": "https://github.com/Azure/AzurePublicDataset/releases/download/dataset-functions-2019/azurefunctions_dataset2019_azurefunctions-dataset2019.tar.xz",
+    "license": "CC-BY-4.0",
+    "citation": "Mohammad Shahrad, Rodrigo Fonseca, Inigo Goiri, Gohar Chaudhry, Paul Batum, Jason Cooke, Eduardo Laureano, Colby Tresness, Mark Russinovich, Ricardo Bianchini. \"Serverless in the Wild: Characterizing and Optimizing the Serverless Workload at a Large Cloud Provider.\" USENIX ATC 2020."
+  },
+  "retrieval": {
+    "note": "not downloaded by this run (prepared from local/extracted files or fixture)"
+  },
+  "verification": null,
+  "files": [
+    {
+      "path": "tests\\fixtures\\azure_functions_2019_invocations_d01_sample.csv",
+      "name": "azure_functions_2019_invocations_d01_sample.csv",
+      "day_index": 1,
+      "sha256": "049669b1cbb0da340e7191fe9e5262b8942e2d1d1af98bed8b7cfa3fb6e57d5a",
+      "size_bytes": 14831
+    },
+    {
+      "path": "tests\\fixtures\\azure_functions_2019_invocations_d02_sample.csv",
+      "name": "azure_functions_2019_invocations_d02_sample.csv",
+      "day_index": 2,
+      "sha256": "d248f4d9eb26ca262c7f8b784652762c230c3af34e0c1b776bd0792d5a9067b8",
+      "size_bytes": 14830
+    }
+  ],
+  "schema": {
+    "raw_columns": [
+      "HashOwner",
+      "HashApp",
+      "HashFunction",
+      "Trigger",
+      "1..1440"
+    ],
+    "prepared_columns": [
+      "timestamp",
+      "function_id",
+      "invocation_count",
+      "trigger",
+      "hash_owner",
+      "hash_app",
+      "hash_function",
+      "day_index",
+      "split(optional)"
+    ]
+  },
+  "units": {
+    "invocation_count": "count per interval (sum over minute bins within interval) per function_id",
+    "interval_seconds": 60,
+    "timestamp": "UTC, sequential 1-min slots from relative day base 2019-07-01T00:00:00Z (assumption)"
+  },
+  "aggregation": {
+    "function_id": "HashApp|HashFunction",
+    "interval_seconds": 60,
+    "method": "sum of per-minute invocation counts within bin",
+    "mode": "per_function"
+  },
+  "cleaning": {
+    "rows_in": 8640,
+    "rows_out": 8640,
+    "duplicate_key_rows": 0,
+    "duplicates_resolved": false,
+    "invalid_numeric": 0,
+    "negative_values": 0,
+    "monotonic_per_function": true,
+    "functions": 3,
+    "unique_timestamps": 2880,
+    "expected_rows_function_x_time": 8640,
+    "missing_intervals_function_x_time": 0,
+    "nan_counts": {},
+    "start": "2019-07-01 00:00:00+00:00",
+    "end": "2019-07-02 23:59:00+00:00"
+  },
+  "split": {
+    "boundaries": {
+      "train": {
+        "start_index": 0,
+        "end_index": 2015,
+        "start_time": "2019-07-01 00:00:00+00:00",
+        "end_time_exclusive": "2019-07-02 09:35:00+00:00",
+        "n_unique_timestamps": 2015
+      },
+      "val": {
+        "start_index": 2015,
+        "end_index": 2448,
+        "start_time": "2019-07-02 09:35:00+00:00",
+        "end_time_exclusive": "2019-07-02 16:48:00+00:00",
+        "n_unique_timestamps": 433
+      },
+      "test": {
+        "start_index": 2448,
+        "end_index": 2880,
+        "start_time": "2019-07-02 16:48:00+00:00",
+        "end_time_exclusive": "2019-07-02 23:59:00+00:00",
+        "n_unique_timestamps": 432
+      }
+    },
+    "row_counts": {
+      "train": 6045,
+      "val": 1299,
+      "test": 1296
+    }
+  },
+  "assumptions": [
+    "Relative day mapping d01..d14 -> sequential days starting 2019-07-01Z for ordering; absolute calendar alignment not asserted by trace.",
+    "Per-minute counts aggregated by sum to configured interval.",
+    "Duplicate (timestamp,function_id) rows resolved by summing invocation_count.",
+    "CPU/memory/latency/cold-start/power/energy are not provided by this trace; downstream proxies must be labeled simulated/estimated."
+  ],
+  "aggregation_detail": {
+    "mode": "per_function",
+    "input_rows": 8640,
+    "input_functions": 3,
+    "output_rows": 8640,
+    "output_functions": 3
+  },
+  "output": {
+    "prepared_csv": "data\\processed\\azure_fixture_total.csv",
+    "rows": 8640,
+    "columns": [
+      "timestamp",
+      "function_id",
+      "invocation_count",
+      "trigger",
+      "hash_owner",
+      "hash_app",
+      "hash_function",
+      "day_index",
+      "split"
+    ]
+  }
+}
