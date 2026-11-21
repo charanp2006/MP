@@ -1,0 +1,48 @@
+extends: project.yaml
+
+forecast:
+  checkpoint_path: results/forecast/azure2019_total/checkpoint.pt
+
+agent:
+  runtime: stub
+
+control:
+  interval_seconds: 60
+
+execution:
+  enabled: true
+  dry_run: false
+  allow_live: true
+  backend: kubernetes_live
+  namespace: openfaas-fn
+  function: fn-checkout
+  allowed_namespaces: [serverless-mgmt, openfaas-fn]
+  live:
+    verify: true
+    cooldown_s: 30
+    rollback: true
+    warm_deployment: fn-checkout-warm
+    warm_namespace: serverless-mgmt
+    warm_increment: 2
+    warm_max: 6
+  docker:
+    service: fn-checkout
+    allowed_services: [fn-checkout]
+
+monitoring:
+  enabled: true
+  metrics:
+    push_url: http://127.0.0.1:8000/publish
+    push_interval_s: 1.0
+  prometheus:
+    host: 127.0.0.1
+    port: 9090
+    adapter_enabled: true
+    queries:
+      p95_latency_ms: 'histogram_quantile(0.95, sum by (le) (rate(fn_request_duration_ms_bucket{function_name="fn-checkout"}[5m])))'
+      current_workload: 'sum(rate(fn_invocations_total{function_name="fn-checkout"}[5m])) * 60'
+      cold_starts: 'sum(increase(fn_cold_starts_total{function_name="fn-checkout"}[5m]))'
+      energy_w: 'sum(fn_energy_w{function_name="fn-checkout"})'
+      active_containers: 'sum(kube_deployment_status_replicas{namespace="openfaas-fn",deployment="fn-checkout"})'
+  feedback:
+    source: prometheus

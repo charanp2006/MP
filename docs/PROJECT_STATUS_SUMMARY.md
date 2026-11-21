@@ -89,6 +89,8 @@ Canonical choices retained throughout:
   - `infrastructure/kubernetes/live-warm-pool.yaml`.
 - Added `configs/local-live.yaml`; `configs/__init__.py` now supports safe
   `extends` + deep merge without changing canonical defaults.
+- Added a `.gitignore` exception so `configs/local-live.yaml` is trackable;
+  the first CI run failed because `configs/*local*` silently excluded it.
 
 ### 2.4 Monitoring, feedback and live dashboards
 
@@ -223,6 +225,8 @@ Canonical dry-run defaults and all existing scaffolding are preserved.
 - Added deploy/verify scripts, runbook, phase record and status summary.
 - Added tests covering live gates, bounded actions, rollback, stale metrics,
   live app metrics, exporter publishing and dashboard content.
+- Unignored `configs/local-live.yaml` so CI clones include the live config used
+  by `test_local_live_config_enables_only_explicit_live_gates`.
 
 ### Verification
 

@@ -67,6 +67,7 @@ data/raw/*
 *.secret
 *kubeconfig*
 configs/*local*
+!configs/local-live.yaml
 
 # ---- Presentations / media (archived on the `files` branch) ----
 # *.pptx
