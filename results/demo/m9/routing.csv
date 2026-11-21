@@ -1,0 +1,10 @@
+service_id,payload_class,events,errors,route
+fn_checkout,large,40,0,/invoke
+fn_checkout,medium,168,2,/invoke
+fn_checkout,small,468,3,/invoke
+fn_recommend,large,52,1,/invoke
+fn_recommend,medium,212,1,/invoke
+fn_recommend,small,443,2,/invoke
+fn_search,large,60,0,/invoke
+fn_search,medium,208,2,/invoke
+fn_search,small,449,5,/invoke

@@ -1,0 +1,6 @@
+arm,steps,mean_reward,reward_std,sla_violation_rate,mean_energy_w,mean_capacity,mean_cold_starts,shield_intervention_rate,fallback_rate,final_action
+full,24,-0.6417777777777777,0.015776212754932323,0.0,35.0,2.0,0.0,0.0,0.0,PreWarm
+planner_off,24,-0.6417777777777777,0.015776212754932323,0.0,35.0,2.0,0.0,0.0,0.0,PreWarm
+policy_off,24,-0.6417777777777777,0.015776212754932323,0.0,35.0,2.0,0.0,0.0,0.0,NoOp
+feedback_off,24,-0.6417777777777777,0.015776212754932323,0.0,35.0,2.0,0.0,0.0,0.0,PreWarm
+forecast_off,24,-0.6417777777777777,0.015776212754932323,0.0,35.0,2.0,0.0,0.0,0.0,PreWarm

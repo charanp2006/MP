@@ -14,14 +14,36 @@ from monitoring.prometheus_adapter import PrometheusMetricsAdapter
 class Handler(BaseHTTPRequestHandler):
     collector: MetricsCollector = MetricsCollector({"monitoring": {"enabled": True}})
     adapter: Optional[PrometheusMetricsAdapter] = None
+    published_snapshot: Optional[dict] = None
+
+    def do_POST(self) -> None:
+        if self.path.startswith("/publish"):
+            length = int(self.headers.get("Content-Length", "0") or 0)
+            try:
+                payload = json.loads(self.rfile.read(length).decode("utf-8") or "{}")
+                if not isinstance(payload, dict):
+                    raise ValueError("snapshot must be an object")
+                type(self).published_snapshot = {str(k): float(v) for k, v in payload.items()}
+                self._send(200, b'{"accepted":true}', "application/json")
+            except Exception as exc:
+                self._send(400, json.dumps({"error": str(exc)}).encode("utf-8"), "application/json")
+            return
+        self._send(404, b"not found", "text/plain")
 
     def do_GET(self) -> None:
         if self.path.startswith("/metrics"):
-            body = export_prometheus_text(self.collector.snapshot()).encode("utf-8")
+            published = type(self).published_snapshot
+            snapshot = published if published is not None else self.collector.snapshot()
+            body = export_prometheus_text(snapshot).encode("utf-8")
             self._send(200, body, "text/plain; version=0.0.4")
         elif self.path.startswith("/health"):
             body = json.dumps(
-                {"status": "ok", "metrics": len(self.collector.snapshot())}, sort_keys=True
+                {
+                    "status": "ok",
+                    "metrics": len(self.collector.snapshot()),
+                    "published": len(type(self).published_snapshot or {}),
+                },
+                sort_keys=True,
             ).encode("utf-8")
             self._send(200, body, "application/json")
         elif self.path.startswith("/ready"):
@@ -49,6 +71,7 @@ def create_handler(collector: MetricsCollector, adapter: Optional[PrometheusMetr
 
     _Handler.collector = collector
     _Handler.adapter = adapter
+    _Handler.published_snapshot = None
     return _Handler
 
 

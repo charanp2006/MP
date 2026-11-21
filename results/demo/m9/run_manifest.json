@@ -1,0 +1,49 @@
+{
+  "generated_at": "2026-11-20T09:15:50.595740+00:00",
+  "git_commit": "0b7cb69",
+  "config_sha256": "d579c92e137442f071802f253b85a3de03ecbb637692283a0a215ef513a1285f",
+  "evidence_tier": "simulation_synthetic_client_no_live_execution",
+  "scenario": "mixed",
+  "steps": 4,
+  "seed": 42,
+  "interval_s": 60,
+  "warmup_steps": 30,
+  "feature_rows_dropped": 87,
+  "event_count": 2100,
+  "event_sha256": "7302ea4baf4612b240ce31fc0dcf0a22a3313d2a1f7bb8f9b4fafd16422ea4ac",
+  "trace_sha256": "f6fa1456e560f5f9d681701f84524c90a7c1a1d44e41771f583cc85a693e289b",
+  "services": [
+    "fn_checkout",
+    "fn_search",
+    "fn_recommend"
+  ],
+  "payload_classes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "auth_mode": "disabled",
+  "auth_token_env": null,
+  "auth_ok": true,
+  "tft_requested": false,
+  "forecast_actual": "persistence",
+  "policy_source": "models/ppo_policy.pt",
+  "policy_sha256": "b3a94a54e4ee05b8cab797154910b4f9c46a571ec944ac51557718cd5234ed17",
+  "planner_actual": "stub_proxy",
+  "executor": "simulator",
+  "live_deployment": false,
+  "artifacts": [
+    "ingestion_schema.json",
+    "events.jsonl",
+    "trace.csv",
+    "routing.csv",
+    "decision.jsonl",
+    "decision_records.jsonl",
+    "audit.jsonl",
+    "feedback.jsonl",
+    "alerts.jsonl",
+    "figures/demo_timeline.png",
+    "report.md",
+    "run_manifest.json"
+  ]
+}

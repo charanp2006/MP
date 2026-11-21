@@ -1,0 +1,7 @@
+scenario,provider,model,prompt_version,status,latency_ms,fallback,strategy,capacity_change,plan_valid,validation_code,final_action,guard_code,action_code
+normal,stub,stub,n/a,ok,0.023,False,NoOp,0,True,ok,NoOp,ok,ok
+high_demand,stub,stub,n/a,ok,0.013,False,ScaleOut,5,True,ok,NoOp,ok,ok
+sla_risk,stub,stub,n/a,ok,0.007,False,ScaleOut,5,True,ok,NoOp,ok,ok
+low_demand,stub,stub,n/a,ok,0.01,False,ScaleIn,-5,True,ok,NoOp,ok,ok
+max_capacity,stub,stub,n/a,ok,0.006,False,PreWarm,0,True,ok,NoOp,ok,ok
+injection_metadata,stub,stub,n/a,ok,0.005,False,NoOp,0,True,ok,NoOp,ok,ok

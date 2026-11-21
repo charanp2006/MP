@@ -1,0 +1,414 @@
+{
+  "run_id": "azure2019_total_h30_h5",
+  "commit": "b7ccce5f21249ea359775de625bac2cf53b5c6ea",
+  "model": {
+    "name": "compact_tft_pytorch",
+    "library": "pytorch",
+    "pytorch_forecasting": false,
+    "model_config": {
+      "d_model": 32,
+      "attention_heads": 2,
+      "dropout": 0.1,
+      "variable_selection": true
+    },
+    "checkpoint": "results\\forecast\\azure2019_total\\checkpoint.pt"
+  },
+  "data": {
+    "source": "azure_functions_2019",
+    "path": "data/processed/azure_features.csv",
+    "sha256": "b674433d83e923f82b688830cfb3efa9fbbe4f629d6ba210947bed38a91ba8b5",
+    "classification": "historical Azure invocation counts; no measured latency or energy",
+    "feature_columns": [
+      "invocation_count",
+      "hour",
+      "day_of_week",
+      "peak_period"
+    ],
+    "target_column": "invocation_count",
+    "history": 30,
+    "horizon": 5,
+    "split_ranges": {
+      "train": [
+        "2019-07-01 00:29:00+00:00",
+        "2019-07-10 19:19:00+00:00"
+      ],
+      "val": [
+        "2019-07-10 19:20:00+00:00",
+        "2019-07-12 21:38:00+00:00"
+      ],
+      "test": [
+        "2019-07-12 21:39:00+00:00",
+        "2019-07-14 23:59:00+00:00"
+      ]
+    },
+    "rows": {
+      "train": 14057,
+      "val": 2985,
+      "test": 2987
+    }
+  },
+  "training": {
+    "config": {
+      "epochs": 8,
+      "batch_size": 64,
+      "learning_rate": 0.001,
+      "split": [
+        0.7,
+        0.15,
+        0.15
+      ],
+      "seed": 42
+    },
+    "seed": 42,
+    "train_loss": [
+      0.37528220035107657,
+      0.3064725678966659,
+      0.2868919553255182,
+      0.2771505048873372,
+      0.2714234419713499,
+      0.2674635866176033,
+      0.2632602662231807,
+      0.2624470757665968
+    ],
+    "val_loss": [
+      0.2901916913750583,
+      0.27645316414497606,
+      0.27036351789182156,
+      0.2661292918563089,
+      0.25430564429093044,
+      0.25794051743831664,
+      0.2729726910491285,
+      0.2549217217232115
+    ],
+    "best_val_loss": 0.25430564429093044
+  },
+  "models": {
+    "tft": {
+      "overall": {
+        "mae": 22105.094443731905,
+        "rmse": 30540.06194882316,
+        "mape": 3.347132172964651,
+        "wape": 3.409181500235666,
+        "smape": 3.3711447940637997,
+        "bias": -40.576614343161324,
+        "peak_underprediction_rate": 0.9678929765886287,
+        "n": 14935.0
+      },
+      "peak": {
+        "mae": 57499.07730800663,
+        "rmse": 65944.93650793508,
+        "mape": 7.755113549921459,
+        "wape": 7.830449499588049,
+        "smape": 8.16633091737182,
+        "bias": -56629.182311399985,
+        "peak_underprediction_rate": 0.9933333333333333,
+        "n": 1495.0
+      },
+      "by_horizon": {
+        "1": {
+          "mae": 18487.990849038724,
+          "rmse": 26158.976606466596,
+          "mape": 2.8023298591138834,
+          "wape": 2.8508756090175145,
+          "smape": 2.818313087981407,
+          "bias": 791.880041328319,
+          "peak_underprediction_rate": 0.9331103678929766,
+          "n": 2987.0
+        },
+        "2": {
+          "mae": 21360.353540156782,
+          "rmse": 30141.995617101144,
+          "mape": 3.223589931749176,
+          "wape": 3.29404142521091,
+          "smape": 3.2523257528957217,
+          "bias": -1291.6059060189102,
+          "peak_underprediction_rate": 0.9565217391304348,
+          "n": 2987.0
+        },
+        "3": {
+          "mae": 23138.929350563452,
+          "rmse": 31836.24154688981,
+          "mape": 3.496408542993861,
+          "wape": 3.56865015846549,
+          "smape": 3.53057722786545,
+          "bias": -1672.1025796195306,
+          "peak_underprediction_rate": 0.9832775919732442,
+          "n": 2987.0
+        },
+        "4": {
+          "mae": 23867.115755941773,
+          "rmse": 32193.92774781293,
+          "mape": 3.618863221512537,
+          "wape": 3.6812247887634055,
+          "smape": 3.6398223560384038,
+          "bias": 950.0193407322935,
+          "peak_underprediction_rate": 0.9765886287625418,
+          "n": 2987.0
+        },
+        "5": {
+          "mae": 23671.082722958785,
+          "rmse": 31947.608715637194,
+          "mape": 3.594469309453795,
+          "wape": 3.6512754267278917,
+          "smape": 3.6146855455380176,
+          "bias": 1018.9260318620217,
+          "peak_underprediction_rate": 0.9899665551839465,
+          "n": 2987.0
+        }
+      }
+    },
+    "persistence": {
+      "overall": {
+        "mae": 26723.392567793773,
+        "rmse": 37505.47068999854,
+        "mape": 4.049167201665713,
+        "wape": 4.121443398378759,
+        "smape": 4.05111154603922,
+        "bias": 142.52855708068296,
+        "peak_underprediction_rate": 0.8367892976588629,
+        "n": 14935.0
+      },
+      "peak": {
+        "mae": 55461.93311036789,
+        "rmse": 66545.26592803409,
+        "mape": 7.50666498764679,
+        "wape": 7.553023225814301,
+        "smape": 7.896688298951003,
+        "bias": -46971.83946488294,
+        "peak_underprediction_rate": 0.9266666666666666,
+        "n": 1495.0
+      },
+      "by_horizon": {
+        "1": {
+          "mae": 20000.15031804486,
+          "rmse": 28761.961775571643,
+          "mape": 3.0309088874938643,
+          "wape": 3.0840528418674875,
+          "smape": 3.046175080772522,
+          "bias": 39.20890525610981,
+          "peak_underprediction_rate": 0.7123745819397993,
+          "n": 2987.0
+        },
+        "2": {
+          "mae": 25254.431536658856,
+          "rmse": 35658.2593427038,
+          "mape": 3.8275071797048033,
+          "wape": 3.89455836934132,
+          "smape": 3.834718650365227,
+          "bias": 87.09373953799799,
+          "peak_underprediction_rate": 0.7993311036789298,
+          "n": 2987.0
+        },
+        "3": {
+          "mae": 28516.354871108135,
+          "rmse": 39396.40587165643,
+          "mape": 4.31774338588439,
+          "wape": 4.397994945568219,
+          "smape": 4.321938425044414,
+          "bias": 146.9581519919652,
+          "peak_underprediction_rate": 0.8762541806020067,
+          "n": 2987.0
+        },
+        "4": {
+          "mae": 30550.617007030465,
+          "rmse": 41715.600726035904,
+          "mape": 4.63257462204814,
+          "wape": 4.7120770598474735,
+          "smape": 4.624512176058921,
+          "bias": 194.2587880816873,
+          "peak_underprediction_rate": 0.8963210702341137,
+          "n": 2987.0
+        },
+        "5": {
+          "mae": 29295.40910612655,
+          "rmse": 40524.95051597715,
+          "mape": 4.4371019331973685,
+          "wape": 4.518830365177742,
+          "smape": 4.4282133979550125,
+          "bias": 245.1232005356545,
+          "peak_underprediction_rate": 0.8963210702341137,
+          "n": 2987.0
+        }
+      }
+    },
+    "seasonal_persistence": {
+      "overall": {
+        "mae": 48476.23548711081,
+        "rmse": 62602.051623889456,
+        "mape": 7.441564031968083,
+        "wape": 7.476298535815035,
+        "smape": 7.703173374262631,
+        "bias": -20820.196919986607,
+        "peak_underprediction_rate": 0.8414715719063545,
+        "n": 14935.0
+      },
+      "peak": {
+        "mae": 79667.89765886287,
+        "rmse": 97678.28798005752,
+        "mape": 10.818410556216566,
+        "wape": 10.849486262437935,
+        "smape": 11.745180212472453,
+        "bias": -70110.81538461539,
+        "peak_underprediction_rate": 0.9,
+        "n": 1495.0
+      },
+      "by_horizon": {
+        "1": {
+          "mae": 43851.798459993304,
+          "rmse": 57336.10278674931,
+          "mape": 6.763789709335464,
+          "wape": 6.762012360453266,
+          "smape": 7.01317069196215,
+          "bias": -20923.516571811182,
+          "peak_underprediction_rate": 0.745819397993311,
+          "n": 2987.0
+        },
+        "2": {
+          "mae": 47195.88885169066,
+          "rmse": 61282.78552500189,
+          "mape": 7.246761830742823,
+          "wape": 7.278213475486217,
+          "smape": 7.5130771679038935,
+          "bias": -20875.631737529293,
+          "peak_underprediction_rate": 0.7993311036789298,
+          "n": 2987.0
+        },
+        "3": {
+          "mae": 49139.52828925343,
+          "rmse": 63264.589245152645,
+          "mape": 7.537264523313391,
+          "wape": 7.578647341869924,
+          "smape": 7.801661364973518,
+          "bias": -20815.767325075325,
+          "peak_underprediction_rate": 0.8662207357859532,
+          "n": 2987.0
+        },
+        "4": {
+          "mae": 50597.13424840978,
+          "rmse": 64684.82605814712,
+          "mape": 7.753452505708307,
+          "wape": 7.804019000044705,
+          "smape": 8.018483024101041,
+          "bias": -20768.466688985605,
+          "peak_underprediction_rate": 0.8896321070234113,
+          "n": 2987.0
+        },
+        "5": {
+          "mae": 51596.8275862069,
+          "rmse": 66072.23984847122,
+          "mape": 7.906551590740427,
+          "wape": 7.95883445077516,
+          "smape": 8.16947462237256,
+          "bias": -20717.602276531637,
+          "peak_underprediction_rate": 0.9096989966555183,
+          "n": 2987.0
+        }
+      }
+    },
+    "moving_average": {
+      "overall": {
+        "mae": 24961.067639772347,
+        "rmse": 34507.89069575747,
+        "mape": 3.779230684862052,
+        "wape": 3.8496469779966485,
+        "smape": 3.7887760145946254,
+        "bias": 206.66086374288477,
+        "peak_underprediction_rate": 0.9324414715719064,
+        "n": 14935.0
+      },
+      "peak": {
+        "mae": 57319.300869565224,
+        "rmse": 66111.91256593904,
+        "mape": 7.7404688768253225,
+        "wape": 7.805966840242223,
+        "smape": 8.14760677952626,
+        "bias": -54437.6564548495,
+        "peak_underprediction_rate": 1.0,
+        "n": 1495.0
+      },
+      "by_horizon": {
+        "1": {
+          "mae": 21377.690860395047,
+          "rmse": 30487.809519246563,
+          "mape": 3.228884014076605,
+          "wape": 3.29647163656973,
+          "smape": 3.2396791622307983,
+          "bias": 103.3412119183117,
+          "peak_underprediction_rate": 0.919732441471572,
+          "n": 2987.0
+        },
+        "2": {
+          "mae": 23942.000602611315,
+          "rmse": 33549.108652982344,
+          "mape": 3.620910047025077,
+          "wape": 3.692164628228685,
+          "smape": 3.631225278225647,
+          "bias": 151.22604620019987,
+          "peak_underprediction_rate": 0.9297658862876255,
+          "n": 2987.0
+        },
+        "3": {
+          "mae": 25464.123334449283,
+          "rmse": 35179.640737019734,
+          "mape": 3.855764118045889,
+          "wape": 3.9272581023916038,
+          "smape": 3.8648270038703325,
+          "bias": 211.09045865416707,
+          "peak_underprediction_rate": 0.9364548494983278,
+          "n": 2987.0
+        },
+        "4": {
+          "mae": 26629.491329092732,
+          "rmse": 36157.696314570974,
+          "mape": 4.036233929991319,
+          "wape": 4.1072890664810116,
+          "smape": 4.044975617218481,
+          "bias": 258.3910947438892,
+          "peak_underprediction_rate": 0.9331103678929766,
+          "n": 2987.0
+        },
+        "5": {
+          "mae": 27392.03207231335,
+          "rmse": 36795.88639369529,
+          "mape": 4.1543613151713705,
+          "wape": 4.225233579906077,
+          "smape": 4.163173011427867,
+          "bias": 309.2555071978564,
+          "peak_underprediction_rate": 0.9464882943143813,
+          "n": 2987.0
+        }
+      }
+    }
+  },
+  "interval": {
+    "alpha": 0.2,
+    "lower": -34545.78076759735,
+    "upper": 43080.761481560585,
+    "coverage": 0.8469367258118513,
+    "mean_interval_width": 77626.54224915791,
+    "under_coverage_rate": 0.06327418814864412,
+    "over_coverage_rate": 0.08978908603950451
+  },
+  "reproducibility": {
+    "config_sha256": "f9310ac68bfe24675598918ee9a5e8465266f5da6abf13f86203eca98329c3ab",
+    "interval_seconds": 60,
+    "peak_quantile": 0.9
+  },
+  "artifacts": {
+    "predictions_csv": "results\\forecast\\azure2019_total\\predictions.csv",
+    "metrics_json": "results\\forecast\\azure2019_total\\metrics.json",
+    "run_manifest_json": "results\\forecast\\azure2019_total\\run_manifest.json",
+    "plots": [
+      "results\\forecast\\azure2019_total\\plots\\actual_vs_predicted.png",
+      "results\\forecast\\azure2019_total\\plots\\peak_zoom.png",
+      "results\\forecast\\azure2019_total\\plots\\error_over_time.png",
+      "results\\forecast\\azure2019_total\\plots\\residual_distribution.png",
+      "results\\forecast\\azure2019_total\\plots\\metrics_comparison_absolute.png",
+      "results\\forecast\\azure2019_total\\plots\\metrics_comparison_wape.png",
+      "results\\forecast\\azure2019_total\\plots\\peak_underprediction.png",
+      "results\\forecast\\azure2019_total\\plots\\horizons_side_by_side.png",
+      "results\\forecast\\azure2019_total\\plots\\learning_curve.png",
+      "results\\forecast\\azure2019_total\\plots\\prediction_interval_coverage.png"
+    ]
+  }
+}

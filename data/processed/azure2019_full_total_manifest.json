@@ -1,0 +1,241 @@
+{
+  "dataset": "azurefunctions-dataset-2019",
+  "source": {
+    "repo": "https://github.com/Azure/AzurePublicDataset",
+    "dataset_doc": "https://raw.githubusercontent.com/Azure/AzurePublicDataset/master/AzureFunctionsDataset2019.md",
+    "release_tag": "dataset-functions-2019",
+    "asset_name": "azurefunctions_dataset2019_azurefunctions-dataset2019.tar.xz",
+    "asset_url": "https://github.com/Azure/AzurePublicDataset/releases/download/dataset-functions-2019/azurefunctions_dataset2019_azurefunctions-dataset2019.tar.xz",
+    "license": "CC-BY-4.0",
+    "citation": "Mohammad Shahrad, Rodrigo Fonseca, Inigo Goiri, Gohar Chaudhry, Paul Batum, Jason Cooke, Eduardo Laureano, Colby Tresness, Mark Russinovich, Ricardo Bianchini. \"Serverless in the Wild: Characterizing and Optimizing the Serverless Workload at a Large Cloud Provider.\" USENIX ATC 2020."
+  },
+  "retrieval": {
+    "url": "https://github.com/Azure/AzurePublicDataset/releases/download/dataset-functions-2019/azurefunctions_dataset2019_azurefunctions-dataset2019.tar.xz",
+    "dest": "data\\raw\\azure\\azurefunctions-dataset-2019\\azurefunctions_dataset2019_azurefunctions-dataset2019.tar.xz",
+    "retrieved_at_utc": null,
+    "http_status": null,
+    "bytes_downloaded": 0,
+    "size_bytes": 142968140,
+    "sha256": "aff8b3ca7240a41a109e4ee598e0a96e45fcb92e7b8395ac19cb3748cd260d89",
+    "expected_sha256": "aff8b3ca7240a41a109e4ee598e0a96e45fcb92e7b8395ac19cb3748cd260d89",
+    "sha256_ok": true,
+    "reused_existing": true
+  },
+  "verification": {
+    "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\azurefunctions_dataset2019_azurefunctions-dataset2019.tar.xz",
+    "sha256": "aff8b3ca7240a41a109e4ee598e0a96e45fcb92e7b8395ac19cb3748cd260d89",
+    "size_bytes": 142968140,
+    "sha256_ok": true,
+    "size_ok": true
+  },
+  "files": [
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d01.csv",
+      "name": "invocations_per_function_md.anon.d01.csv",
+      "day_index": 1,
+      "sha256": "f9613ae91224d87b201ce8c7c618e80c94d6bf041992effb34c5aa710b3c20fa",
+      "size_bytes": 145688809
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d02.csv",
+      "name": "invocations_per_function_md.anon.d02.csv",
+      "day_index": 2,
+      "sha256": "12fbe81e4378d844f80a8f79f859f6a67ef7d49d43948e15817ddc0412509f93",
+      "size_bytes": 147225211
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d03.csv",
+      "name": "invocations_per_function_md.anon.d03.csv",
+      "day_index": 3,
+      "sha256": "e42aee023227e897240af550937f4c73b3d57500f2f2b601fdcf92d4b605dbf2",
+      "size_bytes": 147847889
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d04.csv",
+      "name": "invocations_per_function_md.anon.d04.csv",
+      "day_index": 4,
+      "sha256": "17e8e7f58e3b410d28c2ce148462ff6212e9e9bced6765723fb519af5d2b183d",
+      "size_bytes": 149270715
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d05.csv",
+      "name": "invocations_per_function_md.anon.d05.csv",
+      "day_index": 5,
+      "sha256": "0ca643c3e0377a7077163568650bba0c95cf4402be7db19159b825774694e4ff",
+      "size_bytes": 146543294
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d06.csv",
+      "name": "invocations_per_function_md.anon.d06.csv",
+      "day_index": 6,
+      "sha256": "87a11cd0d01ddeb0463be0683338b4fc6b28e78ba9eb75b524a5ea4f57c44139",
+      "size_bytes": 114734908
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d07.csv",
+      "name": "invocations_per_function_md.anon.d07.csv",
+      "day_index": 7,
+      "sha256": "80cb06531495741d762ac91642c996b613ad6de6c839b2f46482c36bbf882a68",
+      "size_bytes": 113443113
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d08.csv",
+      "name": "invocations_per_function_md.anon.d08.csv",
+      "day_index": 8,
+      "sha256": "26be533cef1c853ac2af714982929891984b26737287d185329d1875f16040d3",
+      "size_bytes": 147549135
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d09.csv",
+      "name": "invocations_per_function_md.anon.d09.csv",
+      "day_index": 9,
+      "sha256": "14cc620359b78313366e9d6a7d9705b43297bec54b9b50977815ff31c89ae143",
+      "size_bytes": 149626915
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d10.csv",
+      "name": "invocations_per_function_md.anon.d10.csv",
+      "day_index": 10,
+      "sha256": "e8229de8d550f5c79a9b5ff80177619ead0178d836e2b48080a19f3972741b6c",
+      "size_bytes": 151944388
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d11.csv",
+      "name": "invocations_per_function_md.anon.d11.csv",
+      "day_index": 11,
+      "sha256": "0e24d2dab9a6118fffd7e0fe30cc5f6e8ec19d2cc24f14fd282c4c36c7063b80",
+      "size_bytes": 151036615
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d12.csv",
+      "name": "invocations_per_function_md.anon.d12.csv",
+      "day_index": 12,
+      "sha256": "7e1377e71b580cbc2e38fac1d3f32d4a8bb01cf971d92e32992f4e28447cfb6f",
+      "size_bytes": 148152217
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d13.csv",
+      "name": "invocations_per_function_md.anon.d13.csv",
+      "day_index": 13,
+      "sha256": "395251affeba32baf8e6008e9fe5fd4254019f73fe9fe52235c4e69fe8effc4a",
+      "size_bytes": 115495030
+    },
+    {
+      "path": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted\\invocations_per_function_md.anon.d14.csv",
+      "name": "invocations_per_function_md.anon.d14.csv",
+      "day_index": 14,
+      "sha256": "8b9b74861378cf5a41b3a05febec27f9fa30e567c813945cf36a94f1329f3901",
+      "size_bytes": 114827241
+    }
+  ],
+  "schema": {
+    "raw_columns": [
+      "HashOwner",
+      "HashApp",
+      "HashFunction",
+      "Trigger",
+      "1..1440"
+    ],
+    "prepared_columns": [
+      "timestamp",
+      "function_id",
+      "invocation_count",
+      "trigger",
+      "hash_owner",
+      "hash_app",
+      "hash_function",
+      "day_index",
+      "split(optional)"
+    ]
+  },
+  "units": {
+    "invocation_count": "count per interval (sum over minute bins within interval) per function_id",
+    "interval_seconds": 60,
+    "timestamp": "UTC, sequential 1-min slots from relative day base 2019-07-01T00:00:00Z (assumption)"
+  },
+  "aggregation": {
+    "function_id": "HashApp|HashFunction",
+    "interval_seconds": 60,
+    "method": "sum of per-minute invocation counts within bin",
+    "mode": "total"
+  },
+  "cleaning": {
+    "rows_in": 20160,
+    "rows_out": 20160,
+    "duplicate_key_rows": 0,
+    "duplicates_resolved": false,
+    "invalid_numeric": 0,
+    "negative_values": 0,
+    "monotonic_per_function": true,
+    "functions": 1,
+    "unique_timestamps": 20160,
+    "expected_rows_function_x_time": 20160,
+    "missing_intervals_function_x_time": 0,
+    "nan_counts": {},
+    "start": "2019-07-01 00:00:00+00:00",
+    "end": "2019-07-14 23:59:00+00:00"
+  },
+  "split": {
+    "boundaries": {
+      "train": {
+        "start_index": 0,
+        "end_index": 14112,
+        "start_time": "2019-07-01 00:00:00+00:00",
+        "end_time_exclusive": "2019-07-10 19:12:00+00:00",
+        "n_unique_timestamps": 14112
+      },
+      "val": {
+        "start_index": 14112,
+        "end_index": 17136,
+        "start_time": "2019-07-10 19:12:00+00:00",
+        "end_time_exclusive": "2019-07-12 21:36:00+00:00",
+        "n_unique_timestamps": 3024
+      },
+      "test": {
+        "start_index": 17136,
+        "end_index": 20160,
+        "start_time": "2019-07-12 21:36:00+00:00",
+        "end_time_exclusive": "2019-07-14 23:59:00+00:00",
+        "n_unique_timestamps": 3024
+      }
+    },
+    "row_counts": {
+      "train": 14112,
+      "val": 3024,
+      "test": 3024
+    }
+  },
+  "assumptions": [
+    "Relative day mapping d01..d14 -> sequential days starting 2019-07-01Z for ordering; absolute calendar alignment not asserted by trace.",
+    "Per-minute counts aggregated by sum to configured interval.",
+    "Duplicate (timestamp,function_id) rows resolved by summing invocation_count.",
+    "CPU/memory/latency/cold-start/power/energy are not provided by this trace; downstream proxies must be labeled simulated/estimated."
+  ],
+  "aggregation_detail": {
+    "mode": "total",
+    "method": "chunked_wide",
+    "input_rows": 618545,
+    "input_functions": null,
+    "output_rows": 20160,
+    "output_functions": 1,
+    "chunk_size": 2000
+  },
+  "extraction": {
+    "archive": "data\\raw\\azure\\azurefunctions-dataset-2019\\azurefunctions_dataset2019_azurefunctions-dataset2019.tar.xz",
+    "extracted_dir": "data\\raw\\azure\\azurefunctions-dataset-2019\\extracted",
+    "files_found": 14,
+    "files_extracted_this_run": 13,
+    "days_selected": null
+  },
+  "output": {
+    "prepared_csv": "data\\processed\\azure2019_full_total.csv",
+    "rows": 20160,
+    "columns": [
+      "timestamp",
+      "function_id",
+      "invocation_count",
+      "day_index",
+      "split"
+    ]
+  }
+}

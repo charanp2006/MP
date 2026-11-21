@@ -1,0 +1,38 @@
+{
+  "mode": "simulation",
+  "generated_by": "experiments.evaluate_ppo_m5",
+  "config_sha256": "5508a45935df0787dbce474c90fba7ff08c78f5c6bc573b7de1e7d424231a046",
+  "git_commit": "b3624ba",
+  "seeds": [
+    42
+  ],
+  "episodes_per_seed": 1,
+  "scenario_steps": 12,
+  "scenarios": [
+    "ramp",
+    "burst",
+    "periodic",
+    "sparse",
+    "stress",
+    "mixed"
+  ],
+  "trace_csv": null,
+  "tft_checkpoint": null,
+  "tft": {
+    "attempted": false,
+    "available": false,
+    "reason": "not_requested"
+  },
+  "arms": [
+    "fixed_noop",
+    "persistence_rule",
+    "ppo_shielded",
+    "reactive"
+  ],
+  "units": {
+    "energy_w": "simulated proxy watts",
+    "p95_latency_ms": "simulated latency milliseconds",
+    "cold_starts": "simulated container starts",
+    "reward": "normalized control objective (higher is better)"
+  }
+}

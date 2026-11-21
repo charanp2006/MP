@@ -54,6 +54,7 @@ class Decision:
     action_code: str
     used_fallback: bool
     authorized: bool
+    metrics_stale: bool = False
     execution: Optional[Dict] = None
     feedback: Optional[Dict] = None
     feedback_applied: bool = False
@@ -84,6 +85,7 @@ class Decision:
             "action_code": self.action_code,
             "used_fallback": self.used_fallback,
             "authorized": self.authorized,
+            "metrics_stale": self.metrics_stale,
             "feedback_applied": self.feedback_applied,
         }
         if self.execution is not None:
@@ -220,6 +222,9 @@ class DecisionLoop:
             planner_record["plan_code"] = plan_validation.code
 
         ppo_action = self._select_action(policy, obs)
+        metrics_stale = bool(metrics.get("stale", False))
+        if metrics_stale:
+            ppo_action = NOOP
         biased_action, feedback_applied = self._apply_feedback_bias(int(ppo_action), plan, feedback_signal)
         shield = self.safety_shield.filter(
             biased_action,
@@ -231,6 +236,19 @@ class DecisionLoop:
         final_action = int(shield.action) if int(shield.action) in range(len(ACTIONS)) else NOOP
         guard_code = "sla_guard" if "sla_guard" in shield.codes else "ok"
         action_code = shield.codes[0] if shield.codes else "ok"
+
+        planner_latency = planner_record.get("latency_ms") if planner_record else None
+        if planner_latency is not None:
+            try:
+                self.metrics.set_gauge("planner_latency_ms", float(planner_latency))
+            except (TypeError, ValueError):
+                pass
+        if used_fallback:
+            self.metrics.inc("planner_fallback_total")
+        if guard_code == "sla_guard" or action_code != "ok":
+            self.metrics.inc("guard_interventions_total")
+        if ppo_action in range(len(ACTIONS)):
+            self.metrics.inc("ppo_action_total", 1.0, {"action": ACTIONS[int(ppo_action)]})
 
         execution = None
         if execute:
@@ -285,6 +303,7 @@ class DecisionLoop:
         hierarchy = {
             "correlation_id": correlation,
             "forecast_source": forecast_source,
+            "metrics_stale": metrics_stale,
             "planner_role": "advisory",
             "controller_role": "proposal",
             "shield_role": "final_authority",
@@ -309,6 +328,7 @@ class DecisionLoop:
             action_code=action_code,
             used_fallback=used_fallback,
             authorized=authorized,
+            metrics_stale=metrics_stale,
             execution=execution,
             feedback=signal,
             feedback_applied=feedback_applied,
@@ -382,6 +402,8 @@ def run_episode(
     correlation_prefix: Optional[str] = None,
     use_feedback: bool = True,
     forecast_scale: float = 1.0,
+    metrics_source: str = "simulator",
+    prometheus_adapter=None,
 ) -> List[Dict]:
     """Replay a trace through the bounded decision loop with logged provenance."""
     loop = loop or DecisionLoop(config, logger=logger)
@@ -398,6 +420,12 @@ def run_episode(
         except Exception:
             service = None
 
+    adapter = prometheus_adapter
+    if metrics_source == "prometheus" and adapter is None:
+        from monitoring.prometheus_adapter import PrometheusMetricsAdapter
+
+        adapter = PrometheusMetricsAdapter(config)
+
     records: List[Dict] = []
     done = False
     prev_info = None
@@ -406,22 +434,31 @@ def run_episode(
     while not done and (steps is None or len(records) < steps):
         idx = int(env.idx)
         row = env.timeline.iloc[idx]
-        forecast = (
-            _tft_forecast(env, service, horizon, forecast_scale)
-            if service is not None
-            else _persistence_forecast(row["workload"], horizon)
-        )
-        forecast_source = str(forecast.get("source", "tft" if service is not None else "persistence"))
-        metrics = {
-            "current_workload": float(row["workload"]),
-            "cpu_utilization": float(row["cpu"]),
-            "memory_utilization": float(row["memory"]),
-            "active_containers": int(env.capacity),
-            "warm_containers": int(getattr(env, "warm", 0)),
-            "p95_latency_ms": float(obs[5]) * env.sla_threshold,
-            "cold_starts": 0.0,
-            "energy": float(obs[8]) * env.energy_ref,
-        }
+        live_metrics = adapter.fetch() if adapter is not None else None
+        if service is not None:
+            forecast = _tft_forecast(env, service, horizon, forecast_scale)
+        elif live_metrics is not None:
+            forecast = _persistence_forecast(float(live_metrics.get("current_workload", row["workload"])), horizon)
+            forecast["source"] = "prometheus_persistence"
+        else:
+            forecast = _persistence_forecast(row["workload"], horizon)
+        forecast_source = str(forecast.get("source", "persistence"))
+        if live_metrics is not None:
+            metrics = dict(live_metrics)
+            metrics.setdefault("active_containers", int(env.capacity))
+            metrics.setdefault("warm_containers", int(getattr(env, "warm", 0)))
+            metrics["source"] = "prometheus"
+        else:
+            metrics = {
+                "current_workload": float(row["workload"]),
+                "cpu_utilization": float(row["cpu"]),
+                "memory_utilization": float(row["memory"]),
+                "active_containers": int(env.capacity),
+                "warm_containers": int(getattr(env, "warm", 0)),
+                "p95_latency_ms": float(obs[5]) * env.sla_threshold,
+                "cold_starts": 0.0,
+                "energy": float(obs[8]) * env.energy_ref,
+            }
         if use_feedback and prev_info is not None:
             try:
                 loop.feedback.record_cycle(
@@ -465,6 +502,12 @@ def run_episode(
             "required_capacity": int(info.get("required_capacity", 0)),
             "reward_components": info.get("reward_components", {}),
         }
+        try:
+            predicted = float(forecast.get("predicted_workload", [0.0])[0])
+            actual = float(metrics.get("current_workload", row["workload"]))
+            loop.metrics.set_gauge("forecast_error", abs(predicted - actual) / max(abs(actual), 1.0))
+        except (TypeError, ValueError, IndexError):
+            pass
         loop.record_outcome(decision, outcome)
         records.append(
             {
@@ -488,6 +531,12 @@ def main() -> None:
     parser.add_argument("--policy", choices=["none", "checkpoint"], default="checkpoint")
     parser.add_argument("--execute", action="store_true", help="call the executor (respecting config)")
     parser.add_argument("--use-tft", action="store_true", help="use trained TFT checkpoint for forecasts (no oracle)")
+    parser.add_argument(
+        "--metrics-source",
+        choices=["simulator", "prometheus"],
+        default="simulator",
+        help="source for live runtime metrics",
+    )
     args = parser.parse_args()
 
     from configs import load_config
@@ -516,6 +565,7 @@ def main() -> None:
         use_tft=args.use_tft,
         execute=args.execute,
         correlation_prefix="cli",
+        metrics_source=args.metrics_source,
     )
     last = records[-1] if records else None
     print(
@@ -527,6 +577,7 @@ def main() -> None:
                     "tft": args.use_tft,
                     "runtime": config.get("agent", {}).get("runtime"),
                     "execute": bool(args.execute),
+                    "metrics_source": args.metrics_source,
                 },
             },
             indent=2,

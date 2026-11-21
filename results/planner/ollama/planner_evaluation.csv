@@ -1,0 +1,7 @@
+scenario,provider,model,prompt_version,status,latency_ms,fallback,strategy,capacity_change,plan_valid,validation_code,final_action,guard_code,action_code
+normal,ollama,qwen3:4b,planner-v2,fallback,4190.562,True,NoOp,0,True,ok,NoOp,ok,ok
+high_demand,ollama,qwen3:4b,planner-v2,fallback,4018.562,True,ScaleOut,5,True,ok,NoOp,ok,ok
+sla_risk,ollama,qwen3:4b,planner-v2,fallback,4015.21,True,ScaleOut,5,True,ok,NoOp,ok,ok
+low_demand,ollama,qwen3:4b,planner-v2,fallback,4011.634,True,ScaleIn,-5,True,ok,NoOp,ok,ok
+max_capacity,ollama,qwen3:4b,planner-v2,fallback,4007.211,True,PreWarm,0,True,ok,NoOp,ok,ok
+injection_metadata,ollama,qwen3:4b,planner-v2,fallback,4020.161,True,NoOp,0,True,ok,NoOp,ok,ok

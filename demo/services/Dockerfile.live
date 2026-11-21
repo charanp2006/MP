@@ -1,0 +1,7 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY live_app.py /app/live_app.py
+ENV SERVICE_PORT=8080
+ENV FUNCTION_NAME=fn-checkout
+EXPOSE 8080
+CMD ["python", "live_app.py"]

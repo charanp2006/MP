@@ -1,0 +1,70 @@
+{
+  "mode": "simulation",
+  "rows": [
+    {
+      "arm": "full",
+      "steps": 24,
+      "mean_reward": -0.6417777777777777,
+      "reward_std": 0.015776212754932323,
+      "sla_violation_rate": 0.0,
+      "mean_energy_w": 35.0,
+      "mean_capacity": 2.0,
+      "mean_cold_starts": 0.0,
+      "shield_intervention_rate": 0.0,
+      "fallback_rate": 0.0,
+      "final_action": "PreWarm"
+    },
+    {
+      "arm": "planner_off",
+      "steps": 24,
+      "mean_reward": -0.6417777777777777,
+      "reward_std": 0.015776212754932323,
+      "sla_violation_rate": 0.0,
+      "mean_energy_w": 35.0,
+      "mean_capacity": 2.0,
+      "mean_cold_starts": 0.0,
+      "shield_intervention_rate": 0.0,
+      "fallback_rate": 0.0,
+      "final_action": "PreWarm"
+    },
+    {
+      "arm": "policy_off",
+      "steps": 24,
+      "mean_reward": -0.6417777777777777,
+      "reward_std": 0.015776212754932323,
+      "sla_violation_rate": 0.0,
+      "mean_energy_w": 35.0,
+      "mean_capacity": 2.0,
+      "mean_cold_starts": 0.0,
+      "shield_intervention_rate": 0.0,
+      "fallback_rate": 0.0,
+      "final_action": "NoOp"
+    },
+    {
+      "arm": "feedback_off",
+      "steps": 24,
+      "mean_reward": -0.6417777777777777,
+      "reward_std": 0.015776212754932323,
+      "sla_violation_rate": 0.0,
+      "mean_energy_w": 35.0,
+      "mean_capacity": 2.0,
+      "mean_cold_starts": 0.0,
+      "shield_intervention_rate": 0.0,
+      "fallback_rate": 0.0,
+      "final_action": "PreWarm"
+    },
+    {
+      "arm": "forecast_off",
+      "steps": 24,
+      "mean_reward": -0.6417777777777777,
+      "reward_std": 0.015776212754932323,
+      "sla_violation_rate": 0.0,
+      "mean_energy_w": 35.0,
+      "mean_capacity": 2.0,
+      "mean_cold_starts": 0.0,
+      "shield_intervention_rate": 0.0,
+      "fallback_rate": 0.0,
+      "final_action": "PreWarm"
+    }
+  ]
+}

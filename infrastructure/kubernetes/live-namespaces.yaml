@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: serverless-mgmt
+  labels:
+    app.kubernetes.io/part-of: predictive-serverless
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openfaas
+  labels:
+    app.kubernetes.io/part-of: predictive-serverless
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openfaas-fn
+  labels:
+    app.kubernetes.io/part-of: predictive-serverless
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    app.kubernetes.io/part-of: predictive-serverless

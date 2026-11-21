@@ -1,0 +1,17 @@
+step,workload,capacity,warm_containers,pending_warm_containers,p95_latency_ms,sla_violated,cold_starts,energy_w,reward,action,arm,seed,scenario,source
+1,857.1954311015771,2,0,0,218.4,False,0,35.0,-0.7831111111111112,NoOp,fixed_noop,42,mixed,synthetic
+2,813.3486916979191,2,0,0,208.0,False,0,35.0,-0.7511111111111112,NoOp,fixed_noop,42,mixed,synthetic
+3,719.1378563113326,2,0,0,187.20000000000002,False,0,35.0,-0.6871111111111111,NoOp,fixed_noop,42,mixed,synthetic
+4,612.613351507405,2,0,0,166.4,False,0,35.0,-0.6231111111111111,NoOp,fixed_noop,42,mixed,synthetic
+1,857.1954311015771,2,0,0,218.4,False,0,35.0,-0.7831111111111112,NoOp,reactive,42,mixed,synthetic
+2,813.3486916979191,2,0,0,208.0,False,0,35.0,-0.7511111111111112,NoOp,reactive,42,mixed,synthetic
+3,719.1378563113326,2,0,0,187.20000000000002,False,0,35.0,-0.6871111111111111,NoOp,reactive,42,mixed,synthetic
+4,612.613351507405,2,0,0,166.4,False,0,35.0,-0.6231111111111111,NoOp,reactive,42,mixed,synthetic
+1,857.1954311015771,2,0,0,218.4,False,0,35.0,-0.7831111111111112,NoOp,persistence_rule,42,mixed,synthetic
+2,813.3486916979191,2,0,0,208.0,False,0,35.0,-0.7511111111111112,NoOp,persistence_rule,42,mixed,synthetic
+3,719.1378563113326,2,0,0,187.20000000000002,False,0,35.0,-0.6871111111111111,NoOp,persistence_rule,42,mixed,synthetic
+4,612.613351507405,2,0,0,166.4,False,0,35.0,-0.6231111111111111,NoOp,persistence_rule,42,mixed,synthetic
+1,857.1954311015771,2,0,0,218.4,False,0,35.0,-0.7831111111111112,NoOp,ppo_shielded,42,mixed,synthetic
+2,813.3486916979191,2,0,0,208.0,False,0,35.0,-0.7511111111111112,NoOp,ppo_shielded,42,mixed,synthetic
+3,719.1378563113326,2,0,0,187.20000000000002,False,0,35.0,-0.6871111111111111,NoOp,ppo_shielded,42,mixed,synthetic
+4,612.613351507405,2,0,0,166.4,False,0,35.0,-0.6231111111111111,NoOp,ppo_shielded,42,mixed,synthetic

@@ -35,7 +35,13 @@ Start with the complete specification:
 | [docs/validation-report.md](docs/validation-report.md) | Image-vs-docs audit + implementation-readiness checklist |
 | [docs/references.md](docs/references.md) | Recommended research papers mapped to components |
 | [docs/tech-stack.md](docs/tech-stack.md) | Technology stack, tools and per-stage mapping |
-| [docs/implementation/](docs/implementation/README.md) | Versioned per-phase implementation records (P1–P4) — [P4 execution](docs/implementation/p4-v1.0-execution.md) |
+| [docs/PROJECT_STATUS_SUMMARY.md](docs/PROJECT_STATUS_SUMMARY.md) | Consolidated summary of all completed work, live G/H evidence, limitations and delivery metadata |
+| [docs/ai-driven-decision-engine-dashboard.html](docs/ai-driven-decision-engine-dashboard.html) | Unified TFT + Qwen3 + PPO decision engine dashboard (roles, handoffs, safety, evidence) |
+| [docs/forecasting-dashboard.html](docs/forecasting-dashboard.html) | TFT workload-forecasting dashboard (trained forecaster + baselines, offline evidence) |
+| [docs/agentic-planning-dashboard.html](docs/agentic-planning-dashboard.html) | Qwen3 planner dashboard (adapter/safety evidence; real inference unavailable) |
+| [docs/ppo-controller-dashboard.html](docs/ppo-controller-dashboard.html) | PPO controller dashboard (smoke training, simulated evaluation evidence) |
+| [docs/implementation/](docs/implementation/README.md) | Versioned per-phase implementation records (P1–P6) — [P4 execution](docs/implementation/p4-v1.0-execution.md), [P6 live G/H](docs/implementation/p6-v1.0-live-execution-and-monitoring.md) |
+| [docs/runbooks/live-g-h.md](docs/runbooks/live-g-h.md) | Exact commands to deploy and verify live Kubernetes/OpenFaaS execution and in-cluster monitoring |
 | [AGENTS.md](AGENTS.md) | Guidance for AI coding agents and contributors |
 | [configs/project.yaml](configs/project.yaml) | Experiment configuration defaults (single source of truth) |
 

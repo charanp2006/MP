@@ -1,0 +1,126 @@
+{
+  "summary": {
+    "runtime": "stub",
+    "model": "qwen3:4b",
+    "scenarios": 6,
+    "valid_rate": 1.0,
+    "fallback_rate": 0.0,
+    "mean_planning_latency_ms": 0.010666666666666666,
+    "p95_planning_latency_ms": 0.0205,
+    "strategy_counts": {
+      "NoOp": 2,
+      "ScaleOut": 2,
+      "ScaleIn": 1,
+      "PreWarm": 1
+    },
+    "final_action_counts": {
+      "NoOp": 6
+    },
+    "guard_override_rate": 0.0,
+    "action_reject_rate": 0.0,
+    "provider_counts": {
+      "stub": 6
+    },
+    "status_counts": {
+      "ok": 6
+    }
+  },
+  "rows": [
+    {
+      "scenario": "normal",
+      "provider": "stub",
+      "model": "stub",
+      "prompt_version": "n/a",
+      "status": "ok",
+      "latency_ms": 0.023,
+      "fallback": false,
+      "strategy": "NoOp",
+      "capacity_change": 0,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "high_demand",
+      "provider": "stub",
+      "model": "stub",
+      "prompt_version": "n/a",
+      "status": "ok",
+      "latency_ms": 0.013,
+      "fallback": false,
+      "strategy": "ScaleOut",
+      "capacity_change": 5,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "sla_risk",
+      "provider": "stub",
+      "model": "stub",
+      "prompt_version": "n/a",
+      "status": "ok",
+      "latency_ms": 0.007,
+      "fallback": false,
+      "strategy": "ScaleOut",
+      "capacity_change": 5,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "low_demand",
+      "provider": "stub",
+      "model": "stub",
+      "prompt_version": "n/a",
+      "status": "ok",
+      "latency_ms": 0.01,
+      "fallback": false,
+      "strategy": "ScaleIn",
+      "capacity_change": -5,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "max_capacity",
+      "provider": "stub",
+      "model": "stub",
+      "prompt_version": "n/a",
+      "status": "ok",
+      "latency_ms": 0.006,
+      "fallback": false,
+      "strategy": "PreWarm",
+      "capacity_change": 0,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "injection_metadata",
+      "provider": "stub",
+      "model": "stub",
+      "prompt_version": "n/a",
+      "status": "ok",
+      "latency_ms": 0.005,
+      "fallback": false,
+      "strategy": "NoOp",
+      "capacity_change": 0,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    }
+  ]
+}
