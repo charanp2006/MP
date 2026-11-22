@@ -1,9 +1,42 @@
 {
   "services": [
-    {"service_id": "fn_checkout", "image": "m9-sample-service:latest", "route": "/invoke", "weight": 0.4},
-    {"service_id": "fn_search", "image": "m9-sample-service:latest", "route": "/invoke", "weight": 0.35},
-    {"service_id": "fn_recommend", "image": "m9-sample-service:latest", "route": "/invoke", "weight": 0.25}
+    {
+      "service_id": "fn_checkout",
+      "function_name": "fn-checkout",
+      "image": "m9-sample-service:latest",
+      "route": "/invoke",
+      "routes": ["/", "/health", "/ready", "/invoke", "/metrics"],
+      "health_endpoint": "/health",
+      "ready_endpoint": "/ready",
+      "metrics_endpoint": "/metrics",
+      "weight": 0.4
+    },
+    {
+      "service_id": "fn_search",
+      "function_name": "fn-search",
+      "image": "m9-sample-service:latest",
+      "route": "/invoke",
+      "routes": ["/", "/health", "/ready", "/invoke", "/metrics"],
+      "health_endpoint": "/health",
+      "ready_endpoint": "/ready",
+      "metrics_endpoint": "/metrics",
+      "weight": 0.35
+    },
+    {
+      "service_id": "fn_recommend",
+      "function_name": "fn-recommend",
+      "image": "m9-sample-service:latest",
+      "route": "/invoke",
+      "routes": ["/", "/health", "/ready", "/invoke", "/metrics"],
+      "health_endpoint": "/health",
+      "ready_endpoint": "/ready",
+      "metrics_endpoint": "/metrics",
+      "weight": 0.25
+    }
   ],
   "payload_classes": ["small", "medium", "large"],
-  "deployment": "scaffolding_only_live_validation_deferred"
+  "deployment": "local_container_scaffolding_only_no_production_claims",
+  "production_ready": false,
+  "live_cluster_validation": "deferred_to_p6_live_path",
+  "single_reusable_image": true
 }
