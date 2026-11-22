@@ -180,13 +180,13 @@ kbd {
 | Field | Value |
 |---|---|
 | Milestone | M6 — Execution layer |
-| Status | Complete for bounded dry-run/adapters; live cluster validation pending |
-| Date | 2026-11-20 |
-| Branch | `feat/m5-decision-engine-integration` |
-| Related commit | `7f8e1e5` (base; M6 changes uncommitted) |
+| Status | Complete (adapters/dry-run; live validation completed in P6) |
+| Date | 2026-11-20 (refreshed 2026-11-21) |
+| Branch | `feat/m6-execution-layer` (merged); current work on `dev` |
+| Related commit | `1ac69d4` (merge), `2584963` (feature), `1cf3f4a` (P6 merge) |
 | Test IDs | F04, F05, I01–I06, S01–S06 |
 | Architecture layers | Layer 9 validator/shield boundary; Layer 10 execution; Layer 11 monitoring |
-| Evidence class | Unit tests + dry-run smoke; **no live platform deployment** |
+| Evidence class | Original: unit tests + dry-run smoke; refreshed: P6 live Docker Desktop Kubernetes validation |
 
 ## Objective
 
@@ -291,12 +291,17 @@ Focused verification: `41 passed in 5.71s`.
   file creation. No energy/latency/performance improvement is claimed.
 - **Simulated:** reward/latency/energy values in `ServerlessEnv` remain research
   surrogate metrics from M4/M5, not live platform telemetry.
-- **Scaffolding only:** `infrastructure/` manifests and stack files were not
-  applied to a cluster; `monitoring/prometheus_adapter.py` was exercised with
-  an injected query function, not a live Prometheus server.
-- **Pending:** apply manifests to a local cluster, run `kubectl auth can-i
-  scale deployment/fn-checkout --as=system:serviceaccount:serverless-mgmt:controller`,
-  deploy OpenFaaS/Docker function images, enable a controlled live run, verify
-  Prometheus scrape/Grafana panels, and produce F04/F05 live evidence in M7/M8.
+- **Original M6 scope:** `infrastructure/` manifests and stack files were
+  scaffolding; `monitoring/prometheus_adapter.py` was exercised with an injected
+  query function, not a live Prometheus server.
+- **P6 refresh (2026-11-21):** the local live path was deployed and verified on
+  Docker Desktop Kubernetes. `LiveKubernetesExecutor` performed a bounded
+  `kubectl -n serverless-mgmt scale deployment/fn-checkout-warm --replicas=4`
+  action with post-action replica verification; OpenFaaS invocation and
+  `scripts/verify_live_g_h.py` also passed. See
+  `../implementation/p6-v1.1-live-execution-and-monitoring.md` and
+  `../runbooks/live-g-h.md`.
+- **Still not measured:** production HA, Qwen3 inference, real watt readings and
+  percentage energy/latency improvements.
 - **Safety:** keep `allow_live=false` outside an explicitly controlled local
   experiment; never expose cluster credentials to the planner or PPO.

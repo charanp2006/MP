@@ -40,7 +40,7 @@ See `results/planner/` for planner validation/latency artifacts. `qwen3_stub` ro
 
 ## 8. End-to-end comparison and ablations
 
-E0-E6 form a predeclared ablation ladder. E7 is deferred until a live cluster and deployed metrics stack are available.
+E0-E6 form a predeclared ablation ladder. E7 remains a deferred full benchmark. Current status (2026-11-21): P6 later completed a local live smoke with bounded execution, Prometheus feedback and Grafana verification, but no repeated E7 performance result.
 
 | experiment_id | forecast | planner | controller | executor | runs | degraded_runs | mean_reward | reward_std | reward_ci95 | sla_violation_rate | mean_energy_w | mean_capacity | mean_cold_starts | shield_intervention_rate | status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

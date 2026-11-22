@@ -180,13 +180,13 @@ kbd {
 | Field | Value |
 |---|---|
 | Milestone | M7 — Monitoring/feedback |
-| Status | Complete for local exporter, alerts, feedback records and dashboard provisioning; live dashboard validation pending |
-| Date | 2026-11-20 |
-| Branch | `feat/m7-monitoring-feedback` |
-| Related commit | `1ac69d4` (base; M7 changes uncommitted) |
+| Status | Complete (exporter/feedback/alerts/dashboard provisioning; live dashboard validated in P6) |
+| Date | 2026-11-20 (refreshed 2026-11-21) |
+| Branch | `feat/m7-monitoring-feedback` (merged); current work on `dev` |
+| Related commit | `db8d8a6` (merge), `46fc391` (feature), `1cf3f4a` (P6 merge) |
 | Test IDs | I05, I06, F04, F05, S01–S06 |
 | Architecture layers | Layer 10 execution boundary; Layer 11 monitoring/feedback |
-| Evidence class | Local HTTP/injected-query unit tests + dry-run simulation; **no deployed dashboard or live telemetry** |
+| Evidence class | Original: local HTTP/injected-query unit tests + dry-run simulation; refreshed: P6 live Prometheus/Grafana evidence |
 
 ## Objective
 
@@ -295,13 +295,17 @@ a cluster.
 - **Simulated:** feedback/reward/latency values from `ServerlessEnv` remain
   research surrogates; feedback records label their source (`simulated` by
   default).
-- **Scaffolding only:** `docker-compose.yml`, Prometheus configs and Grafana
-  provisioning were not started against a deployed system. No live dashboard
-  screenshot, scrape history or production telemetry is claimed.
-- **Pending:** run the exporter alongside a deployed OpenFaaS/Kubernetes
-  runtime, start Prometheus/Grafana via compose, verify the dashboard with live
-  metrics, record F04/F05 live failure evidence, and feed live Prometheus
-  values into the next control cycle in M8.
+- **Original M7 scope:** `docker-compose.yml`, Prometheus configs and Grafana
+  provisioning were local scaffolding; no live dashboard or production telemetry
+  was claimed.
+- **P6 refresh (2026-11-21):** kube-prometheus-stack and the in-cluster
+  `control-loop-exporter` were deployed on Docker Desktop Kubernetes. Live
+  Prometheus queries fed `DecisionLoop`, stale metrics forced `NOOP`, and the
+  `control-loop-live` Grafana dashboard was provisioned and verified. See
+  `../implementation/p6-v1.1-live-execution-and-monitoring.md` and
+  `../runbooks/live-g-h.md`.
+- **Still not measured:** production telemetry, Qwen3 planner latency and
+  percentage energy/latency improvements.
 - **Safety:** monitoring remains read-only. Stale metrics are surfaced as
   alerts/readiness failures and never silently replaced with fabricated live
   measurements.

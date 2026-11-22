@@ -5,7 +5,10 @@
 - Scenario: `mixed` with seed `42`
 - Synthetic requests: `2100` across `['fn_checkout', 'fn_search', 'fn_recommend']`
 - Ingestion auth: `disabled`; no tokens are persisted
-- Sample services are scaffolding only; live deployment was deferred
+- Sample services are scaffolding only; this report is a simulated M9 artifact
+- Current status refresh (2026-11-21): P6 later validated local live
+  Kubernetes/OpenFaaS execution and Prometheus/Grafana monitoring for
+  `fn-checkout`; it did not change this M9 simulation result
 
 ## Flow
 
@@ -53,7 +56,8 @@ flowchart LR
 3. Data: Azure invocation trace plus explicitly simulated resource proxies.
 4. Demo: synthetic requests arrive for checkout/search/recommend services.
 5. Control loop: one decision cycle with forecast, plan, action, guard, and audit.
-6. Evidence: M8 consolidated simulation tables and ablations; no live cluster claims.
+6. Evidence: M8 consolidated simulation tables and ablations; no live cluster
+   claims in this M9 artifact (P6 live validation is documented separately).
 7. Limitations: live Kubernetes/OpenFaaS/Docker and Grafana validation deferred.
 8. Closing: reproducible artifacts and safety boundaries, with measured values only from simulation.
 

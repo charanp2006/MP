@@ -183,8 +183,8 @@ implementation track defined in
 [`IMPLEMENTATION_AGENT_PROMPT.md`](../../IMPLEMENTATION_AGENT_PROMPT.md).
 
 These are distinct from phase implementation records in
-[`docs/implementation/`](../implementation/README.md) (`p{N}-v*`, P1–P5
-historical phase docs): a pre-flight audit (`M0`) plus milestones `M1–M9`
+[`docs/implementation/`](../implementation/README.md) (`p{N}-v*`, P1–P6
+phase docs): a pre-flight audit (`M0`) plus milestones `M1–M9`
 from `IMPLEMENTATION_PLAN.md` track the current integration and validation plan.
 
 ## Convention (required)
@@ -213,7 +213,8 @@ from `IMPLEMENTATION_PLAN.md` track the current integration and validation plan.
 | M3 | [m3-qwen3-planner.md](m3-qwen3-planner.md) | Complete (offline hardening/evaluation; Qwen3 unavailable, fallback validated) | 2026-11-20 | `f2da3f1` (merge), `4542726` (feature) |
 | M4 | [m4-ppo-controller.md](m4-ppo-controller.md) | Complete (simulation/PPO evaluation; no live measurements) | 2026-11-20 | `f2da3f1` (merge), `4542726` (feature) |
 | M5 | [m5-decision-engine-integration.md](m5-decision-engine-integration.md) | Complete (simulation replay/provenance; no live execution) | 2026-11-20 | `7f8e1e5` (merge), `38f5297` (feature) |
-| M6 | [m6-execution-layer.md](m6-execution-layer.md) | Complete for adapters/dry-run audit; live cluster validation pending | 2026-11-20 | `7f8e1e5` (base, uncommitted) |
-| M7 | [m7-monitoring-feedback.md](m7-monitoring-feedback.md) | Complete for local exporter/feedback/alerts/dashboard provisioning; live dashboard pending | 2026-11-20 | `1ac69d4` (base, uncommitted) |
-| M8 | [m8-consolidated-evaluation.md](m8-consolidated-evaluation.md) | Complete for simulated consolidated evaluation; live E7 deferred | 2026-11-20 | `db8d8a6` (base, uncommitted) |
-| M9 | [m9-deferred-demo-integration.md](m9-deferred-demo-integration.md) | Complete for simulated end-to-end demo integration; live deployment/deck deferred | 2026-11-20 | `0b7cb69` (base, uncommitted) |
+| M6 | [m6-execution-layer.md](m6-execution-layer.md) | Complete (adapters/dry-run; live validation completed in P6) | 2026-11-20 | `1ac69d4` (merge), `2584963` (feature) |
+| M7 | [m7-monitoring-feedback.md](m7-monitoring-feedback.md) | Complete (exporter/feedback/alerts/dashboard provisioning; live dashboard validated in P6) | 2026-11-20 | `db8d8a6` (merge), `46fc391` (feature) |
+| M8 | [m8-consolidated-evaluation.md](m8-consolidated-evaluation.md) | Complete for simulated evaluation; full E7 benchmark still deferred, P6 live smoke added | 2026-11-20 | `0b7cb69` (merge), `4383958` (feature) |
+| M9 | [m9-deferred-demo-integration.md](m9-deferred-demo-integration.md) | Complete for simulated demo; local live deployment completed in P6, final deck deferred | 2026-11-20 | `82b00a1` (merge), `be22ace` (feature) |
+| G/H | [../implementation/p6-v1.1-live-execution-and-monitoring.md](../implementation/p6-v1.1-live-execution-and-monitoring.md) | Complete (local live Kubernetes/OpenFaaS execution and in-cluster monitoring validated) | 2026-11-21 | `1cf3f4a` (merge), `80f0d52` (feature), `8889346` (CI fix) |

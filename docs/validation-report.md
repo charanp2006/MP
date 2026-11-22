@@ -187,13 +187,13 @@ supplies the consolidated specification.
 | Workload ingestion | PRD FR-01; architecture data layer | Data/source blocks | Defined |
 | Runtime metrics | PRD FR-02; monitoring design | Monitoring blocks | Defined |
 | Preprocessing | PRD FR-03; design feature engineering | Preprocessing blocks | Defined |
-| Forecasting | PRD FR-04; TFT sections | TFT/forecast blocks | Defined, implementation pending |
-| Agentic planning | PRD FR-05; Qwen3 planner schema | Planner/AI blocks | Defined, implementation pending |
-| PPO control | PRD FR-06; action space and reward | PPO/control blocks | Defined, implementation pending |
-| SLA protection | PRD FR-07; independent SLA guard | SLA/latency labels | Defined, test pending |
-| Action safety | PRD FR-08; security allowlist/RBAC | Validator/guard blocks | Defined, implementation pending |
-| Execution | PRD FR-09; Kubernetes/OpenFaaS/Docker | Platform blocks | Proposed, not deployed |
-| Evaluation | PRD FR-10; test plan baselines/ablations | Evaluation/metrics blocks | Defined, results pending |
+| Forecasting | PRD FR-04; TFT sections | TFT/forecast blocks | Implemented; smoke-trained TFT with offline evaluation |
+| Agentic planning | PRD FR-05; Qwen3 planner schema | Planner/AI blocks | Implemented contract/stub; real Qwen3 inference deferred |
+| PPO control | PRD FR-06; action space and reward | PPO/control blocks | Implemented; smoke training and simulated evaluation |
+| SLA protection | PRD FR-07; independent SLA guard | SLA/latency labels | Implemented and tested; P95 is primary constraint |
+| Action safety | PRD FR-08; security allowlist/RBAC | Validator/guard blocks | Implemented; schema, bounds, SLA and authorization checks |
+| Execution | PRD FR-09; Kubernetes/OpenFaaS/Docker | Platform blocks | Implemented; local live G/H deployment validated via P6 |
+| Evaluation | PRD FR-10; test plan baselines/ablations | Evaluation/metrics blocks | Simulated E0–E6 complete; E7 full benchmark deferred; P6 live smoke added |
 
 ## 8. Required Corrections Before Finalizing Images
 

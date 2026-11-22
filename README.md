@@ -40,12 +40,12 @@ Start with the complete specification:
 | [docs/forecasting-dashboard.html](docs/forecasting-dashboard.html) | TFT workload-forecasting dashboard (trained forecaster + baselines, offline evidence) |
 | [docs/agentic-planning-dashboard.html](docs/agentic-planning-dashboard.html) | Qwen3 planner dashboard (adapter/safety evidence; real inference unavailable) |
 | [docs/ppo-controller-dashboard.html](docs/ppo-controller-dashboard.html) | PPO controller dashboard (smoke training, simulated evaluation evidence) |
-| [docs/implementation/](docs/implementation/README.md) | Versioned per-phase implementation records (P1–P6) — [P4 execution](docs/implementation/p4-v1.0-execution.md), [P6 live G/H](docs/implementation/p6-v1.0-live-execution-and-monitoring.md) |
+| [docs/implementation/](docs/implementation/README.md) | Versioned per-phase implementation records (P1–P6) — [P4 execution](docs/implementation/p4-v1.1-execution.md), [P6 live G/H](docs/implementation/p6-v1.1-live-execution-and-monitoring.md) |
 | [docs/runbooks/live-g-h.md](docs/runbooks/live-g-h.md) | Exact commands to deploy and verify live Kubernetes/OpenFaaS execution and in-cluster monitoring |
 | [AGENTS.md](AGENTS.md) | Guidance for AI coding agents and contributors |
 | [configs/project.yaml](configs/project.yaml) | Experiment configuration defaults (single source of truth) |
 
-A compact summary of the same documents lives in [docs-simpler/](docs-simpler/).
+A compact summary is archived in `docs-simpler/` on the `files` branch.
 
 ## Objectives
 
@@ -73,11 +73,11 @@ A compact summary of the same documents lives in [docs-simpler/](docs-simpler/).
 - **Institution:** Vidyavardhaka College of Engineering, Department of Computer Science and Engineering
 - **Guide:** Dr. Tej C Hiremath
 - **Team:** Charan P (4VV23CS042) · Darshan S Gowda (4VV23CS052) · Gaurav S G (4VV23CS074)
-- **Status:** Phase 1 — design & documentation complete; implementation complete (P1–P5) in simulation/dry-run.
+- **Status:** Phase 1 — design & documentation complete; P1–P6 implemented, including local live G/H validation.
 
 ## Status / roadmap
 
-Documentation and design are complete. Implementation follows `docs/design.md` §24 (data pipeline → baseline → monitoring → TFT → PPO → SLA reward → Qwen3 planning → validators → Kubernetes/OpenFaaS integration → experiments → dashboards → ablation/evaluation). All phases P1–P5 implemented; see [docs/implementation/](docs/implementation/README.md).
+Documentation and design are complete. Implementation follows `docs/design.md` §24 (data pipeline → baseline → monitoring → TFT → PPO → SLA reward → Qwen3 planning → validators → Kubernetes/OpenFaaS integration → experiments → dashboards → ablation/evaluation). All phases P1–P6 are implemented; P6 adds local live Kubernetes/OpenFaaS execution and Prometheus/Grafana feedback while preserving dry-run defaults. See [docs/implementation/](docs/implementation/README.md) and [docs/PROJECT_STATUS_SUMMARY.md](docs/PROJECT_STATUS_SUMMARY.md).
 
 ## Notes
 

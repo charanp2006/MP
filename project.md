@@ -55,7 +55,7 @@ The project is an **academic/research prototype**. Its purpose is to demonstrate
 | Institution | Vidyavardhaka College of Engineering, Department of Computer Science and Engineering |
 | Guide | Dr. Tej C Hiremath |
 | Team | Charan P (4VV23CS042), Darshan S Gowda (4VV23CS052), Gaurav S G (4VV23CS074) |
-| Status | Phase 1 — design & documentation complete; implementation pending |
+| Status | Phase 1 — design & documentation complete; P1–P6 implemented with local live validation |
 
 ---
 
@@ -995,8 +995,11 @@ Numerical targets (e.g. 15–25% energy reduction, 20–30% cold-start reduction
 ```text
 ├── README.md          ← project landing page (this project's front door)
 ├── project.md         ← complete project specification (this document)
-├── docs/              ← expanded detail: prd, architecture, design, security, test_plan
-└── docs-simpler/      ← compact versions of the same documents
+├── docs/              ← prd, architecture, design, security, tests, phase records, runbooks, dashboards
+├── configs/           ← canonical defaults plus isolated live-only overrides
+└── results/           ← generated experiment/demo artifacts
 ```
 
-> Note: the `docs` git branch additionally stores the research survey (PDFs) and Phase-1 presentation material (PPTX).
+> Notes: compact `docs-simpler/` versions are archived on the `files` branch.
+> The `docs` git branch additionally stores the research survey (PDFs) and
+> Phase-1 presentation material (PPTX).

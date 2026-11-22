@@ -215,7 +215,7 @@ kbd {
 
 **Config:** `configs/project.yaml`, `configs/__init__.py`
 
-**Docs:** `docs/architecture.md`, `docs/design.md`, `docs/prd.md`, `docs/security.md`, `docs/test_plan.md`, `docs/validation-report.md`, `docs/tech-stack.md`, `docs/references.md`, `docs/implementation/README.md`, `docs/implementation/p1-v1.0-*.md` … `p5-v1.0-*.md`
+**Docs:** `docs/architecture.md`, `docs/design.md`, `docs/prd.md`, `docs/security.md`, `docs/test_plan.md`, `docs/validation-report.md`, `docs/tech-stack.md`, `docs/references.md`, `docs/implementation/README.md`, `docs/implementation/p1-v1.0-*.md` … `p6-v1.1-*.md`
 
 **CI:** `.github/workflows/tests.yml`
 

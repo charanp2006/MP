@@ -180,9 +180,18 @@ kbd {
 **Repository:** `C:\Charan\MP` (https://github.com/charanp2006/MP)  
 **Branch:** `dev` (audit performed against current working tree; changes are **uncommitted**)  
 **Date:** 2026-11-09  
-**Mode of validation in this environment:** **SIMULATION / DRY-RUN by default** (no live cluster execution performed)
+**Mode of validation in this historical audit:** **SIMULATION / DRY-RUN by default** (no live cluster execution performed at that time; see current-status addendum below)
 
 > **Honesty statement:** This report documents what was verified, what was changed, what was tested, and what remains blocked by environment limitations. No performance improvements are claimed as measured real-world results. Synthetic/sample results are labeled simulation. Live Kubernetes/OpenFaaS/Prometheus/Grafana/Qwen3(Ollama) execution was **not** performed in this environment.
+
+> **Current refresh addendum (2026-11-21):** The statement above describes the
+> historical 2026-11-09 audit. Since then, P6 added and locally validated live
+> Kubernetes/OpenFaaS execution, Prometheus-backed decision-loop metrics and an
+> in-cluster Grafana dashboard via `docs/runbooks/live-g-h.md` and
+> `docs/implementation/p6-v1.1-live-execution-and-monitoring.md`. The live run
+> used a stub/rules planner proxy and a payload-size energy proxy, not real
+> Qwen3 inference or measured watts. See
+> `docs/PROJECT_STATUS_SUMMARY.md` for the current consolidated status.
 
 ---
 
