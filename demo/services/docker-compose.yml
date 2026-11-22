@@ -4,24 +4,75 @@ services:
     image: m9-sample-service:latest
     environment:
       SERVICE_NAME: fn_checkout
+      FUNCTION_NAME: fn-checkout
       SERVICE_PORT: "8080"
+      SERVICE_VERSION: "1.0.0"
+      ACTIVE_CONTAINERS: "1"
     ports:
       - "8081:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
 
   fn_search:
     build: .
     image: m9-sample-service:latest
     environment:
       SERVICE_NAME: fn_search
+      FUNCTION_NAME: fn-search
       SERVICE_PORT: "8080"
+      SERVICE_VERSION: "1.0.0"
+      ACTIVE_CONTAINERS: "1"
     ports:
       - "8082:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
 
   fn_recommend:
     build: .
     image: m9-sample-service:latest
     environment:
       SERVICE_NAME: fn_recommend
+      FUNCTION_NAME: fn-recommend
       SERVICE_PORT: "8080"
+      SERVICE_VERSION: "1.0.0"
+      ACTIVE_CONTAINERS: "1"
     ports:
       - "8083:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
