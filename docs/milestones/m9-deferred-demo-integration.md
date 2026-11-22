@@ -179,9 +179,9 @@ kbd {
 
 - **Phase:** M9
 - **Doc version:** v1.0
-- **Status:** Complete for simulated end-to-end demonstration integration; live deployment and final deck integration deferred
-- **Date:** 2026-11-20
-- **Related commit:** `0b7cb69` (base, uncommitted)
+- **Status:** Complete for simulated demo; local live deployment completed in P6, final deck deferred
+- **Date:** 2026-11-20 (refreshed 2026-11-21)
+- **Related commit:** `82b00a1` (merge), `be22ace` (feature), `1cf3f4a` (P6 merge)
 - **Test IDs:** T09-01 to T09-04
 - **Architecture layers touched:** workload ingestion, control loop, execution/audit scaffolding, observability, demonstration packaging
 
@@ -259,11 +259,22 @@ The smoke report contains a Mermaid control-flow diagram, simulated control summ
 
 - **Simulated:** all requests, service traffic, resource proxies, latency, energy, capacity, decisions, audit, alert, and feedback values.
 - **Stubbed:** Qwen3 planner is a stub proxy; TFT was not requested in the smoke run.
-- **Unimplemented/deferred:** live Docker/OpenFaaS/Kubernetes deployment, live request routing, live Prometheus/Grafana scraping, final PPTX editing, and measured production performance.
+- **Original deferred items:** live Docker/OpenFaaS/Kubernetes deployment, live
+  request routing, live Prometheus/Grafana scraping, final PPTX editing and
+  measured production performance.
+- **P6 refresh (2026-11-21):** local live deployment, live OpenFaaS invocation,
+  bounded `kubectl scale`, Prometheus scraping and Grafana dashboard validation
+  were completed for `fn-checkout`. See
+  `../implementation/p6-v1.1-live-execution-and-monitoring.md` and
+  `../runbooks/live-g-h.md`.
 
 ## Limitations and next steps
 
-- The generic adapter is a local validated SDK-style interface, not a deployed authenticated HTTP endpoint.
-- Sample services share one parametrized image; they are demonstration scaffolding, not application implementations.
-- The final PPTX and image assets remain archive material on the `files` branch and were not edited.
-- Next: if requested, validate live container actions and scraping on a local stack; otherwise this milestone closes the deferred demonstration integration track.
+- The generic adapter remains a local validated SDK-style interface, not a
+  deployed authenticated HTTP endpoint.
+- Sample services remain small demonstrations; the live image uses
+  `demo/services/live_app.py` and is not a production application.
+- The final PPTX and image assets remain archive material on the `files` branch
+  and were not edited.
+- Next: final deck integration and any production deployment remain out of
+  scope for this repository snapshot.

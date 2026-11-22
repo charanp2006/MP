@@ -180,13 +180,13 @@ kbd {
 | Field | Value |
 |---|---|
 | Milestone | M8 — Consolidated evaluation |
-| Status | Complete for simulated consolidated evaluation; live E7 deferred |
-| Date | 2026-11-20 |
-| Branch | `feat/m8-consolidated-evaluation` |
-| Related commit | `db8d8a6` (base; M8 changes uncommitted) |
+| Status | Complete for simulated evaluation; full E7 benchmark deferred, P6 live smoke added |
+| Date | 2026-11-20 (refreshed 2026-11-21) |
+| Branch | `feat/m8-consolidated-evaluation` (merged); current work on `dev` |
+| Related commit | `0b7cb69` (merge), `4383958` (feature), `1cf3f4a` (P6 merge) |
 | Test IDs | I01–I06, S01–S06, F01–F06 protocol coverage |
 | Architecture layers | 1–11: data → forecast → planner → PPO → validation → execution → monitoring → reporting |
-| Evidence class | Simulated closed-loop replay + component artifacts; **no live platform result** |
+| Evidence class | Simulated closed-loop replay + component artifacts; P6 adds a separate local live smoke, not a full E7 benchmark |
 
 ## Objective
 
@@ -280,10 +280,11 @@ marked `stub_proxy`. These values must not be quoted as performance conclusions.
 ## Limitations and next steps
 
 - Real Qwen3/Ollama was unavailable; E3/E6 are stub proxies only.
-- E7 remains unimplemented until live execution and live Prometheus/Grafana
-  measurements are available.
-- Energy/latency/cold starts are simulator outputs; Azure traces supply only
-  invocation counts.
+- E7 remains a deferred full benchmark. P6 (2026-11-21) provides a local live
+  smoke with bounded execution, Prometheus feedback and Grafana verification,
+  but no repeated E7 performance result.
+- Energy/latency/cold starts in E0–E6 are simulator outputs; Azure traces supply
+  only invocation counts. The P6 live energy metric is a payload-size proxy.
 - Results are ignored by Git; `run_manifest.json` plus the documented command
   is the reproducibility contract, not committed raw result files.
 - Next milestone: M9 deferred demonstration integration (synthetic client,

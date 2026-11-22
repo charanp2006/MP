@@ -63,10 +63,10 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 - `docs/ppo-controller-dashboard.html` - PPO controller dashboard (smoke-trained policy, simulated evaluation evidence).
 - `docs/implementation/` - **versioned implementation records, one doc per
   completed phase** (see "Phase documentation" below; start at
-  `docs/implementation/README.md`; includes [P4 execution](docs/implementation/p4-v1.0-execution.md)
-  and [P6 live G/H](docs/implementation/p6-v1.0-live-execution-and-monitoring.md)).
+  `docs/implementation/README.md`; includes [P4 execution](docs/implementation/p4-v1.1-execution.md)
+  and [P6 live G/H](docs/implementation/p6-v1.1-live-execution-and-monitoring.md)).
 - `docs/runbooks/live-g-h.md` - exact local commands for live Kubernetes/OpenFaaS execution and in-cluster monitoring.
-- `docs/milestones/README.md` - current M0-M9 integration/validation milestone reports.
+- `docs/milestones/README.md` - current M0-M9 integration/validation milestone reports plus P6 G/H live-validation record.
 - `configs/project.yaml` - experiment configuration defaults.
 
 ## How to implement (agreed order, from docs/design.md)

@@ -4,8 +4,8 @@
 |---|---|
 | Document | Consolidated status of all work completed in this repository |
 | Date | 2026-11-21 |
-| Current git branch | `main` (work is uncommitted) |
-| Related commit | none for the current changes |
+| Current git branch | `dev` (documentation refresh is uncommitted) |
+| Related commit | `1cf3f4a` (PR #15 merge); `80f0d52` (feature), `8889346` (CI fix) |
 | Status | Phase 1 prototype complete; real Qwen3 inference remains deferred |
 | Verification | 169 Python tests passed; live G/H cluster verification passed |
 
@@ -116,9 +116,13 @@ Canonical choices retained throughout:
 - M9 demo integration was implemented earlier and included synthetic client,
   ingestion adapter, event/decision/audit artifacts and dashboards.
 - Added versioned phase record
-  `docs/implementation/p6-v1.0-live-execution-and-monitoring.md`.
-- Updated `README.md`, `AGENTS.md` and
-  `docs/implementation/README.md` docs maps/indexes.
+  `docs/implementation/p6-v1.1-live-execution-and-monitoring.md`.
+- Refreshed stale milestone/phase documentation after PR #15: P4/P5 records
+  were bumped to v1.1, M6–M9 and milestone index now reflect merged commits and
+  P6 live validation, and validation/infrastructure/monitoring reports were
+  updated.
+- Updated `README.md`, `AGENTS.md`, `docs/implementation/README.md` and
+  `docs/milestones/README.md` docs maps/indexes.
 
 ## 3. Live Phase G/H evidence (2026-11-21)
 
@@ -197,10 +201,12 @@ python scripts/verify_live_g_h.py --config configs/local-live.yaml
 
 ## 7. Suggested delivery metadata
 
-- Branch: `feat/phase-g-h-live-execution-monitoring`
-- Commit message: `feat(live): add validated Kubernetes execution and monitoring loop`
+- Merged branch: `feat/phase-g-h-live-execution-monitoring`
+- Merge commit / PR: `1cf3f4a` / PR #15
+- Feature and CI-fix commits: `80f0d52`, `8889346`
 - PR title: `Phase G/H: live Kubernetes execution and in-cluster monitoring`
-- PR description: see section 8 below.
+- PR description: see section 8 below. This documentation refresh is separate
+  and uncommitted.
 
 ## 8. Pull request description
 

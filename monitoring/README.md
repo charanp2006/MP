@@ -10,15 +10,19 @@ artifacts.
 | File | Role |
 |---|---|
 | `metrics.py` | In-memory counters/gauges and Prometheus text serialization |
-| `prometheus_exporter.py` | `/metrics`, `/health`, `/ready` HTTP endpoints |
+| `prometheus_exporter.py` | `/metrics`, `/health`, `/ready`, `/publish` HTTP endpoints |
 | `prometheus_adapter.py` | Reads validated scalar metrics from Prometheus or an injected query function |
 | `alerts.py` | Deterministic local alert evaluation and JSONL log |
 | `feedback.py` | Bounded feedback signal plus per-cycle feedback records |
 | `prometheus/prometheus.yml` | Scrape configuration for the exporter |
 | `prometheus/alerts.yml` | Prometheus alert rules |
 | `grafana/provisioning/` | Datasource and dashboard provisioning |
-| `grafana/dashboards/control-loop.json` | Workload/infrastructure/performance/efficiency/control panels |
-| `docker-compose.yml` | Local Prometheus + Grafana stack scaffolding |
+| `grafana/dashboards/control-loop.json` | Host-level workload/infrastructure/performance/efficiency/control panels |
+| `grafana/dashboards/control-loop-live.json` | In-cluster live control-loop dashboard (UID `control-loop-live`) |
+| `kubernetes/control-loop-exporter.yaml` | In-cluster exporter Deployment/Service for P6 live runs |
+| `kubernetes/prometheus-values.yaml` | kube-prometheus-stack values with OpenFaaS scrape configuration |
+| `Dockerfile.exporter` | Lightweight image for the live exporter |
+| `docker-compose.yml` | Host-level Prometheus + Grafana stack scaffolding |
 
 ## Run locally
 
@@ -28,8 +32,13 @@ docker compose -f monitoring/docker-compose.yml up -d
 ```
 
 Prometheus expects the exporter at `127.0.0.1:8000`; Grafana is provisioned at
-`127.0.0.1:3000`. Live scraping/dashboards were not started as part of the M7
-implementation tests. All current verification is local and injected.
+`127.0.0.1:3000`. This is the host-level scaffold path.
+
+For the P6 local live Kubernetes path, deploy the in-cluster exporter and
+kube-prometheus-stack assets, then use `docs/runbooks/live-g-h.md`. Live
+verification covered Prometheus-backed metrics, stale-metric `NOOP`,
+`/publish` snapshot ingestion and the `control-loop-live` Grafana dashboard on
+Docker Desktop Kubernetes.
 
 ## Safety
 

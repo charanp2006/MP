@@ -13,6 +13,7 @@ commands, Kubernetes YAML, function names or image names from the planner or PPO
 | `kubernetes` | `KubernetesExecutor` | `kubectl -n <allowed namespace> scale deployment/<function> --replicas=<bounded target>` |
 | `openfaas` | `OpenFaaSExecutor` | Same bounded operation against `execution.openfaas_namespace` (default `openfaas-fn`) |
 | `docker` | `DockerExecutor` | `docker service scale <allowed service>=<bounded target>` |
+| `kubernetes_live` | `LiveKubernetesExecutor` (P6) | Bounded `kubectl scale` against allowlisted namespaces/deployments with verification, rollback and warm-pool support |
 
 Live execution requires all of: `execution.enabled: true`,
 `execution.dry_run: false`, and `execution.allow_live: true`. Keep
@@ -27,7 +28,9 @@ the RBAC/service allowlists have been reviewed.
 - `openfaas/stack.yml`: local OpenFaaS stack definition for `fn-checkout`.
 - `docker/docker-compose.yml`: local Docker Swarm-compatible service definition.
 
-These files are deployment scaffolding. They were not applied to a live cluster
-during M6; no live execution, Prometheus scrape or Grafana observation is
-claimed. See `configs/project.yaml -> execution` and `docs/security.md` for
-bounds, allowlists and trust boundaries.
+These files are the original M6 deployment scaffolding. P6 adds live-only assets
+under `infrastructure/kubernetes/live-*.yaml` and
+`infrastructure/openfaas/stack*.yml`; a local Docker Desktop Kubernetes run was
+deployed and verified via `docs/runbooks/live-g-h.md`. `configs/project.yaml`
+still keeps live execution disabled; see `configs/project.yaml -> execution` and
+`docs/security.md` for bounds, allowlists and trust boundaries.
