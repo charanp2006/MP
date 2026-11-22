@@ -43,6 +43,7 @@ Rules:
 | P5 | [p5-v1.1-monitoring-feedback-experiments.md](p5-v1.1-monitoring-feedback-experiments.md) | v1.1 | Complete | Prometheus/Grafana scaffolds, feedback loop, baseline-vs-proposed, ablations; P6 live-wiring note |
 | P6 | [p6-v1.1-live-execution-and-monitoring.md](p6-v1.1-live-execution-and-monitoring.md) | v1.1 | Complete | Live Kubernetes/OpenFaaS execution, live Prometheus/Grafana feedback, local live runbook |
 | C1 | [c1-v1.0-synthetic-client-load-generator.md](c1-v1.0-synthetic-client-load-generator.md) | v1.0 | Complete | Replayable synthetic client/load generator, profile and CLI |
+| C2 | [c2-v1.0-generic-workload-ingestion.md](c2-v1.0-generic-workload-ingestion.md) | v1.0 | Complete | Generic workload ingestion SDK/API with schema, auth, metrics and provenance |
 
 See also: [`plan.md`](../../plan.md) for the phase-to-architecture mapping and
 [`docs/PROJECT_STATUS_SUMMARY.md`](../PROJECT_STATUS_SUMMARY.md) for the consolidated project status.

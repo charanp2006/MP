@@ -234,6 +234,8 @@ demo:
   use_tft: false
   require_ingest_auth: false
   ingest_token_env: M9_INGEST_TOKEN
+  # Optional allowlist for untrusted event source metadata; null/empty disables the check.
+  allowed_ingest_sources: null
   services: [fn_checkout, fn_search, fn_recommend]
   payload_classes: [small, medium, large]
   burst_multiplier: 2.5
