@@ -4,6 +4,20 @@
 **Primary branch:** `main` (use feature branches and PRs)  
 **Project direction:** Build and validate AI Decision Engine (3–5) first; integrate real execution (6) and monitoring/feedback (8) next. Defer Users/Clients (1), generic Workload Ingestion (2), and Applications/Services (7) as dedicated phases, but define their contracts now so the core remains integration-ready.
 
+> **V2 addendum (2026-11-24):** Components 1, 2 and 7 are no longer deferred;
+> prototype implementations are complete on `dev` (`ea73cbc`, `9b340a4`,
+> `ac9329a`). The local llama-style route originally planned here — Ollama
+> serving Qwen3, with llama.cpp/GGUF as a possible alternative — is now
+> **outdated**. It was chosen for offline reproducibility but depended on a
+> local model process, suitable laptop hardware, manually pinned tags and
+> quantization, and it never produced real Qwen3 inference evidence. The
+> owner's V2 direction replaces it with hosted Hugging Face inference as
+> primary and OpenRouter as a key-based backup. See `docs/implementationv2/m0-audit.md`,
+> `docs/azure-dataset-availability.md` and
+> `docs/qwen3-hosted-inference-plan.md`. The detailed V2 plan is
+> `IMPLEMENTATIONV2.md`; this v1 plan is retained as historical context and
+> updated where directions changed.
+
 ---
 
 ## 0. Working principles and scope
@@ -208,19 +222,18 @@ Generate plots (PNG and optionally HTML):
 
 ## 5. Phase D — Qwen3 Agentic planning (Architecture component 4)
 
-### Recommended connection
+### Recommended connection (updated by V2)
 
-Use **Qwen3 through Ollama as the initial local inference runtime** for development and reproducible demonstrations, with a pinned model tag and explicit configuration. Select a Qwen3 model size that the development machine can run reliably; start with a small/medium instruction model rather than assuming a large model fits. Evaluate the actual model version and quantization before locking it in.
+Use **Qwen3 through a hosted Hugging Face inference endpoint** as the primary real-inference path. This replaces the earlier local/Ollama-first recommendation; the local llama-style runtime (Ollama/llama.cpp) is now outdated because it tied inference to the owner's machine and produced no real inference evidence. Do not provision paid resources without owner approval, and never commit tokens. Verify current model support, revision, license, cost, latency and data-handling terms before pinning a model.
 
-This recommendation is for an initial integration path, not a claim that Ollama or a specific Qwen3 tag is the newest available model as of implementation. Verify current Qwen releases, model license and Ollama compatibility at the time of deployment.
+Keep a provider abstraction so the planner is not coupled to one hosted vendor. The backup path is **OpenRouter with an owner-supplied API key**, used if Hugging Face is unavailable, rate-limited or broken during a crucial run. Add the key only to the execution environment, never to Git, configs, logs or dashboards. The final fallback remains the deterministic stub/NoOp planner.
 
-Potential alternatives if Ollama proves unsuitable:
+Detailed setup, security rules, proposed config keys, fallback order and acceptance criteria are in `docs/qwen3-hosted-inference-plan.md`. Current v1 code still defaults to `stub` and retains the historical Ollama adapter; hosted inference is M3 work, not a completed result.
 
-- vLLM: serving throughput, batching and more demanding GPU-hosted inference.
-- llama.cpp: local inference with GGUF quantization and flexible hardware.
-- A compatible OpenAI-style endpoint: useful for hosted or separately managed inference, but introduce external dependency, privacy, cost and availability considerations.
+Historical local alternatives retained only for compatibility or experiments:
 
-Keep a provider abstraction so the planner is not coupled to Ollama.
+- Ollama: original v1 local runtime path; outdated and retained only for historical compatibility.
+- vLLM / llama.cpp: former local experiment options; outdated for the main project direction.
 
 ### What the LLM should do
 
@@ -595,19 +608,21 @@ These are illustrative ablations; adapt the table after the interfaces are final
 
 ---
 
-## 11. Deferred phases (do not build fully yet)
+## 11. Components 1, 2 and 7 (prototypes complete; broader rollout still deferred)
 
-### Component 1 — Users / Clients
+These were originally deferred in v1, but prototype implementations are now complete on `dev`. Do not rebuild them; extend them only where V2 evidence shows a gap.
 
-Build a demonstration client later. Use a controllable synthetic request generator that produces request details, service/function IDs, payload classes, arrival rate and bursts. It should resemble a client application workload but be clearly labelled synthetic. It must be capable of replaying a scenario and producing realistic event timings; do not fabricate real user identities.
+### Component 1 — Users / Clients — COMPLETE prototype
 
-### Component 2 — Workload ingestion
+`demo/synthetic_client.py` provides a controllable synthetic request generator with request details, service/function IDs, payload classes, arrival rates, bursts and replayable profiles. It resembles a client workload but is clearly labelled synthetic and does not fabricate real user identities. Record: `docs/implementation/c1-v1.0-synthetic-client-load-generator.md` (`ea73cbc`).
 
-Build an integration-ready ingestion API/SDK/adapter later. Define schema and protocol now. It should support generic application instrumentation or service adapters, timestamps, service/function identity, invocation counts, duration, error, resource metrics and source metadata. Provide a synthetic client generator for demonstration. Use secure authentication and schema validation.
+### Component 2 — Workload ingestion — COMPLETE prototype
 
-### Component 7 — Application/services
+`data/generic_adapter.py` and `data/ingestion_schema.py` provide an integration-ready ingestion SDK/API with timestamps, service/function identity, invocation counts, duration, error, resource metrics, source metadata, secure bearer-token handling and schema validation. Record: `docs/implementation/c2-v1.0-generic-workload-ingestion.md` (`9b340a4`).
 
-Later create several containerized sample services (e.g., search, user, recommendation or similarly simple services), deploy them as functions and route the synthetic client requests. Keep services small and demonstrate lifecycle and scaling behavior.
+### Component 7 — Application/services — COMPLETE prototype
+
+`demo/services/` and `demo/service_registry.json` provide containerized checkout/search/recommend profiles with health, readiness, invoke and Prometheus endpoints, hardened Docker/Compose setup and HTTP tests. Record: `docs/implementation/c7-v1.0-sample-serverless-services.md` (`ac9329a`).
 
 ---
 

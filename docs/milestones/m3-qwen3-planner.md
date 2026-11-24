@@ -177,6 +177,15 @@ kbd {
 
 # M3 — Qwen3 Agentic Planner Hardening and Offline Evaluation
 
+> **V2 addendum:** This milestone record is historical: it covered offline
+> hardening and fallback validation with the local Ollama path unavailable.
+> The local llama-style path is now outdated; it was initially chosen for
+> offline reproducibility but required a local model process/hardware and never
+> produced real Qwen3 evidence. The owner's V2 direction is hosted Hugging Face
+> Qwen3 primary with OpenRouter backup; real hosted inference is not yet
+> implemented. See
+> `../qwen3-hosted-inference-plan.md` and `../implementationv2/m0-audit.md`.
+
 | Field | Value |
 |---|---|
 | Phase / Milestone | M3 — Qwen3 planner with bounded context and validated fallback |

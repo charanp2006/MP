@@ -14,7 +14,7 @@ import pandas as pd
 
 from configs import load_config
 from data.feature_engineering import build_features
-from data.generic_adapter import GenericIngestionAdapter, records_to_trace, write_schema
+from data.generic_adapter import IngestEnvelope, GenericIngestionAdapter, records_to_trace, write_schema
 from demo.synthetic_client import generate_events
 from experiments.evaluate_decision_engine import _summary_row
 from experiments.evaluate_m8 import _file_sha256, _load_policy, _make_loop
@@ -190,13 +190,10 @@ def run_demo(
     )
 
     adapter = GenericIngestionAdapter(cfg)
-    ingest_records = [dict(event) for event in events]
-    if adapter.require_auth:
-        token = os.getenv(adapter.token_env)
-        if token:
-            for record in ingest_records:
-                record["auth_token"] = token
-    result = adapter.ingest(ingest_records)
+    envelope_token = os.getenv(adapter.token_env) if adapter.require_auth else None
+    result = adapter.ingest(
+        IngestEnvelope(records=[dict(event) for event in events], auth_token=envelope_token)
+    )
 
     write_schema(target / "ingestion_schema.json")
     _write_jsonl(target / "events.jsonl", events)

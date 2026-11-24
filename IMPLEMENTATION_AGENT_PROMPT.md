@@ -8,6 +8,16 @@ https://github.com/charanp2006/MP
 
 Treat this repository as the single source of truth. Work from `main` by creating a feature branch; do not develop the project in the friend's fork. The fork may be consulted for ideas only, not treated as canonical or blindly copied.
 
+> **V2 update (2026-11-24):** Read `IMPLEMENTATIONV2.md` and
+> `docs/implementationv2/m0-audit.md` before implementation. Components 1, 2
+> and 7 are complete prototypes, not deferred. Qwen3 real inference now uses
+> Hugging Face-hosted primary with OpenRouter backup. The local llama-style
+> plan below (Ollama first, llama.cpp as an alternative) was initially chosen
+> for offline reproducibility but is now outdated: it depended on the owner's
+> hardware/local model process and never produced real Qwen3 inference
+> evidence. Those instructions are historical only. See
+> `docs/qwen3-hosted-inference-plan.md`.
+
 ## Objective of the next implementation phase
 
 Implement and validate **Architecture components 3, 4 and 5 (AI-driven decision engine)** first:
@@ -21,7 +31,7 @@ Then integrate the engine with:
 6. Serverless execution layer (Docker + local Kubernetes + OpenFaaS, initially controlled/dry-run and later safely live).
 8. Monitoring and feedback (Prometheus/Grafana, actual measurements where possible).
 
-Components 1, 2 and 7 are deferred as full implementation, but define compatible interfaces now. Later, component 1 will use a realistic synthetic client/load generator, component 2 will become generic workload ingestion usable by both external applications and our synthetic client, and component 7 will contain actual sample serverless services.
+Components 1, 2 and 7 were originally deferred but are now complete prototypes on `dev`: C1 synthetic client, C2 generic workload ingestion, and C7 sample serverless services. Reuse and extend them rather than rebuilding. Broader production-style applications remain out of scope.
 
 Read the implementation plan in `IMPLEMENTATION_PLAN.md` if it is present in the repository/workspace. Follow its milestone ordering and acceptance criteria.
 
@@ -46,11 +56,11 @@ Read the implementation plan in `IMPLEMENTATION_PLAN.md` if it is present in the
 17. Commit coherent changes on the feature branch and provide the exact branch and commit SHA. Do not merge into `main` unless the user explicitly authorizes it.
 18. At each milestone, report changed files, tests, results, limitations and next step.
 
-## Recommended connection for Qwen3
+## Recommended connection for Qwen3 (updated by V2)
 
-Start with Qwen3 served locally through **Ollama**, using a model tag pinned in config and selected based on available hardware. Verify the model's current availability, license, capabilities and runtime compatibility at implementation time; do not assume a model tag or assert that it is the newest without verification.
+Use a **Hugging Face-hosted Qwen3 endpoint** as the primary real-inference path. Verify current model support, revision, license, cost, latency and data-handling terms before pinning a model. Do not provision paid resources without explicit owner approval. Never hard-code or commit tokens.
 
-Keep the planner backend abstracted so Ollama can be replaced by vLLM, llama.cpp or another compatible endpoint if necessary. Do not make the system depend on cloud inference by default.
+Keep the planner backend abstracted. The backup path is **OpenRouter with an owner-supplied API key**, to be used if Hugging Face stops or breaks during a crucial run. The key is added only to the execution environment; it must never appear in Git, configs, prompts, logs, results or dashboards. Final fallback remains the deterministic stub/NoOp planner. Full plan: `docs/qwen3-hosted-inference-plan.md`.
 
 ## Milestone order
 
@@ -78,7 +88,7 @@ Keep the planner backend abstracted so Ollama can be replaced by vLLM, llama.cpp
 - Add robust inference/fallback service and tests.
 
 ### Milestone 4 — Qwen3 planner
-- Integrate through provider interface, initially Ollama.
+- Integrate through provider interface: Hugging Face primary, OpenRouter backup, stub fallback; local Ollama is historical compatibility only.
 - Define strict structured planner response.
 - Provide bounded input context and allowlisted actions.
 - Validate and reject invalid/unsafe proposals.

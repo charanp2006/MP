@@ -290,7 +290,7 @@ coverage `0.847`, under-coverage `0.063`, over-coverage `0.090`, mean width
 
 - `results/forecast/azure2019_total/predictions.csv`
 - `results/forecast/azure2019_total/metrics.json`
-- `results/forecast/azure2019_total/run_manifest.json`
+- Reproducibility metadata is recorded in `metrics.json`; the previously listed `run_manifest.json` is not present in this checkout.
 - `results/forecast/azure2019_total/checkpoint.pt` (gitignored)
 - `results/forecast/azure2019_total/feature_columns.json`
 - `results/forecast/azure2019_total/scaler.json`

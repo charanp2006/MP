@@ -218,3 +218,13 @@ from `IMPLEMENTATION_PLAN.md` track the current integration and validation plan.
 | M8 | [m8-consolidated-evaluation.md](m8-consolidated-evaluation.md) | Complete for simulated evaluation; full E7 benchmark still deferred, P6 live smoke added | 2026-11-20 | `0b7cb69` (merge), `4383958` (feature) |
 | M9 | [m9-deferred-demo-integration.md](m9-deferred-demo-integration.md) | Complete for simulated demo; local live deployment completed in P6, final deck deferred | 2026-11-20 | `82b00a1` (merge), `be22ace` (feature) |
 | G/H | [../implementation/p6-v1.1-live-execution-and-monitoring.md](../implementation/p6-v1.1-live-execution-and-monitoring.md) | Complete (local live Kubernetes/OpenFaaS execution and in-cluster monitoring validated) | 2026-11-21 | `1cf3f4a` (merge), `80f0d52` (feature), `8889346` (CI fix) |
+
+## V2 continuation
+
+The table above records the V1 milestones. `IMPLEMENTATIONV2.md` adds a stricter
+M0–M10 continuation. The V1↔V2 crosscheck is in
+[`../implementationv2/m0-audit.md`](../implementationv2/m0-audit.md): M1 and M2
+were already complete in V1; C1/C2/C7 prototypes are complete on `dev`; M3
+hosted Qwen3, OpenRouter backup, full PPO/E7 rigor and measured/calibrated
+energy remain future work. Component integration commits on `dev`:
+`ea73cbc`, `9b340a4`, `ac9329a`.

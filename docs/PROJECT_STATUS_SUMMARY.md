@@ -3,11 +3,25 @@
 | Field | Value |
 |---|---|
 | Document | Consolidated status of all work completed in this repository |
-| Date | 2026-11-21 |
-| Current git branch | `dev` (documentation refresh is uncommitted) |
-| Related commit | `1cf3f4a` (PR #15 merge); `80f0d52` (feature), `8889346` (CI fix) |
-| Status | Phase 1 prototype complete; real Qwen3 inference remains deferred |
-| Verification | 169 Python tests passed; live G/H cluster verification passed |
+| Date | 2026-11-24 (V2 documentation crosscheck) |
+| Current git branch | `dev` |
+| Related commit | `ac9329a` (C1/C2/C7 on `dev`); `5dcad48` (docs refresh); `1cf3f4a` (PR #15 merge) |
+| Status | Phase 1 prototype complete; V2 audit done; hosted Qwen3 still to implement |
+| Verification | 214 Python tests passed after component integration; live G/H cluster verification passed |
+
+## 0. V2 addendum
+
+`IMPLEMENTATIONV2.md` is now the forward-looking plan. The V1↔V2 crosscheck is
+recorded in `docs/implementationv2/m0-audit.md`: Azure data provenance and TFT
+evaluation were already complete in V1; C1/C2/C7 prototypes are complete on
+`dev`; hosted Qwen3, OpenRouter backup, full PPO training, full E7 evaluation
+and measured/calibrated energy remain V2 work. The owner's updated provider
+direction is Hugging Face-hosted Qwen3 primary with OpenRouter backup, documented
+in `docs/qwen3-hosted-inference-plan.md`. The earlier local llama-style plan
+(Ollama/llama.cpp) was initially chosen for offline reproducibility but is now
+outdated: it required a local model process/hardware and never produced real
+Qwen3 evidence. Raw Azure data is local and gitignored; see
+`docs/azure-dataset-availability.md`.
 
 ## 1. Scope and canonical decisions
 
@@ -58,8 +72,9 @@ Canonical choices retained throughout:
   SLA guard and bounded decision loop under `agent/` and `orchestrator/`.
 - Implemented PPO environment, reward, smoke training and evaluation under
   `rl/`.
-- Added stub/rules Qwen3-compatible planner runtime; real Ollama/Qwen3
-  inference remains explicitly deferred.
+- Added stub/rules Qwen3-compatible planner runtime; v1 also retains a local
+  Ollama adapter. Real hosted Qwen3 remains V2 work, now planned via Hugging
+  Face with OpenRouter backup.
 - Added `docs/agentic-planning-dashboard.html`,
   `docs/ppo-controller-dashboard.html`,
   `docs/ai-driven-decision-engine-dashboard.html` and their generators
@@ -160,12 +175,14 @@ Verified:
 - `python -m compileall -q configs orchestrator monitoring demo scripts` passed.
 - `git diff --check` passed; Git reported only a CRLF normalization warning for
   `monitoring/__init__.py`.
-- No commit, push or PR was created.
+- Historical verification note: no commit, push or PR was created during that
+  original P6 verification pass.
 
 ## 5. Known limitations
 
-- Real Qwen3/Ollama inference remains a deferred Phase D item. Live evidence
-  uses the stub/rules planner and must be labelled accordingly.
+- Real Qwen3 inference remains a V2 item. The planned route is Hugging Face
+  hosted primary with OpenRouter backup; live evidence so far uses the
+  stub/rules planner and must be labelled accordingly.
 - Numeric targets such as 15-25% energy reduction and 20-30% cold-start
   reduction remain targets, not measured results.
 - The live energy metric is a payload-size proxy, not a measured watt reading.
@@ -205,8 +222,8 @@ python scripts/verify_live_g_h.py --config configs/local-live.yaml
 - Merge commit / PR: `1cf3f4a` / PR #15
 - Feature and CI-fix commits: `80f0d52`, `8889346`
 - PR title: `Phase G/H: live Kubernetes execution and in-cluster monitoring`
-- PR description: see section 8 below. This documentation refresh is separate
-  and uncommitted.
+- PR description: see section 8 below. The docs refresh was committed as
+  `5dcad48`; the V2 crosscheck documentation is pending owner review.
 
 ## 8. Pull request description
 
@@ -244,7 +261,7 @@ Canonical dry-run defaults and all existing scaffolding are preserved.
 
 ### Limitations
 
-- Real Qwen3 inference remains deferred; live planner evidence is stub/rules.
+- Real Qwen3 inference remains V2 work; v1 live planner evidence is stub/rules.
 - Energy is an explicit proxy.
 - CE public-image restriction handled via public router registration plus
   local image patch.
