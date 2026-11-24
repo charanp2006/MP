@@ -522,6 +522,17 @@ Do not return Kubernetes YAML.
 Do not bypass SLA constraints.
 ```
 
+**Provider direction (V2):** Qwen3 is a high-level advisory planner. The v1
+code defaults to a deterministic stub and retains historical local Ollama /
+llama.cpp-era adapter compatibility. The local llama-style route was initially
+chosen for offline reproducibility but is now outdated: it depended on a local
+model process and hardware and produced no real Qwen3 evidence. The owner's
+updated plan uses a hosted Hugging Face Qwen3 endpoint as the primary
+real-inference path, with an OpenRouter API key as a backup if Hugging Face is
+unavailable. Credentials stay outside Git and the repository; all output still
+passes schema, action, SLA and executor allowlist validation. See
+`docs/qwen3-hosted-inference-plan.md`.
+
 Planner output schema:
 
 ```json

@@ -279,7 +279,7 @@ marked `stub_proxy`. These values must not be quoted as performance conclusions.
 
 ## Limitations and next steps
 
-- Real Qwen3/Ollama was unavailable; E3/E6 are stub proxies only.
+- Real Qwen3 was unavailable; E3/E6 are stub proxies only. V2 plans hosted Hugging Face primary with OpenRouter backup (`../qwen3-hosted-inference-plan.md`).
 - E7 remains a deferred full benchmark. P6 (2026-11-21) provides a local live
   smoke with bounded execution, Prometheus feedback and Grafana verification,
   but no repeated E7 performance result.

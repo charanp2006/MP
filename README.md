@@ -36,6 +36,11 @@ Start with the complete specification:
 | [docs/references.md](docs/references.md) | Recommended research papers mapped to components |
 | [docs/tech-stack.md](docs/tech-stack.md) | Technology stack, tools and per-stage mapping |
 | [docs/PROJECT_STATUS_SUMMARY.md](docs/PROJECT_STATUS_SUMMARY.md) | Consolidated summary of all completed work, live G/H evidence, limitations and delivery metadata |
+| [IMPLEMENTATIONV2.md](IMPLEMENTATIONV2.md) | Forward-looking V2 implementation plan with stricter evidence and evaluation requirements |
+| [docs/implementationv2/m0-audit.md](docs/implementationv2/m0-audit.md) | V2 M0 audit and V1↔V2 crosscheck: completed V1 work and remaining V2 gaps |
+| [docs/azure-dataset-availability.md](docs/azure-dataset-availability.md) | Local Azure dataset inventory, Git visibility, provenance and regeneration commands |
+| [docs/qwen3-hosted-inference-plan.md](docs/qwen3-hosted-inference-plan.md) | Hosted Hugging Face Qwen3 primary path and OpenRouter backup plan; explains why the local llama/Ollama plan is outdated |
+| [docs/git-ignored-inventory.md](docs/git-ignored-inventory.md) | Exact ignored files/folders inventory with sizes, ignore rules and handling guidance |
 | [docs/ai-driven-decision-engine-dashboard.html](docs/ai-driven-decision-engine-dashboard.html) | Unified TFT + Qwen3 + PPO decision engine dashboard (roles, handoffs, safety, evidence) |
 | [docs/forecasting-dashboard.html](docs/forecasting-dashboard.html) | TFT workload-forecasting dashboard (trained forecaster + baselines, offline evidence) |
 | [docs/agentic-planning-dashboard.html](docs/agentic-planning-dashboard.html) | Qwen3 planner dashboard (adapter/safety evidence; real inference unavailable) |
@@ -77,7 +82,7 @@ A compact summary is archived in `docs-simpler/` on the `files` branch.
 
 ## Status / roadmap
 
-Documentation and design are complete. Implementation follows `docs/design.md` §24 (data pipeline → baseline → monitoring → TFT → PPO → SLA reward → Qwen3 planning → validators → Kubernetes/OpenFaaS integration → experiments → dashboards → ablation/evaluation). All phases P1–P6 are implemented; P6 adds local live Kubernetes/OpenFaaS execution and Prometheus/Grafana feedback while preserving dry-run defaults. See [docs/implementation/](docs/implementation/README.md) and [docs/PROJECT_STATUS_SUMMARY.md](docs/PROJECT_STATUS_SUMMARY.md).
+Documentation and design are complete. Implementation follows `docs/design.md` §24 (data pipeline → baseline → monitoring → TFT → PPO → SLA reward → Qwen3 planning → validators → Kubernetes/OpenFaaS integration → experiments → dashboards → ablation/evaluation). All v1 phases P1–P6 and C1/C2/C7 prototypes are implemented; P6 adds local live Kubernetes/OpenFaaS execution and Prometheus/Grafana feedback while preserving dry-run defaults. V2 now targets hosted Qwen3 and stricter evaluation; see [IMPLEMENTATIONV2.md](IMPLEMENTATIONV2.md), [docs/implementation/](docs/implementation/README.md) and [docs/PROJECT_STATUS_SUMMARY.md](docs/PROJECT_STATUS_SUMMARY.md).
 
 ## Notes
 

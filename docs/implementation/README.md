@@ -38,13 +38,19 @@ Rules:
 |---|---|---|---|---|
 | P1 | [p1-v1.0-data-pipeline.md](p1-v1.0-data-pipeline.md) | v1.0 | Complete | Ingestion, preprocessing (D01–D04), feature engineering, pipeline |
 | P2 | [p2-v1.0-workload-ingestion-and-prediction.md](p2-v1.0-workload-ingestion-and-prediction.md) | v1.0 | Complete | End-to-end ingestion→prediction, compact TFT, training/evaluation, integration |
-| P3 | [p3-v1.1-decision-engine.md](p3-v1.1-decision-engine.md) | v1.1 | Complete | Qwen3/stub planner, state builder, plan/action validators, SLA guard, bounded loop; refreshed wiring note |
+| P3 | [p3-v1.2-decision-engine.md](p3-v1.2-decision-engine.md) | v1.2 | Complete for v1 runtime | Qwen3/stub planner, validators, SLA guard, bounded loop; hosted HF/OpenRouter path planned in V2 |
 | P4 | [p4-v1.1-execution.md](p4-v1.1-execution.md) | v1.1 | Complete | Bounded executor (kubectl scale), allowlists, dry-run default, decision-loop wiring; P6 live backend note |
 | P5 | [p5-v1.1-monitoring-feedback-experiments.md](p5-v1.1-monitoring-feedback-experiments.md) | v1.1 | Complete | Prometheus/Grafana scaffolds, feedback loop, baseline-vs-proposed, ablations; P6 live-wiring note |
 | P6 | [p6-v1.1-live-execution-and-monitoring.md](p6-v1.1-live-execution-and-monitoring.md) | v1.1 | Complete | Live Kubernetes/OpenFaaS execution, live Prometheus/Grafana feedback, local live runbook |
 | C1 | [c1-v1.0-synthetic-client-load-generator.md](c1-v1.0-synthetic-client-load-generator.md) | v1.0 | Complete | Replayable synthetic client/load generator, profile and CLI |
 | C2 | [c2-v1.0-generic-workload-ingestion.md](c2-v1.0-generic-workload-ingestion.md) | v1.0 | Complete | Generic workload ingestion SDK/API with schema, auth, metrics and provenance |
 | C7 | [c7-v1.0-sample-serverless-services.md](c7-v1.0-sample-serverless-services.md) | v1.0 | Complete | Three service behaviors, endpoints, Prometheus metrics, hardened image/Compose, registry and HTTP tests |
+
+## Implementation V2 crosscheck
+
+- [V2 M0 audit and V1↔V2 crosscheck](../implementationv2/m0-audit.md) — what was already complete in V1 and what remains for V2 implementation.
+- [Azure dataset availability and provenance](../azure-dataset-availability.md) — local raw data, Git visibility and reproduction commands.
+- [Qwen3 hosted inference plan](../qwen3-hosted-inference-plan.md) — Hugging Face primary and OpenRouter backup plan; not yet implemented.
 
 See also: [`plan.md`](../../plan.md) for the phase-to-architecture mapping and
 [`docs/PROJECT_STATUS_SUMMARY.md`](../PROJECT_STATUS_SUMMARY.md) for the consolidated project status.

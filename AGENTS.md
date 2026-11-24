@@ -34,7 +34,7 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 ## Canonical decisions (do NOT change without a documented reason)
 
 - **Forecast model:** Temporal Fusion Transformer (**TFT**), not PatchTST/generic Transformer.
-- **Agentic planner:** **Qwen3**, high-level planning only - never gives infrastructure commands.
+- **Agentic planner:** **Qwen3**, high-level planning only - never gives infrastructure commands. The local llama-style plan (Ollama/llama.cpp) was initially chosen for offline reproducibility but is now outdated; it required a local model process and never yielded real Qwen3 evidence. Planned real-inference path is Hugging Face-hosted primary with OpenRouter backup; v1 still defaults to deterministic stub (`docs/qwen3-hosted-inference-plan.md`).
 - **Controller:** **PPO** with the fixed action set `NoOp, PreWarm, ScaleOut, Reuse, ScaleIn, Terminate`.
 - **Execution:** **Kubernetes + OpenFaaS + Docker** (not Knative).
 - **Observability:** **Prometheus + Grafana**.
@@ -57,6 +57,10 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 - `docs/references.md` - recommended research papers mapped to components.
 - `docs/tech-stack.md` - technology stack, tools and per-stage mapping.
 - `docs/PROJECT_STATUS_SUMMARY.md` - consolidated status of all completed work, live G/H evidence, limitations and delivery metadata.
+- `docs/implementationv2/m0-audit.md` - V2 M0 audit and V1↔V2 crosscheck; explicitly separates completed V1 work from V2 gaps.
+- `docs/azure-dataset-availability.md` - local Azure raw-data inventory, Git visibility, provenance and regeneration commands.
+- `docs/qwen3-hosted-inference-plan.md` - hosted Hugging Face Qwen3 primary path and OpenRouter backup plan with secret-handling rules.
+- `docs/git-ignored-inventory.md` - exact ignored file/folder inventory with sizes, ignore rules and handling guidance.
 - `docs/ai-driven-decision-engine-dashboard.html` - unified TFT + Qwen3 + PPO decision engine dashboard (roles, handoffs, safety, evidence).
 - `docs/forecasting-dashboard.html` - TFT forecasting model dashboard (offline trained/evaluated evidence).
 - `docs/agentic-planning-dashboard.html` - Qwen3 planning dashboard (adapter/safety evidence; real inference unavailable).
