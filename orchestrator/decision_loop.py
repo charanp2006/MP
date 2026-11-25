@@ -527,7 +527,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run the bounded decision loop (P3/P4 smoke)")
     parser.add_argument("--config", default=None)
     parser.add_argument("--steps", type=int, default=5)
-    parser.add_argument("--runtime", choices=["stub", "ollama"], default=None)
+    parser.add_argument(
+        "--runtime",
+        choices=["stub", "ollama", "transformers", "huggingface", "openrouter"],
+        default=None,
+    )
     parser.add_argument("--policy", choices=["none", "checkpoint"], default="checkpoint")
     parser.add_argument("--execute", action="store_true", help="call the executor (respecting config)")
     parser.add_argument("--use-tft", action="store_true", help="use trained TFT checkpoint for forecasts (no oracle)")

@@ -197,14 +197,19 @@ kbd {
 > forward-looking implementation plan. The V1↔V2 crosscheck in
 > `docs/implementationv2/m0-audit.md` records what was already complete in V1
 > (Azure data pipeline, TFT evaluation, C1/C2/C7 prototypes, bounded execution
-> smoke) and what remains (hosted Qwen3, OpenRouter backup, full PPO training,
-> full E7 evaluation, measured/calibrated energy). The owner changed the Qwen3
+> smoke) and what remains (real hosted Qwen3 verification, full PPO training,
+> full E7 evaluation, measured/calibrated energy). HF/OpenRouter adapters are
+> implemented with mocked tests on `feat/m3-hosted-qwen3`. The owner changed the Qwen3
 > direction from local/Ollama-first to Hugging Face-hosted primary with
 > OpenRouter backup; see `docs/qwen3-hosted-inference-plan.md`. The earlier
 > local llama-style runtime (Ollama/llama.cpp) was initially planned for
 > offline reproducibility but is now outdated because it depended on the
 > owner's machine and never yielded real Qwen3 inference evidence. Raw Azure
 > data is local and gitignored; see `docs/azure-dataset-availability.md`.
+> A separate opt-in local Transformers runtime has real CPU smoke evidence for
+> `Qwen/Qwen3-1.7B` on `feat/m3-hosted-qwen3`; see
+> `docs/implementation/p3-v1.5-local-transformers-runtime.md`. It is not hosted
+> inference evidence and not a deployment path.
 
 ---
 
@@ -264,7 +269,7 @@ kbd {
 
 1. **Observation/state:** `orchestrator.state_builder.build_state` combines the latest forecast with runtime metrics into a validated `StateSnapshot` (includes `warm_containers`, SLA margin, trend). Untrusted inputs are bounded/validated.
 2. **TFT forecast (no oracle in proposed path when enabled):** `forecasting.tft_service.TFTForecastService` loads `models/tft_checkpoint.pt` and runs model inference on a history window built from recent timeline features. `DecisionLoop.run_episode(..., use_tft=True)` uses this forecast (`forecast_source=tft`). Oracle timeline values are used only as an explicit labeled fallback if the checkpoint/service is unavailable.
-3. **Qwen3 agentic planning (high-level only):** `agent.planner` produces a `Plan` restricted to `{NoOp, PreWarm, ScaleOut, Reuse, ScaleIn, Terminate}` with structured fields. Historical v1 runtime options were `stub` and local Ollama `qwen3:4b`; V2 now plans Hugging Face-hosted primary with OpenRouter backup (`docs/qwen3-hosted-inference-plan.md`), not yet implemented. **Qwen3 never returns/executes shell/K8s commands.** `PlanValidator` enforces schema/allowlist/bounds; failures fall back to stub/NoOp.
+3. **Qwen3 agentic planning (high-level only):** `agent.planner` produces a `Plan` restricted to `{NoOp, PreWarm, ScaleOut, Reuse, ScaleIn, Terminate}` with structured fields. Historical v1 runtime options were `stub` and local Ollama `qwen3:4b`; V2 adds Hugging Face-hosted primary and OpenRouter backup adapters with mocked tests (`docs/implementation/p3-v1.3-hosted-qwen3-adapter.md`), but real hosted inference is pending owner verification. An opt-in local Transformers runtime has real CPU smoke evidence (`docs/implementation/p3-v1.5-local-transformers-runtime.md`) but is not the hosted path. **Qwen3 never returns/executes shell/K8s commands.** `PlanValidator` enforces schema/allowlist/bounds; failures fall back to stub/NoOp.
 4. **PPO operational control:** `rl.policy` (checkpoint or untrained policy) selects an action from the observation. `ActionValidator` checks action validity, authorization, bounds, and plan consistency.
 5. **Feedback influence (safe):** prior-step `FeedbackLoop` signal may apply a bounded bias toward SLA-safe actions under caution, **but it does not bypass validation or the SLA guard**.
 6. **Independent safety + execution:** `SLAGuard` can override risky reductions near SLA; approved action may be passed to `Executor` (dry-run/disabled by default). Every step records forecast/plan/validation/PPO/final action/guard/execution/fe
@@ -272,7 +277,7 @@ kbd {
 
 ---
 ## 4-11 (condensed completion)
-- TFT/Qwen3/PPO wired in `orchestrator.decision_loop`; TFT inference via `forecasting.tft_service` when `--use-tft` + checkpoint (verified `forecast_source=tft`). Qwen3 stub/historical Ollama validated; never emits infra commands. PPO selects action; validators + independent SLA guard enforce safety; feedback applies bounded safe bias (no bypass). Executor uses bounded allow-listed `kubectl scale`, dry-run/disabled by default. Monitoring/feedback in-memory + scaffold. V2 hosted inference is planned, not present in this historical code snapshot.
+- TFT/Qwen3/PPO wired in `orchestrator.decision_loop`; TFT inference via `forecasting.tft_service` when `--use-tft` + checkpoint (verified `forecast_source=tft`). Qwen3 stub/historical Ollama validated; never emits infra commands. PPO selects action; validators + independent SLA guard enforce safety; feedback applies bounded safe bias (no bypass). Executor uses bounded allow-listed `kubectl scale`, dry-run/disabled by default. Monitoring/feedback in-memory + scaffold. V2 hosted adapters are implemented with mocks on `feat/m3-hosted-qwen3`; real hosted inference is not yet verified, while opt-in local Transformers inference has CPU smoke evidence.
 - Tests: **103 passed, 1 warning** (`py -m pytest -q`). Baseline/proposed simulation scripts added and smoke-run.
 - Historical blockers at that time: Ollama live test, live K8s/OpenFaaS deploy/invoke, Prometheus/Grafana live, real Azure trace run, direct energy measurement, finalized live-aligned docs/PPT, rigorous multi-seed ablations/CI. Later P1/P6 work addressed the Azure trace and local live pieces; see addenda and status summary.
 - Commands: `py -m scripts.run_demo`, `py -m orchestrator.decision_loop --steps 10 --policy checkpoint --use-tft`, `py -m pytest -q`.

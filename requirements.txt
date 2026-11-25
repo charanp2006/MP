@@ -11,4 +11,5 @@ matplotlib==3.10.9
 
 # Agent planner + schema validation (P3)
 pydantic==2.13.3
+transformers>=4.51.0,<5
 # jsonschema==4.26.0  # optional: not required by the pydantic-based validator

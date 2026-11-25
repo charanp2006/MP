@@ -228,7 +228,7 @@ Use **Qwen3 through a hosted Hugging Face inference endpoint** as the primary re
 
 Keep a provider abstraction so the planner is not coupled to one hosted vendor. The backup path is **OpenRouter with an owner-supplied API key**, used if Hugging Face is unavailable, rate-limited or broken during a crucial run. Add the key only to the execution environment, never to Git, configs, logs or dashboards. The final fallback remains the deterministic stub/NoOp planner.
 
-Detailed setup, security rules, proposed config keys, fallback order and acceptance criteria are in `docs/qwen3-hosted-inference-plan.md`. Current v1 code still defaults to `stub` and retains the historical Ollama adapter; hosted inference is M3 work, not a completed result.
+Detailed setup, security rules, config keys, fallback order and acceptance criteria are in `docs/qwen3-hosted-inference-plan.md`. Hosted HF/OpenRouter adapters and mocked tests are implemented on `feat/m3-hosted-qwen3` and recorded in `docs/implementation/p3-v1.3-hosted-qwen3-adapter.md`; the default remains `stub`, and real hosted inference is pending owner verification. An opt-in local Transformers runtime has separate CPU smoke evidence in `docs/implementation/p3-v1.5-local-transformers-runtime.md`; it is a development demo path, not the hosted primary and not a deployment path.
 
 Historical local alternatives retained only for compatibility or experiments:
 

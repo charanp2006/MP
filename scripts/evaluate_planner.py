@@ -109,6 +109,7 @@ def _scenarios() -> list[dict]:
 def evaluate_planner(config: Dict, runtime: str, out_dir: str | Path) -> Dict:
     run_config = json.loads(json.dumps(config))
     run_config["agent"]["runtime"] = runtime
+    run_config["agent"]["provider"] = runtime
     planner = build_planner(run_config, with_fallback=True)
     loop = DecisionLoop(run_config, planner=planner)
 
@@ -178,7 +179,11 @@ def evaluate_planner(config: Dict, runtime: str, out_dir: str | Path) -> Dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate planner providers offline")
     parser.add_argument("--config", default=None, help="Path to project.yaml")
-    parser.add_argument("--runtime", choices=["stub", "ollama"], default="stub")
+    parser.add_argument(
+        "--runtime",
+        choices=["stub", "ollama", "transformers", "huggingface", "openrouter"],
+        default="stub",
+    )
     parser.add_argument("--out-dir", default="results/planner", help="Artifact output directory")
     parser.add_argument("--timeout-s", type=float, default=None, help="Override agent.timeout_s")
     parser.add_argument("--model", default=None, help="Override agent.model")
@@ -187,8 +192,13 @@ def main() -> None:
     config = load_config(args.config)
     if args.timeout_s is not None:
         config["agent"]["timeout_s"] = float(args.timeout_s)
+        config["agent"]["huggingface"]["timeout_s"] = float(args.timeout_s)
+        config["agent"]["openrouter"]["timeout_s"] = float(args.timeout_s)
     if args.model:
         config["agent"]["model"] = args.model
+        config["agent"]["transformers"]["model_id"] = args.model
+        config["agent"]["huggingface"]["model_id"] = args.model
+        config["agent"]["openrouter"]["model"] = args.model
 
     result = evaluate_planner(config, args.runtime, args.out_dir)
     print(json.dumps(result["summary"], indent=2, default=str))

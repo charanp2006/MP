@@ -6,7 +6,7 @@ from rl.environment import ServerlessEnv
 from rl.train_ppo import load_checkpoint as load_ppo
 from orchestrator.decision_loop import run_episode
 def main():
- p=argparse.ArgumentParser(); p.add_argument("--config",default=None); p.add_argument("--steps",type=int,default=50); p.add_argument("--use-tft",action="store_true"); p.add_argument("--runtime",choices=["stub","ollama"],default=None); p.add_argument("--out",default="results/proposed.json"); a=p.parse_args()
+ p=argparse.ArgumentParser(); p.add_argument("--config",default=None); p.add_argument("--steps",type=int,default=50); p.add_argument("--use-tft",action="store_true"); p.add_argument("--runtime",choices=["stub","ollama","transformers","huggingface","openrouter"],default=None); p.add_argument("--out",default="results/proposed.json"); a=p.parse_args()
  config=load_config(a.config)
  if a.runtime: config.setdefault("agent",{})["runtime"]=a.runtime
  frame,_=run(config=config); env=ServerlessEnv(frame,config); policy=None

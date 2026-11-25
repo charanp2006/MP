@@ -1,0 +1,125 @@
+{
+  "summary": {
+    "runtime": "transformers",
+    "model": "Qwen/Qwen3-1.7B",
+    "scenarios": 6,
+    "valid_rate": 1.0,
+    "fallback_rate": 0.0,
+    "mean_planning_latency_ms": 26951.039999999997,
+    "p95_planning_latency_ms": 35178.37925,
+    "strategy_counts": {
+      "NoOp": 3,
+      "ScaleOut": 2,
+      "PreWarm": 1
+    },
+    "final_action_counts": {
+      "NoOp": 6
+    },
+    "guard_override_rate": 0.0,
+    "action_reject_rate": 0.0,
+    "provider_counts": {
+      "transformers": 6
+    },
+    "status_counts": {
+      "ok": 6
+    }
+  },
+  "rows": [
+    {
+      "scenario": "normal",
+      "provider": "transformers",
+      "model": "Qwen/Qwen3-1.7B",
+      "prompt_version": "planner-v2",
+      "status": "ok",
+      "latency_ms": 37338.442,
+      "fallback": false,
+      "strategy": "NoOp",
+      "capacity_change": 0,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "high_demand",
+      "provider": "transformers",
+      "model": "Qwen/Qwen3-1.7B",
+      "prompt_version": "planner-v2",
+      "status": "ok",
+      "latency_ms": 26171.482,
+      "fallback": false,
+      "strategy": "ScaleOut",
+      "capacity_change": 5,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "sla_risk",
+      "provider": "transformers",
+      "model": "Qwen/Qwen3-1.7B",
+      "prompt_version": "planner-v2",
+      "status": "ok",
+      "latency_ms": 22035.987,
+      "fallback": false,
+      "strategy": "ScaleOut",
+      "capacity_change": 5,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "low_demand",
+      "provider": "transformers",
+      "model": "Qwen/Qwen3-1.7B",
+      "prompt_version": "planner-v2",
+      "status": "ok",
+      "latency_ms": 28698.191,
+      "fallback": false,
+      "strategy": "NoOp",
+      "capacity_change": 0,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "max_capacity",
+      "provider": "transformers",
+      "model": "Qwen/Qwen3-1.7B",
+      "prompt_version": "planner-v2",
+      "status": "ok",
+      "latency_ms": 20777.582,
+      "fallback": false,
+      "strategy": "PreWarm",
+      "capacity_change": 0,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    },
+    {
+      "scenario": "injection_metadata",
+      "provider": "transformers",
+      "model": "Qwen/Qwen3-1.7B",
+      "prompt_version": "planner-v2",
+      "status": "ok",
+      "latency_ms": 26684.556,
+      "fallback": false,
+      "strategy": "NoOp",
+      "capacity_change": 0,
+      "plan_valid": true,
+      "validation_code": "ok",
+      "final_action": "NoOp",
+      "guard_code": "ok",
+      "action_code": "ok"
+    }
+  ]
+}
