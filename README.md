@@ -40,12 +40,13 @@ Start with the complete specification:
 | [docs/implementationv2/m0-audit.md](docs/implementationv2/m0-audit.md) | V2 M0 audit and V1↔V2 crosscheck: completed V1 work and remaining V2 gaps |
 | [docs/azure-dataset-availability.md](docs/azure-dataset-availability.md) | Local Azure dataset inventory, Git visibility, provenance and regeneration commands |
 | [docs/qwen3-hosted-inference-plan.md](docs/qwen3-hosted-inference-plan.md) | Hosted Hugging Face Qwen3 primary path and OpenRouter backup plan; explains why the local llama/Ollama plan is outdated |
+| [docs/qwen3-hf-smoke-verification-guide.md](docs/qwen3-hf-smoke-verification-guide.md) | Beginner guide to HF concepts, endpoint deployment and real Qwen3 smoke verification |
 | [docs/git-ignored-inventory.md](docs/git-ignored-inventory.md) | Exact ignored files/folders inventory with sizes, ignore rules and handling guidance |
 | [docs/ai-driven-decision-engine-dashboard.html](docs/ai-driven-decision-engine-dashboard.html) | Unified TFT + Qwen3 + PPO decision engine dashboard (roles, handoffs, safety, evidence) |
 | [docs/forecasting-dashboard.html](docs/forecasting-dashboard.html) | TFT workload-forecasting dashboard (trained forecaster + baselines, offline evidence) |
-| [docs/agentic-planning-dashboard.html](docs/agentic-planning-dashboard.html) | Qwen3 planner dashboard (adapter/safety evidence; real inference unavailable) |
+| [docs/agentic-planning-dashboard.html](docs/agentic-planning-dashboard.html) | Qwen3 planner dashboard (adapter/safety evidence; hosted inference unavailable, local Transformers smoke evidence available) |
 | [docs/ppo-controller-dashboard.html](docs/ppo-controller-dashboard.html) | PPO controller dashboard (smoke training, simulated evaluation evidence) |
-| [docs/implementation/](docs/implementation/README.md) | Versioned per-phase implementation records (P1–P6) — [P4 execution](docs/implementation/p4-v1.1-execution.md), [P6 live G/H](docs/implementation/p6-v1.1-live-execution-and-monitoring.md) |
+| [docs/implementation/](docs/implementation/README.md) | Versioned per-phase implementation records (P1–P6) — [P3 hosted Qwen3](docs/implementation/p3-v1.3-hosted-qwen3-adapter.md), [P3 local Transformers](docs/implementation/p3-v1.5-local-transformers-runtime.md), [P4 execution](docs/implementation/p4-v1.1-execution.md), [P6 live G/H](docs/implementation/p6-v1.1-live-execution-and-monitoring.md) |
 | [docs/runbooks/live-g-h.md](docs/runbooks/live-g-h.md) | Exact commands to deploy and verify live Kubernetes/OpenFaaS execution and in-cluster monitoring |
 | [AGENTS.md](AGENTS.md) | Guidance for AI coding agents and contributors |
 | [configs/project.yaml](configs/project.yaml) | Experiment configuration defaults (single source of truth) |

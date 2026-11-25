@@ -34,7 +34,7 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 ## Canonical decisions (do NOT change without a documented reason)
 
 - **Forecast model:** Temporal Fusion Transformer (**TFT**), not PatchTST/generic Transformer.
-- **Agentic planner:** **Qwen3**, high-level planning only - never gives infrastructure commands. The local llama-style plan (Ollama/llama.cpp) was initially chosen for offline reproducibility but is now outdated; it required a local model process and never yielded real Qwen3 evidence. Planned real-inference path is Hugging Face-hosted primary with OpenRouter backup; v1 still defaults to deterministic stub (`docs/qwen3-hosted-inference-plan.md`).
+- **Agentic planner:** **Qwen3**, high-level planning only - never gives infrastructure commands. The local llama-style plan (Ollama/llama.cpp) was initially chosen for offline reproducibility but is now outdated; it required a local model process and never yielded real Qwen3 evidence. Hosted HF-primary/OpenRouter-backup adapters are implemented with mocked tests on `feat/m3-hosted-qwen3`, but real hosted inference is pending owner verification; defaults remain deterministic stub (`docs/implementation/p3-v1.3-hosted-qwen3-adapter.md`, `docs/qwen3-hosted-inference-plan.md`). A separate opt-in local Transformers runtime has real CPU smoke evidence for `Qwen/Qwen3-1.7B`; it is a demo path, not hosted evidence or a deployment path (`docs/implementation/p3-v1.5-local-transformers-runtime.md`).
 - **Controller:** **PPO** with the fixed action set `NoOp, PreWarm, ScaleOut, Reuse, ScaleIn, Terminate`.
 - **Execution:** **Kubernetes + OpenFaaS + Docker** (not Knative).
 - **Observability:** **Prometheus + Grafana**.
@@ -60,6 +60,7 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 - `docs/implementationv2/m0-audit.md` - V2 M0 audit and V1↔V2 crosscheck; explicitly separates completed V1 work from V2 gaps.
 - `docs/azure-dataset-availability.md` - local Azure raw-data inventory, Git visibility, provenance and regeneration commands.
 - `docs/qwen3-hosted-inference-plan.md` - hosted Hugging Face Qwen3 primary path and OpenRouter backup plan with secret-handling rules.
+- `docs/qwen3-hf-smoke-verification-guide.md` - beginner HF concepts, endpoint deployment and real Qwen3 smoke verification runbook.
 - `docs/git-ignored-inventory.md` - exact ignored file/folder inventory with sizes, ignore rules and handling guidance.
 - `docs/ai-driven-decision-engine-dashboard.html` - unified TFT + Qwen3 + PPO decision engine dashboard (roles, handoffs, safety, evidence).
 - `docs/forecasting-dashboard.html` - TFT forecasting model dashboard (offline trained/evaluated evidence).
@@ -67,8 +68,10 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 - `docs/ppo-controller-dashboard.html` - PPO controller dashboard (smoke-trained policy, simulated evaluation evidence).
 - `docs/implementation/` - **versioned implementation records, one doc per
   completed phase** (see "Phase documentation" below; start at
-  `docs/implementation/README.md`; includes [P4 execution](docs/implementation/p4-v1.1-execution.md)
-  and [P6 live G/H](docs/implementation/p6-v1.1-live-execution-and-monitoring.md)).
+  `docs/implementation/README.md`; includes [P3 hosted Qwen3](docs/implementation/p3-v1.3-hosted-qwen3-adapter.md),
+  [P3 local Transformers](docs/implementation/p3-v1.5-local-transformers-runtime.md),
+  [P4 execution](docs/implementation/p4-v1.1-execution.md) and
+  [P6 live G/H](docs/implementation/p6-v1.1-live-execution-and-monitoring.md)).
 - `docs/runbooks/live-g-h.md` - exact local commands for live Kubernetes/OpenFaaS execution and in-cluster monitoring.
 - `docs/milestones/README.md` - current M0-M9 integration/validation milestone reports plus P6 G/H live-validation record.
 - `configs/project.yaml` - experiment configuration defaults.

@@ -7,17 +7,21 @@
 | Current git branch | `dev` |
 | Related commit | `ac9329a` (C1/C2/C7 on `dev`); `5dcad48` (docs refresh); `1cf3f4a` (PR #15 merge) |
 | Status | Phase 1 prototype complete; V2 audit done; hosted Qwen3 still to implement |
-| Verification | 214 Python tests passed after component integration; live G/H cluster verification passed |
+| Verification | 223 Python tests passed after M3 adapter and local Transformers runtime integration; real local Qwen3 smoke passed on CPU; live G/H cluster verification passed |
 
 ## 0. V2 addendum
 
 `IMPLEMENTATIONV2.md` is now the forward-looking plan. The V1↔V2 crosscheck is
 recorded in `docs/implementationv2/m0-audit.md`: Azure data provenance and TFT
 evaluation were already complete in V1; C1/C2/C7 prototypes are complete on
-`dev`; hosted Qwen3, OpenRouter backup, full PPO training, full E7 evaluation
-and measured/calibrated energy remain V2 work. The owner's updated provider
-direction is Hugging Face-hosted Qwen3 primary with OpenRouter backup, documented
-in `docs/qwen3-hosted-inference-plan.md`. The earlier local llama-style plan
+`dev`; hosted HF/OpenRouter adapters are implemented with mocked tests on
+`feat/m3-hosted-qwen3`, but real hosted inference is pending owner verification.
+An opt-in local Transformers runtime has real CPU smoke evidence for development
+demos (`Qwen/Qwen3-1.7B`, 6/6 valid plans, 0 fallback), but it is not a hosted
+inference result and not a deployment path.
+Full PPO training, full E7 evaluation and measured/calibrated energy remain V2
+work. The owner's updated provider direction is Hugging Face-hosted Qwen3 primary
+with OpenRouter backup, documented in `docs/qwen3-hosted-inference-plan.md`. The earlier local llama-style plan
 (Ollama/llama.cpp) was initially chosen for offline reproducibility but is now
 outdated: it required a local model process/hardware and never produced real
 Qwen3 evidence. Raw Azure data is local and gitignored; see

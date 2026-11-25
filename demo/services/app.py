@@ -328,6 +328,14 @@ def create_app(
                 "duration_ms": ERROR_LATENCY_MS,
             }
 
+        def _drain_body(self, length: int) -> None:
+            remaining = min(length, MAX_BODY_BYTES + 1)
+            while remaining > 0:
+                chunk = self.rfile.read(min(8192, remaining))
+                if not chunk:
+                    break
+                remaining -= len(chunk)
+
         def _not_found(self) -> None:
             _record_result(state, "404", "not_found", ERROR_LATENCY_MS, 0)
             self._json(404, self._error_body("not_found", "route not found"))
@@ -388,6 +396,8 @@ def create_app(
                 return
 
             if length > MAX_BODY_BYTES:
+                self._drain_body(length)
+                self.close_connection = True
                 _record_result(state, "400", "payload_too_large", ERROR_LATENCY_MS, 0)
                 self._json(400, self._error_body("payload_too_large", "payload exceeds 1 MiB"))
                 return

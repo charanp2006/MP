@@ -225,6 +225,9 @@ The table above records the V1 milestones. `IMPLEMENTATIONV2.md` adds a stricter
 M0–M10 continuation. The V1↔V2 crosscheck is in
 [`../implementationv2/m0-audit.md`](../implementationv2/m0-audit.md): M1 and M2
 were already complete in V1; C1/C2/C7 prototypes are complete on `dev`; M3
-hosted Qwen3, OpenRouter backup, full PPO/E7 rigor and measured/calibrated
-energy remain future work. Component integration commits on `dev`:
+hosted Qwen3/OpenRouter adapters are implemented with mocked tests on
+`feat/m3-hosted-qwen3` but real hosted inference is pending owner verification;
+opt-in local Transformers inference has CPU smoke evidence; full PPO/E7 rigor
+and measured/calibrated energy remain future work. Component
+integration commits on `dev`:
 `ea73cbc`, `9b340a4`, `ac9329a`.

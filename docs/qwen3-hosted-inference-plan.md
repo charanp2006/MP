@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Document status | Plan / runbook; no implementation performed in this pass |
+| Document status | Plan / runbook; adapter implemented with mocks, real inference pending owner verification |
 | Date | 2026-11-24 |
 | Related v2 milestone | M3 — Hosted Qwen3 on Hugging Face |
 | Owner decision | Replace the local/Ollama-first approach with hosted Qwen3 inference |
@@ -15,7 +15,7 @@ The Qwen3 planner must not require a model process on the user's laptop.
 - **Backup provider:** OpenRouter API using an owner-supplied API key.
 - **Final fallback:** deterministic stub/NoOp planner through the existing `FallbackPlanner` behavior.
 
-This is a documentation update only. Current code still implements `stub` and the historical local `ollama` adapter. The HF and OpenRouter adapters are future M3 work and must not be marked complete until real inference is verified.
+The HF and OpenRouter adapters are implemented behind the existing provider interface and covered by mocked tests in `tests/test_agent_m3.py`. The deterministic `stub` and historical local `ollama` adapter remain available. A separate opt-in local Transformers runtime has real CPU smoke evidence for development demos (`../implementation/p3-v1.5-local-transformers-runtime.md`); it does not replace hosted evidence and is not a deployment path. M3 must not be marked complete until real hosted inference is verified by the owner.
 
 ## 1.1 Why the local llama plan was replaced
 
@@ -61,6 +61,10 @@ Rules:
 
 ## 3. Hugging Face primary path
 
+For a beginner-friendly explanation of Hugging Face, endpoint deployment,
+secret handling and the exact real-inference smoke procedure, use
+[`qwen3-hf-smoke-verification-guide.md`](qwen3-hf-smoke-verification-guide.md).
+
 Before implementation:
 
 1. Verify that a suitable Qwen3 model is supported by the selected HF inference product.
@@ -69,7 +73,7 @@ Before implementation:
 4. Pin the exact model ID/revision and endpoint URL in versioned configuration.
 5. Store the HF token in environment variables or a secret manager; never in Git, prompts, logs, or result artifacts.
 
-Proposed configuration keys for M3 (not yet implemented):
+Configuration keys implemented for M3:
 
 ```yaml
 agent:

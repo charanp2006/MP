@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 import time
 from dataclasses import dataclass
-from typing import Optional
+from typing import Dict, Optional
 
 _SECRET_PATTERN = re.compile(
     r"(?i)\b([a-z0-9_-]*(?:api[_-]?key|token|password|secret|credential|authorization|bearer)[a-z0-9_-]*\s*[=:]\s*)(\S+)"
@@ -37,11 +37,15 @@ class PlannerCallRecord:
     reason: Optional[str] = None
     strategy: Optional[str] = None
     plan_code: Optional[str] = None
+    revision: Optional[str] = None
+    usage: Optional[Dict[str, int]] = None
+    attempts: int = 1
 
     def to_dict(self) -> dict:
         return {
             "provider": self.provider,
             "model": redact_text(self.model, 100),
+            "revision": redact_text(self.revision, 100),
             "prompt_version": self.prompt_version,
             "status": self.status,
             "latency_ms": round(float(self.latency_ms), 3),
@@ -49,4 +53,6 @@ class PlannerCallRecord:
             "reason": redact_text(self.reason),
             "strategy": self.strategy,
             "plan_code": self.plan_code,
+            "usage": dict(self.usage) if self.usage else None,
+            "attempts": int(self.attempts),
         }

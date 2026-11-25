@@ -38,19 +38,21 @@ Rules:
 |---|---|---|---|---|
 | P1 | [p1-v1.0-data-pipeline.md](p1-v1.0-data-pipeline.md) | v1.0 | Complete | Ingestion, preprocessing (D01–D04), feature engineering, pipeline |
 | P2 | [p2-v1.0-workload-ingestion-and-prediction.md](p2-v1.0-workload-ingestion-and-prediction.md) | v1.0 | Complete | End-to-end ingestion→prediction, compact TFT, training/evaluation, integration |
-| P3 | [p3-v1.2-decision-engine.md](p3-v1.2-decision-engine.md) | v1.2 | Complete for v1 runtime | Qwen3/stub planner, validators, SLA guard, bounded loop; hosted HF/OpenRouter path planned in V2 |
+| P3 | [p3-v1.5-local-transformers-runtime.md](p3-v1.5-local-transformers-runtime.md) | v1.5 | Local runtime implemented; real local Qwen3 smoke passed on CPU | Qwen3/stub planner, validators, SLA guard, bounded loop, hosted HF/OpenRouter adapters and opt-in local Transformers runtime |
 | P4 | [p4-v1.1-execution.md](p4-v1.1-execution.md) | v1.1 | Complete | Bounded executor (kubectl scale), allowlists, dry-run default, decision-loop wiring; P6 live backend note |
 | P5 | [p5-v1.1-monitoring-feedback-experiments.md](p5-v1.1-monitoring-feedback-experiments.md) | v1.1 | Complete | Prometheus/Grafana scaffolds, feedback loop, baseline-vs-proposed, ablations; P6 live-wiring note |
 | P6 | [p6-v1.1-live-execution-and-monitoring.md](p6-v1.1-live-execution-and-monitoring.md) | v1.1 | Complete | Live Kubernetes/OpenFaaS execution, live Prometheus/Grafana feedback, local live runbook |
 | C1 | [c1-v1.0-synthetic-client-load-generator.md](c1-v1.0-synthetic-client-load-generator.md) | v1.0 | Complete | Replayable synthetic client/load generator, profile and CLI |
 | C2 | [c2-v1.0-generic-workload-ingestion.md](c2-v1.0-generic-workload-ingestion.md) | v1.0 | Complete | Generic workload ingestion SDK/API with schema, auth, metrics and provenance |
-| C7 | [c7-v1.0-sample-serverless-services.md](c7-v1.0-sample-serverless-services.md) | v1.0 | Complete | Three service behaviors, endpoints, Prometheus metrics, hardened image/Compose, registry and HTTP tests |
+| C7 | [c7-v1.1-sample-serverless-services.md](c7-v1.1-sample-serverless-services.md) | v1.1 | Complete | Three service behaviors, endpoints, Prometheus metrics, hardened image/Compose, registry, HTTP tests and oversized-body connection fix |
 
 ## Implementation V2 crosscheck
 
 - [V2 M0 audit and V1↔V2 crosscheck](../implementationv2/m0-audit.md) — what was already complete in V1 and what remains for V2 implementation.
 - [Azure dataset availability and provenance](../azure-dataset-availability.md) — local raw data, Git visibility and reproduction commands.
-- [Qwen3 hosted inference plan](../qwen3-hosted-inference-plan.md) — Hugging Face primary and OpenRouter backup plan; not yet implemented.
+- [Qwen3 hosted inference plan](../qwen3-hosted-inference-plan.md) — Hugging Face primary and OpenRouter backup runbook; adapter implemented, real inference pending owner verification.
+- [Hugging Face smoke verification guide](../qwen3-hf-smoke-verification-guide.md) — beginner HF concepts, endpoint deployment and real Qwen3 smoke verification.
+- [Local Transformers runtime](p3-v1.5-local-transformers-runtime.md) — opt-in local Qwen3 demonstration path with real CPU smoke evidence.
 
 See also: [`plan.md`](../../plan.md) for the phase-to-architecture mapping and
 [`docs/PROJECT_STATUS_SUMMARY.md`](../PROJECT_STATUS_SUMMARY.md) for the consolidated project status.

@@ -30,7 +30,7 @@ Raw Azure files were inventoried by path/size/ignore state; they were not upload
 | M0 mandatory audit | **Complete (this document)** | Earlier `docs/milestones/m0-repository-audit-and-contract-harmonization.md` was pre-V2. This document satisfies the requested V2 audit/crosscheck record. |
 | M1 Azure provenance and pipeline | **COMPLETE already in V1** | Official source, release, SHA-256, size, schema, cleaning, chronological splits and plots verified in `data/processed/azure_manifest.json`, `data/processed/azure2019_full_total_manifest.json`, `docs/milestones/m1-official-azure-dataset-pipeline.md`. Raw data is local and gitignored. See `docs/azure-dataset-availability.md`. |
 | M2 TFT reproduction and evaluation | **COMPLETE already in V1, with caveats** | `results/forecast/azure2019_total/metrics.json` records config, seed, commit, data SHA, splits, horizons, baselines and peak subsets; `docs/milestones/m2-tft-forecast-model.md` records plots and limitations. Caveats: one seed, `total` aggregate only, peak underprediction unresolved, no rolling-origin folds. A stale `run_manifest.json` reference in that milestone doc is corrected. |
-| M3 hosted Qwen3 on Hugging Face | **NOT DONE** | Current code supports `stub` and historical local Ollama adapter only (`agent/planner.py`, `configs/project.yaml`). No HF endpoint adapter, secret-managed credentials, retries, rate-limit handling or real inference evidence. Plan added at `docs/qwen3-hosted-inference-plan.md`. |
+| M3 hosted Qwen3 on Hugging Face | **PARTIAL** | HF and OpenRouter adapters, provider chain, env-only credentials, retries, redaction and mocked tests are implemented on `feat/m3-hosted-qwen3` (`agent/planner.py`, `configs/project.yaml`, `tests/test_agent_m3.py`). Real hosted inference is not verified; see `docs/implementation/p3-v1.3-hosted-qwen3-adapter.md`. A separate opt-in local Transformers runtime has CPU smoke evidence but does not close hosted M3; see `docs/implementation/p3-v1.5-local-transformers-runtime.md`. |
 | M4 PPO research training | **PARTIAL** | Environment, reward, safety tests, checkpoints and multi-seed smoke evaluation exist (`docs/milestones/m4-ppo-controller.md`, `results/ppo/m5/run_manifest.json`). Budget was smoke-level (3 episodes/seed, 48 steps, seeds 42–44); full justified-budget training, uncertainty and held-out Azure-derived evaluation remain. |
 | M5 integrate TFT→Qwen→PPO | **PARTIAL** | Loop wiring and replay records exist (`orchestrator/decision_loop.py`, `docs/milestones/m5-decision-engine-integration.md`). Planner is stub; hosted Qwen is absent; ablations are identical; planner influence is soft feedback bias rather than an explicit declared feature/candidate/constraint contract. |
 | M6 execution hardening | **PARTIAL** | Allowlists, bounded `kubectl scale`, live gates, verification, rollback and one local live smoke exist (`orchestrator/live_executor.py`, P6 record). Missing: quota-freshness preconditions, unavailable-cluster tests, broader unauthorized-target tests. |
@@ -53,8 +53,8 @@ Raw Azure files were inventoried by path/size/ignore state; they were not upload
 
 ## 4. Known gaps to carry into V2 implementation
 
-1. Hosted Qwen3 via Hugging Face is not implemented; real inference has never been verified.
-2. OpenRouter backup path is not implemented; no key/secret flow, provider chain, or fallback test exists.
+1. Hosted Qwen3 via Hugging Face has an adapter and mocked tests, but real inference has never been verified.
+2. OpenRouter backup has an adapter, env-only key flow, provider chain and mocked fallback tests; real key smoke verification is pending.
 3. PPO training budget and evaluation rigor are smoke-level.
 4. Planner advice contract to PPO is undocumented/soft-bias only.
 5. Monitoring lacks a formal metric catalog and real resource/energy measurements.

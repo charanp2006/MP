@@ -2,7 +2,7 @@
 
 * ``schemas``   --- strict state/plan contracts.
 * ``prompts``   --- planner prompt templates.
-* ``planner``   --- Ollama Qwen3 adapter, deterministic stub and fallback.
+* ``planner``   --- hosted/local Qwen3 adapters, deterministic stub and fallbacks.
 * ``validator`` --- plan schema/bounds validation (Layer 6).
 
 Qwen3 only emits high-level strategies; it never issues infrastructure commands.
@@ -10,9 +10,13 @@ Qwen3 only emits high-level strategies; it never issues infrastructure commands.
 
 from agent.planner import (
     FallbackPlanner,
+    HostedQwen3Planner,
     Planner,
     PlannerError,
+    PlannerProviderError,
+    ProviderChainPlanner,
     Qwen3OllamaPlanner,
+    Qwen3TransformersPlanner,
     StubPlanner,
     build_planner,
 )
@@ -27,7 +31,11 @@ __all__ = [
     "PlannerError",
     "StubPlanner",
     "Qwen3OllamaPlanner",
+    "Qwen3TransformersPlanner",
+    "HostedQwen3Planner",
+    "ProviderChainPlanner",
     "FallbackPlanner",
+    "PlannerProviderError",
     "build_planner",
     "PlanValidator",
     "PlanValidation",

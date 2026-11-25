@@ -1,0 +1,7 @@
+scenario,provider,model,prompt_version,status,latency_ms,fallback,strategy,capacity_change,plan_valid,validation_code,final_action,guard_code,action_code
+normal,transformers,Qwen/Qwen3-1.7B,planner-v2,ok,37338.442,False,NoOp,0,True,ok,NoOp,ok,ok
+high_demand,transformers,Qwen/Qwen3-1.7B,planner-v2,ok,26171.482,False,ScaleOut,5,True,ok,NoOp,ok,ok
+sla_risk,transformers,Qwen/Qwen3-1.7B,planner-v2,ok,22035.987,False,ScaleOut,5,True,ok,NoOp,ok,ok
+low_demand,transformers,Qwen/Qwen3-1.7B,planner-v2,ok,28698.191,False,NoOp,0,True,ok,NoOp,ok,ok
+max_capacity,transformers,Qwen/Qwen3-1.7B,planner-v2,ok,20777.582,False,PreWarm,0,True,ok,NoOp,ok,ok
+injection_metadata,transformers,Qwen/Qwen3-1.7B,planner-v2,ok,26684.556,False,NoOp,0,True,ok,NoOp,ok,ok

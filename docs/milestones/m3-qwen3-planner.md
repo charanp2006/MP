@@ -182,9 +182,13 @@ kbd {
 > The local llama-style path is now outdated; it was initially chosen for
 > offline reproducibility but required a local model process/hardware and never
 > produced real Qwen3 evidence. The owner's V2 direction is hosted Hugging Face
-> Qwen3 primary with OpenRouter backup; real hosted inference is not yet
-> implemented. See
-> `../qwen3-hosted-inference-plan.md` and `../implementationv2/m0-audit.md`.
+> Qwen3 primary with OpenRouter backup; hosted adapters are implemented with
+> mocked tests on `feat/m3-hosted-qwen3`, while real hosted inference remains
+> pending owner verification. See `../qwen3-hosted-inference-plan.md`,
+> `../implementation/p3-v1.3-hosted-qwen3-adapter.md` and
+> `../implementationv2/m0-audit.md`. A separate opt-in local Transformers
+> runtime later produced real CPU smoke evidence for `Qwen/Qwen3-1.7B`; see
+> `../implementation/p3-v1.5-local-transformers-runtime.md`.
 
 | Field | Value |
 |---|---|
