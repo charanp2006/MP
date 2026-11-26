@@ -15,7 +15,7 @@ The Qwen3 planner must not require a model process on the user's laptop.
 - **Backup provider:** OpenRouter API using an owner-supplied API key.
 - **Final fallback:** deterministic stub/NoOp planner through the existing `FallbackPlanner` behavior.
 
-The HF and OpenRouter adapters are implemented behind the existing provider interface and covered by mocked tests in `tests/test_agent_m3.py`. The deterministic `stub` and historical local `ollama` adapter remain available. A separate opt-in local Transformers runtime has real CPU smoke evidence for development demos (`../implementation/p3-v1.5-local-transformers-runtime.md`); it does not replace hosted evidence and is not a deployment path. M3 must not be marked complete until real hosted inference is verified by the owner.
+The HF and OpenRouter adapters are implemented behind the existing provider interface and covered by mocked tests in `tests/test_agent_m3.py`. The deterministic `stub` and historical local `ollama` adapter remain available. A separate opt-in local Transformers runtime has real CPU smoke evidence for development demos (`../implementation/p3-v1.5-local-transformers-runtime.md`); it does not replace hosted evidence and is not a deployment path. M3 must not be marked complete until real hosted inference is verified by the owner. Hosted verification preparation, mocked failure coverage and the remaining owner actions are recorded in `../implementation/p3-v1.6-hosted-qwen3-verification.md`.
 
 ## 1.1 Why the local llama plan was replaced
 

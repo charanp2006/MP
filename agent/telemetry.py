@@ -8,7 +8,11 @@ from dataclasses import dataclass
 from typing import Dict, Optional
 
 _SECRET_PATTERN = re.compile(
-    r"(?i)\b([a-z0-9_-]*(?:api[_-]?key|token|password|secret|credential|authorization|bearer)[a-z0-9_-]*\s*[=:]\s*)(\S+)"
+    r"(?i)\b([a-z0-9_-]*(?:api[_-]?key|token|password|secret|credential|authorization|bearer)[a-z0-9_-]*\s*[=:]\s*)(?!\[REDACTED\]\b|bearer\b)(\S+)"
+)
+_BEARER_PATTERN = re.compile(r"(?i)\b(bearer\s+)(\S+)")
+_PROVIDER_TOKEN_PATTERN = re.compile(
+    r"\b(?:hf_[A-Za-z0-9_-]{8,}|sk-or-v1-[A-Za-z0-9_-]{8,})\b"
 )
 
 
@@ -16,7 +20,9 @@ def redact_text(value: object, max_chars: int = 300) -> Optional[str]:
     if value is None:
         return None
     text = str(value)
+    text = _BEARER_PATTERN.sub(r"\1[REDACTED]", text)
     text = _SECRET_PATTERN.sub(r"\1[REDACTED]", text)
+    text = _PROVIDER_TOKEN_PATTERN.sub("[REDACTED]", text)
     if len(text) > max_chars:
         return text[:max_chars] + "...[TRUNCATED]"
     return text
