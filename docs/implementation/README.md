@@ -38,7 +38,7 @@ Rules:
 |---|---|---|---|---|
 | P1 | [p1-v1.0-data-pipeline.md](p1-v1.0-data-pipeline.md) | v1.0 | Complete | Ingestion, preprocessing (D01–D04), feature engineering, pipeline |
 | P2 | [p2-v1.0-workload-ingestion-and-prediction.md](p2-v1.0-workload-ingestion-and-prediction.md) | v1.0 | Complete | End-to-end ingestion→prediction, compact TFT, training/evaluation, integration |
-| P3 | [p3-v1.5-local-transformers-runtime.md](p3-v1.5-local-transformers-runtime.md) | v1.5 | Local runtime implemented; real local Qwen3 smoke passed on CPU | Qwen3/stub planner, validators, SLA guard, bounded loop, hosted HF/OpenRouter adapters and opt-in local Transformers runtime |
+| P3 | [p3-v1.6-hosted-qwen3-verification.md](p3-v1.6-hosted-qwen3-verification.md) | v1.6 | Hosted verification prepared/blocked; real hosted inference not run | Qwen3/stub planner, validators, SLA guard, bounded loop, hosted HF/OpenRouter adapters, mocked failure coverage and owner-gated hosted smoke |
 | P4 | [p4-v1.1-execution.md](p4-v1.1-execution.md) | v1.1 | Complete | Bounded executor (kubectl scale), allowlists, dry-run default, decision-loop wiring; P6 live backend note |
 | P5 | [p5-v1.1-monitoring-feedback-experiments.md](p5-v1.1-monitoring-feedback-experiments.md) | v1.1 | Complete | Prometheus/Grafana scaffolds, feedback loop, baseline-vs-proposed, ablations; P6 live-wiring note |
 | P6 | [p6-v1.1-live-execution-and-monitoring.md](p6-v1.1-live-execution-and-monitoring.md) | v1.1 | Complete | Live Kubernetes/OpenFaaS execution, live Prometheus/Grafana feedback, local live runbook |
@@ -53,6 +53,7 @@ Rules:
 - [Qwen3 hosted inference plan](../qwen3-hosted-inference-plan.md) — Hugging Face primary and OpenRouter backup runbook; adapter implemented, real inference pending owner verification.
 - [Hugging Face smoke verification guide](../qwen3-hf-smoke-verification-guide.md) — beginner HF concepts, endpoint deployment and real Qwen3 smoke verification.
 - [Local Transformers runtime](p3-v1.5-local-transformers-runtime.md) — opt-in local Qwen3 demonstration path with real CPU smoke evidence.
+- [Hosted Qwen3 verification preparation](p3-v1.6-hosted-qwen3-verification.md) — audit, mocked failure coverage, owner approval actions and blocked real-hosted smoke.
 
 See also: [`plan.md`](../../plan.md) for the phase-to-architecture mapping and
 [`docs/PROJECT_STATUS_SUMMARY.md`](../PROJECT_STATUS_SUMMARY.md) for the consolidated project status.

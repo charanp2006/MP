@@ -34,7 +34,7 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
 ## Canonical decisions (do NOT change without a documented reason)
 
 - **Forecast model:** Temporal Fusion Transformer (**TFT**), not PatchTST/generic Transformer.
-- **Agentic planner:** **Qwen3**, high-level planning only - never gives infrastructure commands. The local llama-style plan (Ollama/llama.cpp) was initially chosen for offline reproducibility but is now outdated; it required a local model process and never yielded real Qwen3 evidence. Hosted HF-primary/OpenRouter-backup adapters are implemented with mocked tests on `feat/m3-hosted-qwen3`, but real hosted inference is pending owner verification; defaults remain deterministic stub (`docs/implementation/p3-v1.3-hosted-qwen3-adapter.md`, `docs/qwen3-hosted-inference-plan.md`). A separate opt-in local Transformers runtime has real CPU smoke evidence for `Qwen/Qwen3-1.7B`; it is a demo path, not hosted evidence or a deployment path (`docs/implementation/p3-v1.5-local-transformers-runtime.md`).
+- **Agentic planner:** **Qwen3**, high-level planning only - never gives infrastructure commands. The local llama-style plan (Ollama/llama.cpp) was initially chosen for offline reproducibility but is now outdated; it required a local model process and never yielded real Qwen3 evidence. Hosted HF-primary/OpenRouter-backup adapters are implemented with mocked tests on `feat/m3-hosted-qwen3`, but real hosted inference is pending owner verification; defaults remain deterministic stub (`docs/implementation/p3-v1.3-hosted-qwen3-adapter.md`, `docs/qwen3-hosted-inference-plan.md`). Hosted verification preparation and mocked failure coverage are recorded in `docs/implementation/p3-v1.6-hosted-qwen3-verification.md`; no hosted artifacts exist yet. A separate opt-in local Transformers runtime has real CPU smoke evidence for `Qwen/Qwen3-1.7B`; it is a demo path, not hosted evidence or a deployment path (`docs/implementation/p3-v1.5-local-transformers-runtime.md`).
 - **Controller:** **PPO** with the fixed action set `NoOp, PreWarm, ScaleOut, Reuse, ScaleIn, Terminate`.
 - **Execution:** **Kubernetes + OpenFaaS + Docker** (not Knative).
 - **Observability:** **Prometheus + Grafana**.
@@ -70,6 +70,7 @@ Objective: `Minimize E + αL + βCS + γC` subject to `P95 latency <= SLA target
   completed phase** (see "Phase documentation" below; start at
   `docs/implementation/README.md`; includes [P3 hosted Qwen3](docs/implementation/p3-v1.3-hosted-qwen3-adapter.md),
   [P3 local Transformers](docs/implementation/p3-v1.5-local-transformers-runtime.md),
+  [P3 hosted verification prep](docs/implementation/p3-v1.6-hosted-qwen3-verification.md),
   [P4 execution](docs/implementation/p4-v1.1-execution.md) and
   [P6 live G/H](docs/implementation/p6-v1.1-live-execution-and-monitoring.md)).
 - `docs/runbooks/live-g-h.md` - exact local commands for live Kubernetes/OpenFaaS execution and in-cluster monitoring.
